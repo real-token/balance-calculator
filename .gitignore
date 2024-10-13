@@ -1,0 +1,12 @@
+.env
+.env.local
+.VSCodeCounter
+.cursorignore
+
+*.log
+debug*
+
+node_modules
+dist
+
+outDatas

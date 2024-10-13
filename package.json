@@ -1,0 +1,31 @@
+{
+  "name": "balance_calculator",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node --import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"ts-node/esm\", pathToFileURL(\"./\"));' src/index.ts",
+    "start:logs": "NODE_OPTIONS='--max-old-space-size=4096' ts-node src/index.ts | tee -a logs.log"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.0.0",
+    "axios": "^1.7.7",
+    "bignumber.js": "^9.1.2",
+    "dotenv": "^16.4.5",
+    "graphql": "^16.9.0",
+    "graphql-request": "^6.1.0",
+    "inquirer": "^12.0.0",
+    "json2csv": "^6.0.0-alpha.2",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/bignumber.js": "^5.0.0",
+    "@types/inquirer": "^9.0.7",
+    "@types/json2csv": "^5.0.7",
+    "@types/node": "^22.7.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
+  }
+}
