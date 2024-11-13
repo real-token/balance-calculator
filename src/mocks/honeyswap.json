@@ -1,0 +1,620 @@
+[
+  {
+    "id": "0x04c83b48307d20a0e2d2f6259d18a9a7393f39a5",
+    "liquidityPositions": [
+      {
+        "liquidityTokenBalance": "0.000000924443888028",
+        "user": {
+          "id": "0xc6c2e9efb898a42db4137b07b727b45e0c353d81"
+        }
+      },
+      {
+        "liquidityTokenBalance": "0.000407430975748267",
+        "user": {
+          "id": "0xf5e635fc3c795c11ae6b58e38828cdf962845ac6"
+        }
+      }
+    ],
+    "reserve0": "2.215417206",
+    "reserve1": "77.468634724565951152",
+    "token0": {
+      "decimals": "9",
+      "id": "0x0675e8f4a52ea6c845cb6427af03616a2af42170",
+      "symbol": "REALTOKEN-CH-S-RWA-HOLDINGS-SA-NEUCHATEL-NE"
+    },
+    "token0Price": "0.02859760229255044169530049347593864",
+    "token1": {
+      "decimals": "18",
+      "id": "0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce",
+      "symbol": "REG"
+    },
+    "token1Price": "34.96796653684829743621662564626665",
+    "totalSupply": "0.000408355419636295"
+  },
+  {
+    "id": "0x2f7475bb43d9390f5b7d3d747d93d6d15e9158f2",
+    "liquidityPositions": [
+      {
+        "liquidityTokenBalance": "0.000021560013597656",
+        "user": {
+          "id": "0x2131461adadaeceae73f44e67327ee012901ccf7"
+        }
+      },
+      {
+        "liquidityTokenBalance": "0.00009668004579809",
+        "user": {
+          "id": "0x9566e3e6f55d4378243e55de8e037ee8e6e4de7e"
+        }
+      },
+      {
+        "liquidityTokenBalance": "0.00003575038989161",
+        "user": {
+          "id": "0x97fc178f27682988996e2fc766337d6b0bc24587"
+        }
+      },
+      {
+        "liquidityTokenBalance": "0.000000483683591714",
+        "user": {
+          "id": "0xc6c2e9efb898a42db4137b07b727b45e0c353d81"
+        }
+      }
+    ],
+    "reserve0": "135.641005075724196502",
+    "reserve1": "179.004741",
+    "token0": {
+      "decimals": "18",
+      "id": "0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce",
+      "symbol": "REG"
+    },
+    "token0Price": "0.757750908260715823733406033083783",
+    "token1": {
+      "decimals": "6",
+      "id": "0xddafbb505ad214d7b80b1f830fccc89b60fb7a83",
+      "symbol": "USDC"
+    },
+    "token1Price": "1.319694887988091543403890855359847",
+    "totalSupply": "0.00015447413287907"
+  },
+  {
+    "id": "0x331fefcea4cf8a49c4986a6d9a52b4ab4caf3fe1",
+    "liquidityPositions": [
+      {
+        "liquidityTokenBalance": "0.85825960807297557",
+        "user": {
+          "id": "0xc6c2e9efb898a42db4137b07b727b45e0c353d81"
+        }
+      },
+      {
+        "liquidityTokenBalance": "1685.248478031664225094",
+        "user": {
+          "id": "0xd9df1d931cfab59965c1a87e1e55131632357f0d"
+        }
+      }
+    ],
+    "reserve0": "586.583160180482253494",
+    "reserve1": "4923.859764743873897498",
+    "token0": {
+      "decimals": "18",
+      "id": "0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce",
+      "symbol": "REG"
+    },
+    "token0Price": "0.1191307608678401812613722325906056",
+    "token1": {
+      "decimals": "18",
+      "id": "0x6eeffc9faa02700a7f0dcc363736cdd71238caed",
+      "symbol": "BORG"
+    },
+    "token1Price": "8.394137607409120006060297657537183",
+    "totalSupply": "1686.106737639737200664"
+  },
+  {
+    "id": "0x59f9b6b3ac4795eb34b8c64e17b2300baa7e4ebc",
+    "liquidityPositions": [
+      {
+        "liquidityTokenBalance": "52.191519868360584865",
+        "user": {
+          "id": "0x31c94aeecd7a632395b8b9a8e4fdc06fbe5be885"
+        }
+      }
+    ],
+    "reserve0": "2.621273810631470795",
+    "reserve1": "1042.627641894792042077",
+    "token0": {
+      "decimals": "18",
+      "id": "0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce",
+      "symbol": "REG"
+    },
+    "token0Price": "0.002514103506662999532236713521670212",
+    "token1": {
+      "decimals": "18",
+      "id": "0x74fc9e57d6735f939ae532c5e3d302c9c6f504b4",
+      "symbol": "UPMP"
+    },
+    "token1Price": "397.7560976903899569546882971458091",
+    "totalSupply": "52.191519868360584865"
+  },
+  {
+    "id": "0x7c65b137d0ac0ab0cff2afa690a12575afbd125c",
+    "liquidityPositions": [
+      {
+        "liquidityTokenBalance": "2.320584655395138643",
+        "user": {
+          "id": "0x012662215992e3c864ba138a67ffe540c64c35ce"
+        }
+      },
+      {
+        "liquidityTokenBalance": "86.957003005508713286",
+        "user": {
+          "id": "0x019ec61ea317ed516dfc652b64c8a28e02e789cf"
+        }
+      },
+      {
+        "liquidityTokenBalance": "21.140507286998155619",
+        "user": {
+          "id": "0x038b708917b6aade9afed85cd4bb059e4fced496"
+        }
+      },
+      {
+        "liquidityTokenBalance": "39.653356677508072047",
+        "user": {
+          "id": "0x0d67a5798d70b6b8ecd7f58d7ba813d0ba0eec9d"
+        }
+      },
+      {
+        "liquidityTokenBalance": "2.244232342851207488",
+        "user": {
+          "id": "0x0f5c1f425b82c3274e8c3ec4d43800e337189648"
+        }
+      },
+      {
+        "liquidityTokenBalance": "77.380759756459313326",
+        "user": {
+          "id": "0x13f6fa4102d74f40219c026f747af4bda3e13b20"
+        }
+      },
+      {
+        "liquidityTokenBalance": "78.807382364994330566",
+        "user": {
+          "id": "0x1f71d97b27f22bd619dbc63a45d9378e084a23ca"
+        }
+      },
+      {
+        "liquidityTokenBalance": "14.044684266206232717",
+        "user": {
+          "id": "0x2131461adadaeceae73f44e67327ee012901ccf7"
+        }
+      },
+      {
+        "liquidityTokenBalance": "86.772697057744272923",
+        "user": {
+          "id": "0x23f7504f2edd95219cf64441cbc08ee624959682"
+        }
+      },
+      {
+        "liquidityTokenBalance": "43.483171579002945704",
+        "user": {
+          "id": "0x24629cea734a84aba57436a4cb2e35d1450b378a"
+        }
+      },
+      {
+        "liquidityTokenBalance": "101.266855525042329989",
+        "user": {
+          "id": "0x25bd0b0fa0e0b20ac3b4fefc1edb63d2426a48a3"
+        }
+      },
+      {
+        "liquidityTokenBalance": "175.405685678232041338",
+        "user": {
+          "id": "0x287fa9676a6779d10e1bdbc0a85393826f5e96eb"
+        }
+      },
+      {
+        "liquidityTokenBalance": "374.957924049631978691",
+        "user": {
+          "id": "0x2ba7f536ff0a4a043c2f3c25163f0384681657e8"
+        }
+      },
+      {
+        "liquidityTokenBalance": "43.641887851560992048",
+        "user": {
+          "id": "0x2e5411296fbe729af0e2a5fc935a3bc005a8ac2b"
+        }
+      },
+      {
+        "liquidityTokenBalance": "8.714106989319510196",
+        "user": {
+          "id": "0x3100853912fd80e29f98ffb11dab3b7ee9309bcc"
+        }
+      },
+      {
+        "liquidityTokenBalance": "31.73586185562886777",
+        "user": {
+          "id": "0x362a2295e2be105eb7ec6806feef797d774d6f3b"
+        }
+      },
+      {
+        "liquidityTokenBalance": "195.23773900046580019",
+        "user": {
+          "id": "0x3785a825617db4da2463e43c67ebc51d786f894a"
+        }
+      },
+      {
+        "liquidityTokenBalance": "7.078514580521557838",
+        "user": {
+          "id": "0x393cdc3d341faedfe8ece9f31aa2a7c9e1fcbada"
+        }
+      },
+      {
+        "liquidityTokenBalance": "78.74327353463148505",
+        "user": {
+          "id": "0x440e43f2f52848a182ef8c71afb5f5ad768400c1"
+        }
+      },
+      {
+        "liquidityTokenBalance": "13.405012356031648923",
+        "user": {
+          "id": "0x446e9b578958e51e7d0d84742bcf6080f0302a00"
+        }
+      },
+      {
+        "liquidityTokenBalance": "17.641766936905956229",
+        "user": {
+          "id": "0x4a6fbad2cb3e5724e3fa2efcbb988f12a298b196"
+        }
+      },
+      {
+        "liquidityTokenBalance": "52.860910854350916498",
+        "user": {
+          "id": "0x4d13c400787974aff670f30e29ac3d212a03b418"
+        }
+      },
+      {
+        "liquidityTokenBalance": "78.873094764600373869",
+        "user": {
+          "id": "0x54fcfccdcaabd65e107a33edfc0e83ee2c621ec0"
+        }
+      },
+      {
+        "liquidityTokenBalance": "23.676014868678422549",
+        "user": {
+          "id": "0x553e0c455445c7ae41bf3c93472bd901a4810c69"
+        }
+      },
+      {
+        "liquidityTokenBalance": "2.159255713409718733",
+        "user": {
+          "id": "0x567519b1e59ee2169473eb1abdaeea48d62e3c88"
+        }
+      },
+      {
+        "liquidityTokenBalance": "189.054301979062287064",
+        "user": {
+          "id": "0x5e55b240bada3a286724ef68ee6fe5c543d6465a"
+        }
+      },
+      {
+        "liquidityTokenBalance": "26.007792965791783757",
+        "user": {
+          "id": "0x5f3820be62a311dea8ca62edb3c55a1bb2e4ef46"
+        }
+      },
+      {
+        "liquidityTokenBalance": "170.115744955417909159",
+        "user": {
+          "id": "0x6b68511ad853fa924a569a01fd9a8b87b7bae65c"
+        }
+      },
+      {
+        "liquidityTokenBalance": "98.408604018194745186",
+        "user": {
+          "id": "0x70372cfb0a8d78b88604ae87a6ba643555c05eaf"
+        }
+      },
+      {
+        "liquidityTokenBalance": "100.046536015002163971",
+        "user": {
+          "id": "0x78e87757861185ec5e8c0ef6bf0c69fa7832df6c"
+        }
+      },
+      {
+        "liquidityTokenBalance": "31.97033226566545672",
+        "user": {
+          "id": "0x7bbcd348b8c5df9cef2e142196d65adaf7e13895"
+        }
+      },
+      {
+        "liquidityTokenBalance": "8.858451628504425471",
+        "user": {
+          "id": "0x8363cac2846df9a03d7e2af6f8881013c320d1ae"
+        }
+      },
+      {
+        "liquidityTokenBalance": "44.698554305400539175",
+        "user": {
+          "id": "0x86fb842a8c6d945a642cecd9536c3139552d64c8"
+        }
+      },
+      {
+        "liquidityTokenBalance": "88.30761013146773764",
+        "user": {
+          "id": "0x89f9d798b485d0ad18a680adb674f1598bcd44c7"
+        }
+      },
+      {
+        "liquidityTokenBalance": "76.532388987043478321",
+        "user": {
+          "id": "0x8b26149a06752417e9c4ecaaf110ab80d8a39a3e"
+        }
+      },
+      {
+        "liquidityTokenBalance": "51.486201232876884121",
+        "user": {
+          "id": "0x8bd75817753f30384a8b847c528a6cfab3b0695d"
+        }
+      },
+      {
+        "liquidityTokenBalance": "11.288342500767665031",
+        "user": {
+          "id": "0x8dabaf9784bff097de160b1b6f0feea40683a5bd"
+        }
+      },
+      {
+        "liquidityTokenBalance": "60.433503442031468518",
+        "user": {
+          "id": "0x9617818378546acaa2284941bb7c069c5871c5f5"
+        }
+      },
+      {
+        "liquidityTokenBalance": "36.668856762007617719",
+        "user": {
+          "id": "0x97fc178f27682988996e2fc766337d6b0bc24587"
+        }
+      },
+      {
+        "liquidityTokenBalance": "27.995188474389368689",
+        "user": {
+          "id": "0x9c3d7d3565541f0b736403ea7fb8ccb40232efbb"
+        }
+      },
+      {
+        "liquidityTokenBalance": "5.363520806638931347",
+        "user": {
+          "id": "0x9e3e0e63dc0e02420ea0c57af094ac6da424240e"
+        }
+      },
+      {
+        "liquidityTokenBalance": "165.658191591273297518",
+        "user": {
+          "id": "0xa0c022b8a2627c350d09074b343754d56064c0fa"
+        }
+      },
+      {
+        "liquidityTokenBalance": "181.266532269840472027",
+        "user": {
+          "id": "0xa1747d4a40cddcaa10089852963755701741b9df"
+        }
+      },
+      {
+        "liquidityTokenBalance": "79.712793219279622825",
+        "user": {
+          "id": "0xa22dc341c8dd53ab1dff6e66228e779832a449bf"
+        }
+      },
+      {
+        "liquidityTokenBalance": "43.237671723320578587",
+        "user": {
+          "id": "0xa3c373757d15563eb97fae18701bc2cea0bfe855"
+        }
+      },
+      {
+        "liquidityTokenBalance": "40.127407779167853579",
+        "user": {
+          "id": "0xa67e311b9c5915998c86866652092c5de332d7a8"
+        }
+      },
+      {
+        "liquidityTokenBalance": "14.414366120593923994",
+        "user": {
+          "id": "0xa6c98e809766b1c2f6157122928e9300c880942f"
+        }
+      },
+      {
+        "liquidityTokenBalance": "40.561660497441368814",
+        "user": {
+          "id": "0xa9d293324dec5ebc3ac56f928d005cf4e0bdeb7b"
+        }
+      },
+      {
+        "liquidityTokenBalance": "47.423266003552280902",
+        "user": {
+          "id": "0xab58779cec2b82a75ffd103fdc88d7e3adb13468"
+        }
+      },
+      {
+        "liquidityTokenBalance": "4.555920624168072775",
+        "user": {
+          "id": "0xac717bd63de98dc822a0cd10af7e9c3f291a9a9c"
+        }
+      },
+      {
+        "liquidityTokenBalance": "28.13224244877926141",
+        "user": {
+          "id": "0xb354af60d85e5fe431facdbb9388e4e4f70e1bbd"
+        }
+      },
+      {
+        "liquidityTokenBalance": "92.241066145952475921",
+        "user": {
+          "id": "0xb3d88863240dbec830e989e6333cd3f98b25e46f"
+        }
+      },
+      {
+        "liquidityTokenBalance": "39.88992041021131227",
+        "user": {
+          "id": "0xbbcb7e7143720fa8960dda9a44e6a0e6789030d8"
+        }
+      },
+      {
+        "liquidityTokenBalance": "81.563777482156795873",
+        "user": {
+          "id": "0xbd3e684453ddaf3ede4618f73b12bc03ac53602f"
+        }
+      },
+      {
+        "liquidityTokenBalance": "41.357217656472787798",
+        "user": {
+          "id": "0xc6c2e9efb898a42db4137b07b727b45e0c353d81"
+        }
+      },
+      {
+        "liquidityTokenBalance": "588.189771292504471995",
+        "user": {
+          "id": "0xd9df1d931cfab59965c1a87e1e55131632357f0d"
+        }
+      },
+      {
+        "liquidityTokenBalance": "89.190311758876356594",
+        "user": {
+          "id": "0xdad352e44473a9704bdcddabc8bbaf6ffb945778"
+        }
+      },
+      {
+        "liquidityTokenBalance": "8.854577268971785192",
+        "user": {
+          "id": "0xdb1a1a83fe6546296e436a661a6d5073cc4ee732"
+        }
+      },
+      {
+        "liquidityTokenBalance": "162.181921472785166659",
+        "user": {
+          "id": "0xdc1c5a3d2173d6bcc0d6a62b7e94c00f88ddbae8"
+        }
+      },
+      {
+        "liquidityTokenBalance": "8.762280852807448043",
+        "user": {
+          "id": "0xdc502e12488468e55ece3cbad60e0b5e288b2fb8"
+        }
+      },
+      {
+        "liquidityTokenBalance": "17.377722607276048271",
+        "user": {
+          "id": "0xde752f595297dee0155112232931661af03b6d19"
+        }
+      },
+      {
+        "liquidityTokenBalance": "17.453999821351205835",
+        "user": {
+          "id": "0xdeea1fc99da352c54716c1a2d68ede97283129a0"
+        }
+      },
+      {
+        "liquidityTokenBalance": "16.887699944342612568",
+        "user": {
+          "id": "0xdfbcd20078b4346c185dee24d143ad2f98956ac7"
+        }
+      },
+      {
+        "liquidityTokenBalance": "244.682144757616550409",
+        "user": {
+          "id": "0xe1cdeedfdf83bf6261df3a5daf0aa27b835e2415"
+        }
+      },
+      {
+        "liquidityTokenBalance": "31.071570565126269497",
+        "user": {
+          "id": "0xe5621699119a05f36885d8a1d56f2e14dc510d5b"
+        }
+      },
+      {
+        "liquidityTokenBalance": "167.927083272165431359",
+        "user": {
+          "id": "0xe56ce6aa39eb3d8c0e97229b75954d0ff4b40750"
+        }
+      },
+      {
+        "liquidityTokenBalance": "330.193692270564452162",
+        "user": {
+          "id": "0xe5f43ba510d3ea0d7288ec9f10fce02a65eff4f7"
+        }
+      },
+      {
+        "liquidityTokenBalance": "15.385198052494789265",
+        "user": {
+          "id": "0xf0633940d64515379bbe743515fc14c13834d393"
+        }
+      },
+      {
+        "liquidityTokenBalance": "88.292535650603474459",
+        "user": {
+          "id": "0xf10581d6ba3d531bc3ce9b24af359089fe7616f1"
+        }
+      },
+      {
+        "liquidityTokenBalance": "530.660616392965021978",
+        "user": {
+          "id": "0xf46ac972ef2a43801756cf85bf66ff8b64778e4f"
+        }
+      },
+      {
+        "liquidityTokenBalance": "93.653080980494836455",
+        "user": {
+          "id": "0xfd4c6e580ab18fdc315ee4f82503c5c58819c36d"
+        }
+      }
+    ],
+    "reserve0": "5477.669202093058824919",
+    "reserve1": "7226.549755929633963608",
+    "token0": {
+      "decimals": "18",
+      "id": "0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce",
+      "symbol": "REG"
+    },
+    "token0Price": "0.7579923182011501174207647112114735",
+    "token1": {
+      "decimals": "18",
+      "id": "0xe91d153e0b41518a2ce8dd3d7944fa863463a97d",
+      "symbol": "WXDAI"
+    },
+    "token1Price": "1.319274583643772182121012933602718",
+    "totalSupply": "5996.344454955098469153"
+  },
+  {
+    "id": "0x994517bc7fcf07e7227ce56775d1fc881355eda7",
+    "liquidityPositions": [
+      {
+        "liquidityTokenBalance": "0.469362506493002504",
+        "user": {
+          "id": "0x6c8c3c90d50be6f3442699ee57ecbd72f5796c1b"
+        }
+      },
+      {
+        "liquidityTokenBalance": "13.737876259046740482",
+        "user": {
+          "id": "0x90c5f4d733c5db300c42fa0e281d66b215967d0a"
+        }
+      },
+      {
+        "liquidityTokenBalance": "0.047685067678437274",
+        "user": {
+          "id": "0xc6c2e9efb898a42db4137b07b727b45e0c353d81"
+        }
+      }
+    ],
+    "reserve0": "187.804031924691900981",
+    "reserve1": "1.146905508582543537",
+    "token0": {
+      "decimals": "18",
+      "id": "0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce",
+      "symbol": "REG"
+    },
+    "token0Price": "163.7484784224275285130384842600705",
+    "token1": {
+      "decimals": "18",
+      "id": "0x9c58bacc331c9aa871afd802db6379a98e80cedb",
+      "symbol": "GNO"
+    },
+    "token1Price": "0.006106926975041966076310132271043054",
+    "totalSupply": "14.25492383321818026"
+  }
+]

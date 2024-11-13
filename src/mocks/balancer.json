@@ -1,0 +1,427 @@
+[
+  {
+    "address": "0x17794db163dd298bba1ffa4d42918c6b8474d948",
+    "shares": [
+      {
+        "balance": "0.000464453025197269",
+        "userAddress": {
+          "id": "0x123d04f0bcd896557fd751fc2362ab8c95a0f184"
+        }
+      },
+      {
+        "balance": "802.834499628984598916",
+        "userAddress": {
+          "id": "0x24c47db1cc0ba028836bf808175c044055d037ec"
+        }
+      },
+      {
+        "balance": "3.065102514324392927",
+        "userAddress": {
+          "id": "0xce88686553686da562ce7cea497ce749da109f9f"
+        }
+      },
+      {
+        "balance": "1502.293475851361991052",
+        "userAddress": {
+          "id": "0xf7fb07e46a54a0878105c6271b753948e715a962"
+        }
+      }
+    ],
+    "symbol": "10REG-90USDC",
+    "tokens": [
+      {
+        "address": "0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce",
+        "balance": "125.722868731264676323",
+        "decimals": 18,
+        "symbol": "REG",
+        "weight": "0.1"
+      },
+      {
+        "address": "0xddafbb505ad214d7b80b1f830fccc89b60fb7a83",
+        "balance": "1482.253393",
+        "decimals": 6,
+        "symbol": "USDC",
+        "weight": "0.9"
+      }
+    ],
+    "totalShares": "2308.193542447697180164"
+  },
+  {
+    "address": "0x22d3f4e4dada5d7a3007a58dd191897ad8578160",
+    "shares": [
+      {
+        "balance": "1.287366402951256129",
+        "userAddress": {
+          "id": "0x038b708917b6aade9afed85cd4bb059e4fced496"
+        }
+      },
+      {
+        "balance": "350.483077656679782778",
+        "userAddress": {
+          "id": "0x0f5c1f425b82c3274e8c3ec4d43800e337189648"
+        }
+      },
+      {
+        "balance": "68.055751509695768402",
+        "userAddress": {
+          "id": "0x1537b8c9e7da7322c8045d304aa5ae76a9fbcffe"
+        }
+      },
+      {
+        "balance": "21.625538408017397504",
+        "userAddress": {
+          "id": "0x2131461adadaeceae73f44e67327ee012901ccf7"
+        }
+      },
+      {
+        "balance": "700.524598058112771411",
+        "userAddress": {
+          "id": "0x25d38e194822156582d20592781968521f4241fc"
+        }
+      },
+      {
+        "balance": "160.928752105363203006",
+        "userAddress": {
+          "id": "0x2b4a694dc834b8ffbdc0bf082854de2ed662bf17"
+        }
+      },
+      {
+        "balance": "94.75392459396290074",
+        "userAddress": {
+          "id": "0x347e0fde7e0626d0a91bd78b8d620fd8d8b63fb4"
+        }
+      },
+      {
+        "balance": "70.232340195861200451",
+        "userAddress": {
+          "id": "0x56f4a265d87d14a1b65680cf6c618012c62d0320"
+        }
+      },
+      {
+        "balance": "19.351397025669973319",
+        "userAddress": {
+          "id": "0x6735834376efbab8f6f7415304d374bfed5e81d1"
+        }
+      },
+      {
+        "balance": "11.871923635351777757",
+        "userAddress": {
+          "id": "0x6c8c3c90d50be6f3442699ee57ecbd72f5796c1b"
+        }
+      },
+      {
+        "balance": "20.534439505218240876",
+        "userAddress": {
+          "id": "0x8dabaf9784bff097de160b1b6f0feea40683a5bd"
+        }
+      },
+      {
+        "balance": "62.399675412811172434",
+        "userAddress": {
+          "id": "0x93fdce6725f6997c88bad198b656457373f6f5bc"
+        }
+      },
+      {
+        "balance": "323.436682283510371831",
+        "userAddress": {
+          "id": "0xa28502337025f5ca908b0ef527e9b12a020a243b"
+        }
+      },
+      {
+        "balance": "149.418525634338946006",
+        "userAddress": {
+          "id": "0xab58779cec2b82a75ffd103fdc88d7e3adb13468"
+        }
+      },
+      {
+        "balance": "600.502052626181956158",
+        "userAddress": {
+          "id": "0xb0e83c2d71a991017e0116d58c5765abc57384af"
+        }
+      },
+      {
+        "balance": "1489.668611032263866775",
+        "userAddress": {
+          "id": "0xb354af60d85e5fe431facdbb9388e4e4f70e1bbd"
+        }
+      },
+      {
+        "balance": "180.41249167283129916",
+        "userAddress": {
+          "id": "0xb5bfb68b2f40d211338bd5955e2733b9990ecdc9"
+        }
+      },
+      {
+        "balance": "56.849145819546993728",
+        "userAddress": {
+          "id": "0xb624c17d22bb52cd55887c442639e570e4e27472"
+        }
+      },
+      {
+        "balance": "6.34617742507058144",
+        "userAddress": {
+          "id": "0xce88686553686da562ce7cea497ce749da109f9f"
+        }
+      },
+      {
+        "balance": "91.645023960447514982",
+        "userAddress": {
+          "id": "0xd1898665a01a91ac10bd2c6cb1899336df34ac33"
+        }
+      },
+      {
+        "balance": "182.298214818377093121",
+        "userAddress": {
+          "id": "0xdc95905331b1b04b89bfa3144f5a2516bc0779b5"
+        }
+      },
+      {
+        "balance": "4.950720937484080113",
+        "userAddress": {
+          "id": "0xdceb0bb3311342e3ce9e49f57affce9deac40ba1"
+        }
+      },
+      {
+        "balance": "178.713435522586182046",
+        "userAddress": {
+          "id": "0xde145f934f7e0f30f412a33a69cd089f57cec3b8"
+        }
+      },
+      {
+        "balance": "67.595638639394748672",
+        "userAddress": {
+          "id": "0xf10581d6ba3d531bc3ce9b24af359089fe7616f1"
+        }
+      },
+      {
+        "balance": "178.385937086858858384",
+        "userAddress": {
+          "id": "0xfb04df5bc87a78ebcfaa207847da146bd2a7d390"
+        }
+      }
+    ],
+    "symbol": "50REG-50sDAI",
+    "tokens": [
+      {
+        "address": "0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce",
+        "balance": "2441.810279693057679709",
+        "decimals": 18,
+        "symbol": "REG",
+        "weight": "0.5"
+      },
+      {
+        "address": "0xaf204776c7245bf4147c2612bf6e5972ee483701",
+        "balance": "2853.846520397361535969",
+        "decimals": 18,
+        "symbol": "sDAI",
+        "weight": "0.5"
+      }
+    ],
+    "totalShares": "5092.271441968588937223"
+  },
+  {
+    "address": "0x333c19b134553fdc75b2e252b7f56dd3ec34c1f9",
+    "shares": [
+      {
+        "balance": "0.012205467301229699",
+        "userAddress": {
+          "id": "0xce88686553686da562ce7cea497ce749da109f9f"
+        }
+      }
+    ],
+    "symbol": "13REG-13staBAL3-13wstETH-13WBTC-13GNO-13sDAI-13OLAS-13WXDAI",
+    "tokens": [
+      {
+        "address": "0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce",
+        "balance": "0.033708983356416046",
+        "decimals": 18,
+        "symbol": "REG",
+        "weight": "0.125"
+      },
+      {
+        "address": "0x2086f52651837600180de173b09470f54ef74910",
+        "balance": "0.043327032579468708",
+        "decimals": 18,
+        "symbol": "staBAL3",
+        "weight": "0.125"
+      },
+      {
+        "address": "0x6c76971f98945ae98dd7d4dfca8711ebea946ea6",
+        "balance": "0.000012499765928114",
+        "decimals": 18,
+        "symbol": "wstETH",
+        "weight": "0.125"
+      },
+      {
+        "address": "0x8e5bbbb09ed1ebde8674cda39a0c169401db4252",
+        "balance": "0.00000051",
+        "decimals": 8,
+        "symbol": "WBTC",
+        "weight": "0.125"
+      },
+      {
+        "address": "0x9c58bacc331c9aa871afd802db6379a98e80cedb",
+        "balance": "0.000169221030708775",
+        "decimals": 18,
+        "symbol": "GNO",
+        "weight": "0.125"
+      },
+      {
+        "address": "0xaf204776c7245bf4147c2612bf6e5972ee483701",
+        "balance": "0.033157659311864138",
+        "decimals": 18,
+        "symbol": "sDAI",
+        "weight": "0.125"
+      },
+      {
+        "address": "0xce11e14225575945b8e6dc0d4f2dd4c570f79d9f",
+        "balance": "0.019761218159323828",
+        "decimals": 18,
+        "symbol": "OLAS",
+        "weight": "0.125"
+      },
+      {
+        "address": "0xe91d153e0b41518a2ce8dd3d7944fa863463a97d",
+        "balance": "0.036975466592199204",
+        "decimals": 18,
+        "symbol": "WXDAI",
+        "weight": "0.125"
+      }
+    ],
+    "totalShares": "0.012205467302229699"
+  },
+  {
+    "address": "0x915938ff0a2b54e575068ff1a95007cafba7d277",
+    "shares": [
+      {
+        "balance": "14.269684368648647481",
+        "userAddress": {
+          "id": "0x0f5c1f425b82c3274e8c3ec4d43800e337189648"
+        }
+      },
+      {
+        "balance": "43.905261896644240613",
+        "userAddress": {
+          "id": "0x347e0fde7e0626d0a91bd78b8d620fd8d8b63fb4"
+        }
+      },
+      {
+        "balance": "144.903208273596581891",
+        "userAddress": {
+          "id": "0x59b201e8fdcc440fbcc0b101229861bac72db526"
+        }
+      },
+      {
+        "balance": "513.374228767635986389",
+        "userAddress": {
+          "id": "0x5eda2dc136986fc88d4df5696bc464f96a20268a"
+        }
+      },
+      {
+        "balance": "72.313327175271487833",
+        "userAddress": {
+          "id": "0xc9ac554017494b8db629be17fb9aad1b9ec538db"
+        }
+      },
+      {
+        "balance": "6.726680524974281111",
+        "userAddress": {
+          "id": "0xce88686553686da562ce7cea497ce749da109f9f"
+        }
+      },
+      {
+        "balance": "60.636470763704283455",
+        "userAddress": {
+          "id": "0xe399d79d2b0c9e2c5c23c0370b25f608907e38b2"
+        }
+      }
+    ],
+    "symbol": "80REG-20WXDAI",
+    "tokens": [
+      {
+        "address": "0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce",
+        "balance": "536.073978808808985308",
+        "decimals": 18,
+        "symbol": "REG",
+        "weight": "0.8"
+      },
+      {
+        "address": "0xe91d153e0b41518a2ce8dd3d7944fa863463a97d",
+        "balance": "177.053712363063845138",
+        "decimals": 18,
+        "symbol": "WXDAI",
+        "weight": "0.2"
+      }
+    ],
+    "totalShares": "856.128861770476508773"
+  },
+  {
+    "address": "0x95a2e3f73cdcef576a7d9b9e0d11efb5df90f166",
+    "shares": [
+      {
+        "balance": "112.226959485062775782",
+        "userAddress": {
+          "id": "0x540a623c7ed0c09e1b3916a83d93f2f59d44ea89"
+        }
+      },
+      {
+        "balance": "31.139196995983432647",
+        "userAddress": {
+          "id": "0x8dabaf9784bff097de160b1b6f0feea40683a5bd"
+        }
+      },
+      {
+        "balance": "1.060014615532599183",
+        "userAddress": {
+          "id": "0xce88686553686da562ce7cea497ce749da109f9f"
+        }
+      },
+      {
+        "balance": "2.63553990741486148",
+        "userAddress": {
+          "id": "0xdceb0bb3311342e3ce9e49f57affce9deac40ba1"
+        }
+      }
+    ],
+    "symbol": "80REG-20GNO",
+    "tokens": [
+      {
+        "address": "0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce",
+        "balance": "277.512553775281778575",
+        "decimals": 18,
+        "symbol": "REG",
+        "weight": "0.8"
+      },
+      {
+        "address": "0x9c58bacc331c9aa871afd802db6379a98e80cedb",
+        "balance": "0.416481590346002204",
+        "decimals": 18,
+        "symbol": "GNO",
+        "weight": "0.2"
+      }
+    ],
+    "totalShares": "147.061711003994669092"
+  },
+  {
+    "address": "0xf11ad03bbe64a493482c9a263995a6bec4343d6b",
+    "shares": [],
+    "symbol": "80REG-20sDAI",
+    "tokens": [
+      {
+        "address": "0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce",
+        "balance": "0.000000000000675719",
+        "decimals": 18,
+        "symbol": "REG",
+        "weight": "0.8"
+      },
+      {
+        "address": "0xaf204776c7245bf4147c2612bf6e5972ee483701",
+        "balance": "0.000000000000149895",
+        "decimals": 18,
+        "symbol": "sDAI",
+        "weight": "0.2"
+      }
+    ],
+    "totalShares": "0.000000000001"
+  }
+]

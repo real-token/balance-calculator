@@ -1,0 +1,6 @@
+query getTokensUUID {
+  tokens {
+    id
+    shortName
+  }
+}

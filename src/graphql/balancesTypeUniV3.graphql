@@ -1,0 +1,52 @@
+query getPoolsTypeUniV3(
+  $first: Int!
+  $paramBlockNumber: Block_height
+  $pool_id: [String]!
+) {
+  pools(first: $first, block: $paramBlockNumber, where: { id_in: $pool_id }) {
+    id
+    tick
+    sqrtPrice
+    liquidity
+    fee
+    feeTier
+    token0 {
+      id
+      symbol
+      decimals
+    }
+    token1 {
+      id
+      symbol
+      decimals
+    }
+  }
+}
+
+query getPositionsTypeUniV3(
+  $first: Int!
+  $paramBlockNumber: Block_height
+  $positions_id: String!
+  $pool_id: [String]!
+) {
+  positions(
+    first: $first
+    orderBy: id
+    orderDirection: asc
+    block: $paramBlockNumber
+    where: { id_gt: $positions_id, pool_in: $pool_id, liquidity_gt: 0 }
+  ) {
+    pool {
+      id
+    }
+    id
+    owner
+    tickLower {
+      tickIdx
+    }
+    tickUpper {
+      tickIdx
+    }
+    liquidity
+  }
+}

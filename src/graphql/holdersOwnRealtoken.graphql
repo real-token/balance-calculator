@@ -1,0 +1,12 @@
+query getHoldersOwnRealToken(
+  $tokenAddressesQuery: [String!]
+  $timestamp: Int!
+) {
+  tokens(ids: { id_in: $tokenAddressesQuery }) {
+    shortName
+    balances(filters: { timestamp: $timestamp, cache: true, ttl: 3600 }) {
+      addressHolder
+      total
+    }
+  }
+}

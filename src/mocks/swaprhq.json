@@ -1,0 +1,24 @@
+{
+  "data": {
+    "pools": [
+      {
+        "fee": "1905",
+        "id": "0x4332031095bb5da682c88e7e14fc033e212f8290",
+        "liquidity": "0",
+        "sqrtPrice": "74302722948901362000464912683",
+        "tick": "-1284",
+        "token0": {
+          "decimals": "18",
+          "id": "0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce",
+          "symbol": "REG"
+        },
+        "token1": {
+          "decimals": "18",
+          "id": "0xe91d153e0b41518a2ce8dd3d7944fa863463a97d",
+          "symbol": "WXDAI"
+        }
+      }
+    ],
+    "positions": []
+  }
+}

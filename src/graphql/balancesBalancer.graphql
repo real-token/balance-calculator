@@ -1,0 +1,31 @@
+query getBalancerBalances(
+  $first: Int!
+  $paramBlockNumber: Block_height
+  $pool_id: [String]!
+) {
+  balancers(first: $first, block: $paramBlockNumber) {
+    pools(first: $first, where: { address_in: $pool_id }) {
+      address
+      symbol
+      totalShares
+      tokens {
+        address
+        decimals
+        symbol
+        balance
+        weight
+      }
+      shares(
+        where: {
+          balance_gt: 0
+          userAddress_not: "0x0000000000000000000000000000000000000000"
+        }
+      ) {
+        balance
+        userAddress {
+          id
+        }
+      }
+    }
+  }
+}

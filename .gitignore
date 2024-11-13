@@ -6,7 +6,9 @@
 *.log
 debug*
 
+# dossiers
 node_modules
 dist
-
 outDatas
+python/*
+

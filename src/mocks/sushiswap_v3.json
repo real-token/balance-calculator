@@ -1,0 +1,370 @@
+{
+  "data": {
+    "pools": [
+      {
+        "feeTier": "10000",
+        "id": "0x1ace772b5bbe3c6e96f2e94df9470f4b984c2ea1",
+        "liquidity": "0",
+        "sqrtPrice": "86689027892826809293056216050",
+        "tick": "1800",
+        "token0": {
+          "decimals": "18",
+          "id": "0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce",
+          "symbol": "REG"
+        },
+        "token1": {
+          "decimals": "18",
+          "id": "0xe91d153e0b41518a2ce8dd3d7944fa863463a97d",
+          "symbol": "WXDAI"
+        }
+      },
+      {
+        "feeTier": "3000",
+        "id": "0x8ed9fc5aa26342cd89cbddb0cb36dce091e5ecf6",
+        "liquidity": "0",
+        "sqrtPrice": "79704936542881920863903188246",
+        "tick": "120",
+        "token0": {
+          "decimals": "18",
+          "id": "0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce",
+          "symbol": "REG"
+        },
+        "token1": {
+          "decimals": "18",
+          "id": "0xe91d153e0b41518a2ce8dd3d7944fa863463a97d",
+          "symbol": "WXDAI"
+        }
+      },
+      {
+        "feeTier": "3000",
+        "id": "0xc24be395a73ad1b4a612c08729f630cbb270a6cd",
+        "liquidity": "18410760117923",
+        "sqrtPrice": "90492124009032613548726",
+        "tick": "-273666",
+        "token0": {
+          "decimals": "18",
+          "id": "0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce",
+          "symbol": "REG"
+        },
+        "token1": {
+          "decimals": "6",
+          "id": "0xddafbb505ad214d7b80b1f830fccc89b60fb7a83",
+          "symbol": "USDC"
+        }
+      },
+      {
+        "feeTier": "10000",
+        "id": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8",
+        "liquidity": "377825251376638832",
+        "sqrtPrice": "90704409731159180028136",
+        "tick": "-273619",
+        "token0": {
+          "decimals": "18",
+          "id": "0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce",
+          "symbol": "REG"
+        },
+        "token1": {
+          "decimals": "6",
+          "id": "0xddafbb505ad214d7b80b1f830fccc89b60fb7a83",
+          "symbol": "USDC"
+        }
+      }
+    ],
+    "positions": [
+      {
+        "id": "665",
+        "liquidity": "8107247281075",
+        "owner": "0x9ba97f130b745d1556f118b183fb6bcd991c5a16",
+        "pool": {
+          "id": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8"
+        },
+        "tickLower": {
+          "tickIdx": "-282400"
+        },
+        "tickUpper": {
+          "tickIdx": "-275800"
+        }
+      },
+      {
+        "id": "669",
+        "liquidity": "23238330540559810544",
+        "owner": "0xf0633940d64515379bbe743515fc14c13834d393",
+        "pool": {
+          "id": "0x1ace772b5bbe3c6e96f2e94df9470f4b984c2ea1"
+        },
+        "tickLower": {
+          "tickIdx": "-1800"
+        },
+        "tickUpper": {
+          "tickIdx": "1800"
+        }
+      },
+      {
+        "id": "685",
+        "liquidity": "841161350969755",
+        "owner": "0xdc95905331b1b04b89bfa3144f5a2516bc0779b5",
+        "pool": {
+          "id": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8"
+        },
+        "tickLower": {
+          "tickIdx": "-279800"
+        },
+        "tickUpper": {
+          "tickIdx": "-275800"
+        }
+      },
+      {
+        "id": "690",
+        "liquidity": "4615662644664194737502",
+        "owner": "0xd012be76324577702ae961561a54d9adfc051b64",
+        "pool": {
+          "id": "0x8ed9fc5aa26342cd89cbddb0cb36dce091e5ecf6"
+        },
+        "tickLower": {
+          "tickIdx": "-3540"
+        },
+        "tickUpper": {
+          "tickIdx": "120"
+        }
+      },
+      {
+        "id": "692",
+        "liquidity": "98741040104025",
+        "owner": "0xa2c2143faa1820bce552d40f27bd2e84fe4c77c3",
+        "pool": {
+          "id": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8"
+        },
+        "tickLower": {
+          "tickIdx": "-281200"
+        },
+        "tickUpper": {
+          "tickIdx": "-274600"
+        }
+      },
+      {
+        "id": "781",
+        "liquidity": "1132832900092413",
+        "owner": "0x10df7dd932e655c01cc7a35ec23711b1d4153882",
+        "pool": {
+          "id": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8"
+        },
+        "tickLower": {
+          "tickIdx": "-278600"
+        },
+        "tickUpper": {
+          "tickIdx": "-275000"
+        }
+      },
+      {
+        "id": "794",
+        "liquidity": "17275516970800637",
+        "owner": "0x76f0b8e6cde5b9d82438448250660f40723da9c9",
+        "pool": {
+          "id": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8"
+        },
+        "tickLower": {
+          "tickIdx": "-273600"
+        },
+        "tickUpper": {
+          "tickIdx": "-273400"
+        }
+      },
+      {
+        "id": "795",
+        "liquidity": "17449130078836939",
+        "owner": "0x76f0b8e6cde5b9d82438448250660f40723da9c9",
+        "pool": {
+          "id": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8"
+        },
+        "tickLower": {
+          "tickIdx": "-273400"
+        },
+        "tickUpper": {
+          "tickIdx": "-273200"
+        }
+      },
+      {
+        "id": "796",
+        "liquidity": "17624487939943898",
+        "owner": "0x76f0b8e6cde5b9d82438448250660f40723da9c9",
+        "pool": {
+          "id": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8"
+        },
+        "tickLower": {
+          "tickIdx": "-273200"
+        },
+        "tickUpper": {
+          "tickIdx": "-273000"
+        }
+      },
+      {
+        "id": "797",
+        "liquidity": "55877657400761058",
+        "owner": "0xf5383bc332e01f066edb84a6647066da02695ea7",
+        "pool": {
+          "id": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8"
+        },
+        "tickLower": {
+          "tickIdx": "-274600"
+        },
+        "tickUpper": {
+          "tickIdx": "-273600"
+        }
+      },
+      {
+        "id": "800",
+        "liquidity": "8704291665996205",
+        "owner": "0xf5383bc332e01f066edb84a6647066da02695ea7",
+        "pool": {
+          "id": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8"
+        },
+        "tickLower": {
+          "tickIdx": "-273600"
+        },
+        "tickUpper": {
+          "tickIdx": "-269200"
+        }
+      },
+      {
+        "id": "801",
+        "liquidity": "6141912387063249",
+        "owner": "0x4db4c8bd12d7ad6dc2f7322b6c6510bd7a3e16fa",
+        "pool": {
+          "id": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8"
+        },
+        "tickLower": {
+          "tickIdx": "-276200"
+        },
+        "tickUpper": {
+          "tickIdx": "-272400"
+        }
+      },
+      {
+        "id": "804",
+        "liquidity": "18410760117923",
+        "owner": "0x6735834376efbab8f6f7415304d374bfed5e81d1",
+        "pool": {
+          "id": "0xc24be395a73ad1b4a612c08729f630cbb270a6cd"
+        },
+        "tickLower": {
+          "tickIdx": "-887220"
+        },
+        "tickUpper": {
+          "tickIdx": "887220"
+        }
+      },
+      {
+        "id": "825",
+        "liquidity": "11632365675909182",
+        "owner": "0xc6a82e72156a11a2e1634633af5e4517b451f0d9",
+        "pool": {
+          "id": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8"
+        },
+        "tickLower": {
+          "tickIdx": "-273600"
+        },
+        "tickUpper": {
+          "tickIdx": "-273000"
+        }
+      },
+      {
+        "id": "884",
+        "liquidity": "8670512612170312",
+        "owner": "0x7ee567d2ac5dca4c422281deb1e2334a805ba6c1",
+        "pool": {
+          "id": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8"
+        },
+        "tickLower": {
+          "tickIdx": "-276200"
+        },
+        "tickUpper": {
+          "tickIdx": "-269200"
+        }
+      },
+      {
+        "id": "892",
+        "liquidity": "1142143543496071",
+        "owner": "0xf9e40cbaeda471d39563da20dd4ac15d57afc28d",
+        "pool": {
+          "id": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8"
+        },
+        "tickLower": {
+          "tickIdx": "-283400"
+        },
+        "tickUpper": {
+          "tickIdx": "-264200"
+        }
+      },
+      {
+        "id": "893",
+        "liquidity": "305965411401503573",
+        "owner": "0x76f0b8e6cde5b9d82438448250660f40723da9c9",
+        "pool": {
+          "id": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8"
+        },
+        "tickLower": {
+          "tickIdx": "-273800"
+        },
+        "tickUpper": {
+          "tickIdx": "-273600"
+        }
+      },
+      {
+        "id": "894",
+        "liquidity": "600474228006963370",
+        "owner": "0xf5383bc332e01f066edb84a6647066da02695ea7",
+        "pool": {
+          "id": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8"
+        },
+        "tickLower": {
+          "tickIdx": "-274000"
+        },
+        "tickUpper": {
+          "tickIdx": "-273800"
+        }
+      },
+      {
+        "id": "895",
+        "liquidity": "27614031644569",
+        "owner": "0x1ad8bb75df755f3528917c63b3eb21df1383abf2",
+        "pool": {
+          "id": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8"
+        },
+        "tickLower": {
+          "tickIdx": "-887200"
+        },
+        "tickUpper": {
+          "tickIdx": "500000"
+        }
+      },
+      {
+        "id": "896",
+        "liquidity": "177194624005107010",
+        "owner": "0xc6a82e72156a11a2e1634633af5e4517b451f0d9",
+        "pool": {
+          "id": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8"
+        },
+        "tickLower": {
+          "tickIdx": "-274000"
+        },
+        "tickUpper": {
+          "tickIdx": "-273800"
+        }
+      },
+      {
+        "id": "897",
+        "liquidity": "17890610937021458",
+        "owner": "0xc6a82e72156a11a2e1634633af5e4517b451f0d9",
+        "pool": {
+          "id": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8"
+        },
+        "tickLower": {
+          "tickIdx": "-273000"
+        },
+        "tickUpper": {
+          "tickIdx": "-272600"
+        }
+      }
+    ]
+  }
+}

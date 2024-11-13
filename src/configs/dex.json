@@ -1,0 +1,47 @@
+{
+  "network": {
+    "gnosis": {
+      "honeyswap": {
+        "pool_id": [
+          "0x7c65b137d0ac0ab0cff2afa690a12575afbd125c",
+          "0x04c83b48307d20a0e2d2f6259d18a9a7393f39a5",
+          "0x2f7475bb43d9390f5b7d3d747d93d6d15e9158f2",
+          "0x994517bc7fcf07e7227ce56775d1fc881355eda7",
+          "0x331fefcea4cf8a49c4986a6d9a52b4ab4caf3fe1",
+          "0x59f9b6b3ac4795eb34b8c64e17b2300baa7e4ebc"
+        ],
+        "graphUrl": "https:gateway.thegraph.com/api/[api-key]/subgraphs/id/HTxWvPGcZ5oqWLYEVtWnVJDfnai2Ud1WaABiAR72JaSJ",
+        "mockData": "honeyswap.json"
+      },
+      "sushiswap": {
+        "pool_id": [
+          "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8",
+          "0x1ace772b5bbe3c6e96f2e94df9470f4b984c2ea1",
+          "0x8ed9fc5aa26342cd89cbddb0cb36dce091e5ecf6",
+          "0xc24be395a73ad1b4a612c08729f630cbb270a6cd"
+        ],
+        "graphUrl": "https:gateway.thegraph.com/api/[api-key]/subgraphs/id/GFvGfWBX47RNnvgwL6SjAAf2mrqrPxF91eA53F4eNegW",
+        "mockData": "sushiswap_v3.json"
+      },
+      "balancer": {
+        "pool_id": [
+          "0x17794db163dd298bba1ffa4d42918c6b8474d948",
+          "0x22d3f4e4dada5d7a3007a58dd191897ad8578160",
+          "0x333c19b134553fdc75b2e252b7f56dd3ec34c1f9",
+          "0x915938ff0a2b54e575068ff1a95007cafba7d277",
+          "0x95a2e3f73cdcef576a7d9b9e0d11efb5df90f166",
+          "0xf11ad03bbe64a493482c9a263995a6bec4343d6b"
+        ],
+        "graphUrl": "https:gateway.thegraph.com/api/[api-key]/subgraphs/id/EJezH1Cp31QkKPaBDerhVPRWsKVZLrDfzjrLqpmv6cGg",
+        "mockData": "balancer.json"
+      },
+      "swaprhq": {
+        "pool_id": ["0x4332031095bb5da682c88e7e14fc033e212f8290"],
+        "graphUrl": "https:gateway.thegraph.com/api/[api-key]/subgraphs/id/AAA1vYjxwFHzbt6qKwLHNcDSASyr1J1xVViDH8gTMFMR",
+        "mockData": "swaprhq.json"
+      }
+    },
+    "ethereum": {},
+    "polygon": {}
+  }
+}
