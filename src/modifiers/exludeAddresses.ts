@@ -1,3 +1,4 @@
+import { i18n } from "../i18n/index.js";
 import { SourceBalancesREG } from "../types/REG.types.js";
 
 /**
@@ -14,11 +15,7 @@ import { SourceBalancesREG } from "../types/REG.types.js";
  * @example
  * const filteredData = excludeAddresses(data, ['0x123...', '0x456...']);
  */
-export function excludeAddresses(
-  data: SourceBalancesREG[],
-  excludeAddresses: string[]
-): SourceBalancesREG[] {
-  return data.filter(
-    (item) => !excludeAddresses.includes(item.walletAddress.toLowerCase())
-  );
+export function excludeAddresses(data: SourceBalancesREG[], excludeAddresses: string[]): SourceBalancesREG[] {
+  console.info(i18n.t("modifiers.infoApplyModifier", { modifier: "excludeAddresses" }), excludeAddresses);
+  return data.filter((item) => !excludeAddresses.includes(item.walletAddress.toLowerCase()));
 }

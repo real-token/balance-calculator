@@ -1,7 +1,8 @@
+import { BigNumber } from "bignumber.js";
 import { NETWORK } from "../configs/constantes.js";
+import { i18n } from "../i18n/index.js";
 import { SourceBalancesREG } from "../types/REG.types.js";
 import { NormalizeOptions } from "../types/inputModles.types.js";
-import { BigNumber } from "bignumber.js";
 
 /**
  * Modifie les balances des DEX en fonction des options spécifiées
@@ -16,7 +17,7 @@ export function boostBalancesIncentivesVault(
   data: SourceBalancesREG[],
   options: NormalizeOptions["boostBalancesIncentivesVault"]
 ): SourceBalancesREG[] {
-  console.log("Début de boostBalancesIncentivesVault", options);
+  console.info(i18n.t("modifiers.infoApplyModifier", { modifier: "boostBalancesIncentivesVault" }), options);
 
   // Si aucune option de boost n'est fournie, retourner les données inchangées
   if (!options || options === 0) {

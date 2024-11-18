@@ -1,5 +1,6 @@
 import { BigNumber } from "bignumber.js";
 import { Network } from "../configs/constantes.js";
+import { i18n } from "../i18n/index.js";
 import { SourceBalancesREG } from "../types/REG.types.js";
 import { NormalizeOptions } from "../types/inputModles.types.js";
 
@@ -16,7 +17,7 @@ export function boostBalancesWallet(
   data: SourceBalancesREG[],
   options: NormalizeOptions["boostBalancesWallet"]
 ): SourceBalancesREG[] {
-  console.log("Début de boostBalancesWallet", options);
+  console.info(i18n.t("modifiers.infoApplyModifier", { modifier: "boostBalancesWallet" }), options);
 
   // Si aucune option de boost n'est fournie, retourner les données inchangées
   if (!options || options === 0) {

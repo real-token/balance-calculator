@@ -6,6 +6,7 @@ import { askChoiseListe, askInput, askUseTempFile } from "../utils/inquirer.js";
 import { getJsonFiles } from "../utils/lib.js";
 import { PowerVotingModel, calculatePowerVoting, powerVotingModels } from "./../models/powerVotingModels.js";
 
+import { i18n } from "../i18n/index.js";
 const __dirname = new URL(".", import.meta.url).pathname;
 
 /**
@@ -18,14 +19,14 @@ export async function taskCalculatePowerVotingREG(): Promise<string> {
   const jsonFiles = await getJsonFiles(dirPath);
 
   if (jsonFiles.length === 0) {
-    console.error("Aucun fichier JSON trouvé dans le dossier outDatas");
+    console.error(i18n.t("tasks.calculatePowerVotingREG.noJsonFiles"));
     return "";
   }
 
   // Sélection du fichier JSON d'entrée
   const jsonFileName = await askUseTempFile(jsonFiles);
   const jsonFilePath = path.join(dirPath, jsonFileName);
-  console.debug("Chemin du fichier JSON d'entrée:", jsonFilePath);
+  //console.debug("Chemin du fichier JSON d'entrée:", jsonFilePath);
   const jsonData = JSON.parse(fs.readFileSync(jsonFilePath, "utf-8"));
 
   // Importation et sélection du modèle d'entrée
@@ -38,12 +39,12 @@ export async function taskCalculatePowerVotingREG(): Promise<string> {
 
   // Si aucun modèle n'est détecté automatiquement, demander à l'utilisateur
   if (!selectedModelName) {
-    selectedModelName = await askChoiseListe("Quel modèle d'entrée voulez-vous utiliser ?", {
+    selectedModelName = await askChoiseListe(i18n.t("tasks.calculatePowerVotingREG.askModel"), {
       value: modelNames,
       name: modelNames,
     });
   } else {
-    console.log(`Modèle d'entrée détecté automatiquement : ${selectedModelName}`);
+    console.info(i18n.t("tasks.calculatePowerVotingREG.infoModelAutoDetected", { model: selectedModelName }));
   }
 
   // Normalisation des données d'entrée
@@ -53,7 +54,7 @@ export async function taskCalculatePowerVotingREG(): Promise<string> {
   // Sélection du modèle de calcul du pouvoir de vote
   const powerVotingModelNames = Object.keys(powerVotingModels);
   const selectedPowerVotingModelName = await askChoiseListe(
-    "Quel modèle de calcul de pouvoir de vote voulez-vous utiliser ?",
+    i18n.t("tasks.calculatePowerVotingREG.askPowerVotingModel"),
     { value: powerVotingModelNames, name: powerVotingModelNames }
   );
 
@@ -61,7 +62,7 @@ export async function taskCalculatePowerVotingREG(): Promise<string> {
     powerVotingModels[selectedPowerVotingModelName as keyof typeof powerVotingModels];
 
   const previousDataPowerVotingJsonFileName = await askChoiseListe(
-    "Quel fichier contien les datas de pouvoir de vote précedemment utilisées pour mettre à jour le pouvoir de vote ?",
+    i18n.t("tasks.calculatePowerVotingREG.askPreviousDataPowerVotingJsonFile"),
     { value: jsonFiles, name: jsonFiles }
   );
   const previousDataPowerVotingJsonFilePath = path.join(dirPath, previousDataPowerVotingJsonFileName);
@@ -79,10 +80,10 @@ export async function taskCalculatePowerVotingREG(): Promise<string> {
   // Formatage des données pour la transaction on-chain
   const BATCH_SIZE = parseInt(
     await askInput(
-      "Quelle taille de lot voulez-vous utiliser pour la transaction on-chain ?",
+      i18n.t("tasks.calculatePowerVotingREG.askBatchSize"),
       {
         regex: /^\d+$/,
-        messageEchec: "La taille du lot doit être un nombre entier.",
+        messageEchec: i18n.t("tasks.calculatePowerVotingREG.messageBatchSizeError"),
       },
       "1000"
     )
@@ -95,7 +96,12 @@ export async function taskCalculatePowerVotingREG(): Promise<string> {
       let powerVoting = new BigNumber(item.powerVoting);
 
       if (!powerVoting.isFinite() || powerVoting.isNaN()) {
-        console.warn(`Valeur de pouvoir de vote invalide pour l'adresse ${item.address}: ${item.powerVoting}`);
+        console.warn(
+          i18n.t("tasks.calculatePowerVotingREG.warnPowerVotinValue", {
+            address: item.address,
+            value: item.powerVoting,
+          })
+        );
         powerVoting = new BigNumber(0);
       }
 
@@ -108,7 +114,12 @@ export async function taskCalculatePowerVotingREG(): Promise<string> {
 
       return [item.address, finalValue.toString(10)];
     } catch (error: any) {
-      console.warn(`Erreur lors du traitement du pouvoir de vote pour l'adresse ${item.address}: ${error.message}`);
+      console.warn(
+        i18n.t("tasks.calculatePowerVotingREG.warnPowerVotingTraitment", {
+          address: item.address,
+          error: error.message,
+        })
+      );
       return [item.address, "0"];
     }
   });

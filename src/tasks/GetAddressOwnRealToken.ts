@@ -1,12 +1,9 @@
-import path from "path";
-import fs from "fs";
-import {
-  createGraphQLClient,
-  getListTokensUUID,
-  getHoldersOwnRealToken,
-} from "../utils/graphql.js";
-import { askTokenAddresses, askDateRange, askUrls } from "../utils/inquirer.js";
 import { BigNumber } from "bignumber.js";
+import fs from "fs";
+import path from "path";
+import { i18n } from "../i18n/index.js";
+import { createGraphQLClient, getHoldersOwnRealToken, getListTokensUUID } from "../utils/graphql.js";
+import { askDateRange, askTokenAddresses, askUrls } from "../utils/inquirer.js";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 
@@ -632,56 +629,43 @@ export async function taskGetAddressOwnRealToken(tempData: string) {
 
   // Demande à l'utilisateur de spécifier la plage de dates
   const { startDate, endDate, snapshotTime } = await askDateRange();
-  console.info("Dates de début et de fin:", startDate, endDate, snapshotTime);
+  console.info(
+    i18n.t("tasks.getAddressOwnRealToken.askDateRange", {
+      startDate,
+      endDate,
+      snapshotTime,
+    })
+  );
 
   let startDateStr = new Date(`${startDate}T${snapshotTime}:00Z`);
   const endDateStr = new Date(`${endDate}T${snapshotTime}:00Z`);
 
   // Définition du chemin du fichier de sortie
-  const pathFile = path.join(
-    __dirname,
-    "../../",
-    "outDatas/listeHolderOwnRealToken_tmp.json"
-  );
+  const pathFile = path.join(__dirname, "../../", "outDatas/listeHolderOwnRealToken_tmp.json");
 
   // Boucle sur chaque jour de la plage de dates
   while (startDateStr <= endDateStr) {
     const timestamp = Math.floor(startDateStr.getTime() / 1000);
-    console.log(
-      "Timestamp en cours de traitement:",
-      timestamp,
-      new Date(timestamp * 1000)
-    );
+    console.log(i18n.t("tasks.getAddressOwnRealToken.currentTimestamp"), timestamp, new Date(timestamp * 1000));
 
     // Récupération des détenteurs de tokens pour le timestamp donné
-    const holdersOwnRealToken = await getHoldersOwnRealToken(
-      client,
-      selectedTokenAddresses,
-      timestamp
-    );
+    const holdersOwnRealToken = await getHoldersOwnRealToken(client, selectedTokenAddresses, timestamp);
 
     // Traitement des données des détenteurs
     for (const token of holdersOwnRealToken.tokens) {
       for (const balance of token.balances) {
-        if (
-          new BigNumber(balance.total).gt(0) &&
-          !addressExclude.includes(balance.addressHolder.toLowerCase())
-        ) {
+        if (new BigNumber(balance.total).gt(0) && !addressExclude.includes(balance.addressHolder.toLowerCase())) {
           listHlodersOwnToken.add(balance.addressHolder);
         }
       }
     }
 
-    console.info("Nombre de détenteurs uniques:", listHlodersOwnToken.size);
+    console.info(i18n.t("tasks.getAddressOwnRealToken.infoNumberOfHolders"), listHlodersOwnToken.size);
 
     // Écriture des résultats dans le fichier de sortie
     fs.writeFileSync(
       pathFile,
-      JSON.stringify(
-        { result: { holders: Array.from(listHlodersOwnToken) }, params: {} },
-        null,
-        2
-      )
+      JSON.stringify({ result: { holders: Array.from(listHlodersOwnToken) }, params: {} }, null, 2)
     );
 
     // Passage au jour suivant

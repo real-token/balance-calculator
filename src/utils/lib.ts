@@ -1,10 +1,11 @@
-import fs, { readFileSync } from "fs";
-import { NETWORK, Network, blockStartREG, etherscanApiUrls } from "../configs/constantes.js";
 import axios from "axios";
-import dotenv from "dotenv";
 import { BigNumber } from "bignumber.js";
+import dotenv from "dotenv";
+import fs, { readFileSync } from "fs";
 import path from "path";
 import util from "util";
+import { NETWORK, Network, blockStartREG, etherscanApiUrls } from "../configs/constantes.js";
+import { i18n } from "../i18n/index.js";
 dotenv.config();
 type KeyString = {
   [key: string]: any;
@@ -62,7 +63,7 @@ export function readContentFromFile(filePath: string): boolean | string {
     const content = readFileSync(filePath, "utf-8");
     return content;
   } catch (error) {
-    console.info(`Fichier introuvable : ${filePath}`);
+    console.info(i18n.t("common.infos.infoFileNotFound", { filePath }));
     return false;
   }
 }
@@ -91,7 +92,7 @@ export async function getBlockNumber(timestamp: number | undefined, network: Net
   const apiUrl = etherscanApiUrls[network];
 
   if (!apiUrl || !apiUrl.length) {
-    throw new Error(`Aucune URL d'API n'a été trouvée pour le réseau "${network}"`);
+    throw new Error(i18n.t("utils.lib.errorApiUrlNotFound", { network }));
   }
 
   const apiKey =
@@ -101,7 +102,7 @@ export async function getBlockNumber(timestamp: number | undefined, network: Net
   // console.log("DEBUG apiKey", apiKey);
 
   if (!apiKey || !apiKey.length) {
-    throw new Error(`La clé API Etherscan pour le réseau "${network}" n'est pas définie ou incorrect (${apiKey})`);
+    throw new Error(i18n.t("common.errors.errorApiKeyNotFound", { network, apiKey }));
   }
 
   for (let attempt = 1; attempt <= 3; attempt++) {
@@ -127,11 +128,13 @@ export async function getBlockNumber(timestamp: number | undefined, network: Net
       if (attempt === 3) {
         throw error;
       }
-      console.error(`La requête (${apiUrl}) a échoué "${attempt}" fois , réessayer dans ${attempt} seconde...`);
+      console.error(
+        i18n.t("utils.lib.errorApiRequestFailedAfterRetry", { apiUrl, attempt, delayTime: attempt * 1000 })
+      );
       await delay(attempt * 1000);
     }
   }
-  throw new Error("Toutes les tentatives de requête pour obtenir le block number a partir d'un timestemp ont échoué");
+  throw new Error(i18n.t("utils.lib.errorGetBlockNumberFromTimestamp"));
 }
 
 export function keyFactory(
@@ -153,7 +156,7 @@ export function keyFactory(
       formattedSuffix = suffix.charAt(0).toUpperCase() + suffix.slice(1).toLowerCase();
       break;
     default:
-      throw new Error(`Option de cas non reconnue : "${caseOption}"`);
+      throw new Error(i18n.t("utils.lib.errorKeyFactory", { caseOption }));
   }
 
   return prefix + formattedSuffix + (postSuffix || "");
@@ -171,7 +174,7 @@ export function calculateTokenEquivalentBalancer(
   // console.log("DEBUG fromTokenInfo", fromTokenInfo);
   // console.log("DEBUG toTokenInfo", toTokenInfo);
   if (!fromTokenInfo || !toTokenInfo) {
-    throw new Error("Token not found in the pool");
+    throw new Error(i18n.t("utils.lib.errorTokenNotFoundInPool", { token: fromToken }));
   }
 
   const fromBalance = new BigNumber(fromTokenInfo.balance);
@@ -215,7 +218,7 @@ export function calculateTokenEquivalentTypeUniV3(
     amountBN = new BigNumber(amount).multipliedBy(new BigNumber(10).pow(pool.token1.decimals));
     normalizedAmount = amountBN.multipliedBy(price).div(new BigNumber(10).pow(pool.token0.decimals));
   } else {
-    throw new Error("Tokens do not match the pool");
+    throw new Error(i18n.t("utils.lib.errorTokenNotMatchPool", { fromToken, toToken }));
   }
 
   return normalizedAmount.toString(10);

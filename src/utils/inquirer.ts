@@ -1,5 +1,6 @@
 import { checkbox, confirm, input, select } from "@inquirer/prompts";
 import { setTimeout } from "timers/promises";
+import { i18n } from "../i18n/index.js";
 
 export async function askGraphQLUrl(): Promise<string> {
   const extra = process.env.ENDPOINT_EXTRA ?? [];
@@ -22,7 +23,7 @@ export async function askTokenAddresses(tokens: Array<[string, string]>): Promis
   }));
 
   const answers = await checkbox({
-    message: "Quels tokens voulez-vous utiliser?",
+    message: i18n.t("utils.inquirer.askTokenAddresses"),
     choices: choices,
   });
 
@@ -48,7 +49,7 @@ export async function askDateRange(
     "0"
   )}-${String(today.getUTCDate()).padStart(2, "0")}`;
   const defaultTime = `${String(today.getUTCHours()).padStart(2, "0")}:00`;
-  console.log("function askDateRange", { options }, options.skipAsk);
+  //console.log("function askDateRange", { options }, options.skipAsk);
   if (options.skipAsk) {
     return {
       startDate: options.startDate ?? defaultDate,
@@ -60,10 +61,10 @@ export async function askDateRange(
   //Option par defaut si demande date
   const { startDate = defaultDate, endDate = defaultDate, snapshotTime = defaultTime } = options;
 
-  console.log("askDateRange demande", { startDate, endDate, snapshotTime });
+  //console.log("askDateRange demande", { startDate, endDate, snapshotTime });
 
   const start = await input({
-    message: "Entrez la date de début UTC (format YYYY-MM-DD) :",
+    message: i18n.t("utils.inquirer.askDateRange"),
     default: defaultDate,
     validate: (value: string) => {
       const pass = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
@@ -71,12 +72,12 @@ export async function askDateRange(
         return true;
       }
 
-      return "Veuillez entrer une date valide UTC au format YYYY-MM-DD";
+      return i18n.t("utils.inquirer.askMessageValidateRange");
     },
   });
 
   const end = await input({
-    message: "Entrez la date de fin UTC (format YYYY-MM-DD) :",
+    message: i18n.t("utils.inquirer.askDateRangeEnd"),
     default: start,
     validate: (value: string) => {
       const pass = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
@@ -84,12 +85,12 @@ export async function askDateRange(
         return true;
       }
 
-      return "Veuillez entrer une date UTC valide au format YYYY-MM-DD";
+      return i18n.t("utils.inquirer.askMessageValidateRange");
     },
   });
 
   const time = await input({
-    message: "Entrez l'heure du snapshot UTC (format HH:mm) :",
+    message: i18n.t("utils.inquirer.askSnapshotTime"),
     default: defaultTime,
     validate: (value: string) => {
       const pass = value.match(/^([01]\d|2[0-3]):([0-5]\d)$/);
@@ -97,7 +98,7 @@ export async function askDateRange(
         return true;
       }
 
-      return "Veuillez entrer une heure UTC valide au format HH:mm";
+      return i18n.t("utils.inquirer.askMessageValidateTime");
     },
   });
 
@@ -114,7 +115,7 @@ export async function askUseconfirm(message: string, defaultValue?: boolean): Pr
 
 export async function askUseTempFile(listFile: string[]): Promise<string> {
   const answers: string = await select({
-    message: `Quelle fichier voulez vous utiliser ?`,
+    message: i18n.t("utils.inquirer.askUseTempFile"),
     choices: listFile.map((str) => ({ value: str })),
     pageSize: 5,
     loop: true,
@@ -159,7 +160,7 @@ export async function askChoiseCheckbox(
     loop: true,
     validate: (value) => {
       if (value.length < 1) {
-        return "Veuillez sélectionner au moins une option.";
+        return i18n.t("utils.inquirer.askMessageValidateCheckbox");
       }
       return true;
     },
@@ -192,7 +193,7 @@ export async function askUrls(
   multiSelect: boolean = true,
   message: string = "Quelle url graphQL utiliser ?"
 ): Promise<string[] | string> {
-  console.log("askUrls", urlsList);
+  //console.log("askUrls", urlsList);
   urlsList.push("http://localhost:3000/graphql", "custom");
   const askGraphQLUrl = {
     value: urlsList,
@@ -212,9 +213,9 @@ export async function askUrls(
 
   return urls.includes("custom")
     ? [
-        await askInput("Quelle es l'url custom ?", {
+        await askInput(i18n.t("utils.inquirer.askCustomUrl"), {
           regex: /^https?:\/\/[a-zA-Z0-9_-]*\.[a-z]{2,}/,
-          messageEchec: "Veuillez entrer une url valide (http://... ou https://...)",
+          messageEchec: i18n.t("utils.inquirer.askMessageValidateCustomUrl"),
         }),
         ...urls,
       ]

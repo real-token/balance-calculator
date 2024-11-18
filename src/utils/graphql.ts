@@ -1,7 +1,8 @@
 import fs, { readFileSync, writeFileSync } from "fs";
+import { DocumentNode } from "graphql";
 import { GraphQLClient } from "graphql-request";
-import path, { join } from "path";
 import { gql } from "graphql-tag";
+import path, { join } from "path";
 import {
   DexValue,
   Dexs,
@@ -11,10 +12,10 @@ import {
   dexFunctionMap,
   networkToDexsMap,
 } from "../configs/constantes.js";
-import { delay, getBlockNumber } from "./lib.js";
-import { askUseconfirm } from "./inquirer.js";
-import { DocumentNode } from "graphql";
+import { i18n } from "../i18n/index.js";
 import { DexBalanceResult } from "../types/dexConfig.types.js";
+import { askUseconfirm } from "./inquirer.js";
+import { delay, getBlockNumber } from "./lib.js";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 
@@ -180,8 +181,8 @@ export async function getRegBalancesByDexs(
   // );
   for (const dex of dexs) {
     if (networkToDexsMap[network].includes(dex)) {
-      console.info(`Le DEX "${dex}" sur ${network} est en cours de traitement`);
-      console.time(`Query for ${dex} on ${network}`);
+      console.info(i18n.t("utils.graphql.infoDexProcessing", { dex, network }));
+      console.time(i18n.t("utils.graphql.timeQuery", { dex, network }));
 
       // Obtenez la fonction appropriée pour le DEX actuel
       const getRegBalancesFunction = dexFunctionMap[dex as DexValue];
@@ -193,18 +194,15 @@ export async function getRegBalancesByDexs(
       // );
       // Vérifiez si la fonction existe
       if (!(typeof getRegBalancesFunction === "function")) {
-        console.warn(
-          `WARNING: Aucune fonction de récupération des soldes n'a été trouvée pour le DEX "${dex}"`,
-          getRegBalancesFunction
-        );
+        console.warn(i18n.t("utils.graphql.warnNoFunctionForDex", { dex }));
         result[dex] = [];
         continue;
       }
 
       result[dex] = await getRegBalancesFunction(configs.network[network][dex], network, timestamp, mock);
-      console.timeEnd(`Query for ${dex} on ${network}`);
+      console.timeEnd(i18n.t("utils.graphql.timeQuery", { dex, network }));
     } else {
-      console.error(`Error: DEX or NETWORK not found or not implemented : DEX->${dex} on ${network} network`);
+      console.error(i18n.t("utils.graphql.errorDexOrNetworkNotFound", { dex, network }));
     }
   }
   return result;
@@ -233,7 +231,7 @@ export async function getRegBalancesVaultIncentives(
         balance_gt,
       },
     };
-    console.info("Info: Start client.request(query)");
+    console.info(i18n.t("utils.graphql.infoQueryStart"));
     console.time("client.request");
     const response = await makeRequestWithRetry(client, requestBody)
       .then((response) => {
@@ -243,7 +241,7 @@ export async function getRegBalancesVaultIncentives(
       .catch((error) => {
         console.error(`La requête a échoué après 3 tentatives :`, error);
       });
-    console.info("Info: End client.request(query)");
+    console.info(i18n.t("utils.graphql.infoQueryEnd"));
     console.timeEnd("client.request");
 
     const accounts = response.userGlobalStates;
@@ -258,7 +256,7 @@ export async function getRegBalancesVaultIncentives(
     currentAddressWallet = accounts[accounts.length - 1].id;
   }
   if (MAJ_MOCK_DATA) {
-    console.info("Info: MAJ_MOCK_DATA");
+    console.info(i18n.t("utils.graphql.infoQueryMockData"));
     const path = join(__dirname, "..", "mocks", `balancesVaultIncentivesREG.json`);
     writeFileSync(path, JSON.stringify(allData, null, 2));
   }
@@ -296,18 +294,17 @@ export async function fetchBalancesByTokenAddress(
     }
   }
     `;
-  console.info("Info: Start client.request(query)");
+  console.info(i18n.t("utils.graphql.infoQueryStart"));
   const data = await makeRequestWithRetry(client, query)
     .then((response) => {
       // Gérer la réponse
       return response;
     })
     .catch((error) => {
-      console.error(`La requête a échoué après 3 tentatives :`, error);
+      console.error(`${i18n.t("utils.graphql.errorQueryFailed")}`, error);
     });
-  console.info("Info: End client.request(query)");
+  console.info(i18n.t("utils.graphql.infoQueryEnd"));
   console.timeEnd("client.request");
-  console.info("Info: End client.request(query)");
 
   return data;
 }
@@ -324,9 +321,9 @@ export async function getListTokensUUID(client: GraphQLClient): Promise<Array<[s
       return response;
     })
     .catch((error) => {
-      console.error(`La requête a échoué après 3 tentatives :`, error);
+      console.error(`${i18n.t("utils.graphql.errorQueryFailed")}`, error);
     });
-  console.info("Info: End client.request(query)");
+  console.info(i18n.t("utils.graphql.infoQueryEnd"));
   console.timeEnd("client.request");
 
   // Assurez-vous que cette ligne correspond à la structure de votre réponse GraphQL
@@ -365,19 +362,24 @@ export async function makeRequestWithRetry(
         const indexedBlockNumber = blockNumberMatch[1];
         const requestedBlockNumber = requestedBlockNumberMatch[1];
         console.info(
-          `Info: Le graph est désynchronisé. Le graph a indexé jusqu'au bloc numéro ${indexedBlockNumber}, mais les données pour le bloc numéro ${requestedBlockNumber} ne sont pas encore disponibles, il y as une différance de ${
-            Number(requestedBlockNumber) - Number(indexedBlockNumber)
-          } blocs.\n\nVérifier l'indexation avant de continuer.`
+          `${i18n.t("utils.graphql.errorGraphNotSync", {
+            indexedBlockNumber,
+            requestedBlockNumber,
+            difference: Number(requestedBlockNumber) - Number(indexedBlockNumber),
+          })}`
         );
       }
 
-      if (await askUseconfirm("Voulez vous recommencer une série de tentatives ?", false)) {
+      if (await askUseconfirm(i18n.t("utils.graphql.askRetry"), false)) {
         return await makeRequestWithRetry(client, query, 5, 2000);
       }
       throw error;
     }
     console.error(
-      `La requête à échoué, il reste ${retries - 1} tentatives, pause de ${delayTime / 1000}s :`,
+      `${i18n.t("utils.graphql.errorQueryFailedAfterRetry", {
+        retries: retries - 1,
+        delayTime: delayTime / 1000,
+      })}`,
       JSON.stringify(client, null, 2)
     );
     await delay(delayTime);

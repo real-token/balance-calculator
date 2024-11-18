@@ -1,6 +1,10 @@
+import { BigNumber } from "bignumber.js";
 import { existsSync, readFileSync, writeFileSync } from "fs";
-import { DexConfigs, MAJ_MOCK_DATA, Network, TOKEN_ADDRESS } from "../configs/constantes.js";
+import { DocumentNode, OperationDefinitionNode, print } from "graphql";
 import { join } from "path";
+import { DexConfigs, MAJ_MOCK_DATA, Network, TOKEN_ADDRESS } from "../configs/constantes.js";
+import { i18n } from "../i18n/index.js";
+import { ResponseFunctionGetRegBalances } from "../types/dexConfig.types.js";
 import { createGraphQLClient, loadGraphQLQuery, makeRequestWithRetry } from "./graphql.js";
 import {
   calculateTokenEquivalentBalancer,
@@ -8,9 +12,6 @@ import {
   getBlockNumber,
   splitIntoChunks,
 } from "./lib.js";
-import { BigNumber } from "bignumber.js";
-import { DocumentNode, OperationDefinitionNode, print } from "graphql";
-import { ResponseFunctionGetRegBalances } from "../types/dexConfig.types.js";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 
@@ -76,14 +77,14 @@ export async function getRegBalancesHoneySwap(
   mock?: boolean
 ): Promise<ResponseFunctionGetRegBalances[]> {
   if (mock) {
-    console.info("Info: Utilisation des données mockées pour HoneySwap");
+    console.info(i18n.t("utils.queryDexs.infoUseMockData", { dex: "HoneySwap" }));
     const data = JSON.parse(readFileSync(join(__dirname, "..", "mocks", `${dexConfigs.mockData}`), "utf-8"));
     return responseformaterHoneySwap(data);
   }
 
-  console.info("\nInfo: Démarrage de la requête HoneySwap");
+  console.info(i18n.t("utils.queryDexs.infoQueryStart", { dex: "HoneySwap" }));
   if (dexConfigs === undefined) {
-    console.info(`INFO: getRegBalancesHoneySwap -> Configuration manquante pour le réseau "${network}"`);
+    console.info(i18n.t("common.queryDexs.infoDexOrNetworkNotFound", { network }));
     return [];
   }
 
@@ -101,18 +102,18 @@ export async function getRegBalancesHoneySwap(
       variables: { first, paramBlockNumber, pool_id },
     };
 
-    console.info("Info: Début de la requête client");
+    console.info(i18n.t("utils.queryDexs.infoQueryStart", { dex: "HoneySwap" }));
     console.time("Durée de la requête");
 
     try {
       const response = await makeRequestWithRetry(client, requestBody);
       result.push(...response.pairs);
     } catch (error) {
-      console.error(`La requête a échoué après plusieurs tentatives :`, error);
+      console.error(i18n.t("common.queryDexs.errorQueryFailed"), error);
       throw error;
     }
 
-    console.info("Info: Fin de la requête client");
+    console.info(i18n.t("utils.queryDexs.infoQueryEnd", { dex: "HoneySwap" }));
     console.timeEnd("Durée de la requête");
   }
 
@@ -136,7 +137,7 @@ export async function getRegBalancesHoneySwap(
  */
 function responseformaterHoneySwap(pairs: any): ResponseFunctionGetRegBalances[] {
   if (MAJ_MOCK_DATA) {
-    console.info("Info: MAJ_MOCK_DATA");
+    console.info(i18n.t("utils.queryDexs.infoMajMockData"));
     // const dataMaj = { data: { pairs: pairs } };
     const path = join(__dirname, "..", "mocks", `honeyswap.json`);
     writeFileSync(path, JSON.stringify(pairs, null, 2));
@@ -206,7 +207,7 @@ export async function getRegBalancesBalancer(
   mock?: boolean
 ): Promise<ResponseFunctionGetRegBalances[]> {
   if (mock) {
-    console.info("Info: query mock data balancer");
+    console.info(i18n.t("utils.queryDexs.infoUseMockData", { dex: "Balancer" }));
     let data: any;
     if (dexConfigs?.mockData && existsSync(join(__dirname, "..", "mocks", `${dexConfigs?.mockData}`))) {
       data = JSON.parse(readFileSync(join(__dirname, "..", "mocks", `${dexConfigs.mockData}`), "utf-8"));
@@ -218,7 +219,7 @@ export async function getRegBalancesBalancer(
     }
     return responseformaterBalancer(data);
   }
-  console.info("\nInfo: START Balancer");
+  console.info(i18n.t("utils.queryDexs.infoQueryStart", { dex: "Balancer" }));
 
   if (dexConfigs === undefined) {
     console.info(`INFO: getRegBalancesBalancer -> dexConfigs is undefined for "${network}"`);
@@ -242,7 +243,7 @@ export async function getRegBalancesBalancer(
         pool_id,
       },
     };
-    console.info("Info: Start client.request(query)");
+    console.info(i18n.t("utils.queryDexs.infoQueryStart", { dex: "Balancer" }));
     console.time("client.request");
     const response = await makeRequestWithRetry(client, requestBody, 10, 5000)
       .then((response) => {
@@ -250,9 +251,9 @@ export async function getRegBalancesBalancer(
         return response;
       })
       .catch((error) => {
-        console.error(`La requête a échoué après 3 tentatives :`, error);
+        console.error(i18n.t("common.queryDexs.errorQueryFailed"), error);
       });
-    console.info("Info: End client.request(query)");
+    console.info(i18n.t("utils.queryDexs.infoQueryEnd", { dex: "Balancer" }));
     console.timeEnd("client.request");
     result.push(...response.balancers.flatMap((balancer: { pools: any }) => balancer.pools));
   }
@@ -268,7 +269,7 @@ export async function getRegBalancesBalancer(
  */
 function responseformaterBalancer(pairs: any): ResponseFunctionGetRegBalances[] {
   if (MAJ_MOCK_DATA) {
-    console.info("Info: MAJ_MOCK_DATA");
+    console.info(i18n.t("utils.queryDexs.infoMajMockData"));
     const path = join(__dirname, "..", "mocks", `balancer.json`);
     writeFileSync(path, JSON.stringify(pairs, null, 2));
   }
@@ -296,7 +297,7 @@ function responseformaterBalancer(pairs: any): ResponseFunctionGetRegBalances[] 
               try {
                 equivalentREG = calculateTokenEquivalentBalancer(pair, token.address, TOKEN_ADDRESS.REG, tokenBalance);
               } catch (error) {
-                console.error(`Erreur lors du calcul de l'équivalence "${token.symbol}" en REG:`, error);
+                console.error(i18n.t("utils.queryDexs.errorCalculateTokenEquivalent", { token: token.symbol }));
               }
             }
 
@@ -337,23 +338,21 @@ async function getRegBalancesTypeUniV3(
 ): Promise<ResponseFunctionGetRegBalances[]> {
   {
     if (mock) {
-      console.info(`Info: query mock data ${dexName}`);
+      console.info(i18n.t("utils.queryDexs.infoUseMockData", { dex: dexName }));
       let data: ResponseSushiSwapV3GraphALL;
       if (dexConfigs?.mockData && existsSync(join(__dirname, "..", "mocks", `${dexConfigs.mockData}`))) {
         data = JSON.parse(readFileSync(join(__dirname, "..", "mocks", `${dexConfigs.mockData}`), "utf-8"));
       } else {
-        console.warn(
-          `WARNING: getRegBalances${dexName} -> dexConfigs.mockData "${dexConfigs?.mockData}", le fichier correspondant n'existe pas.`
-        );
+        console.warn(i18n.t("utils.queryDexs.warnFileNotFound", { dexName, filePath: dexConfigs.mockData }));
         data = { data: { pools: [], positions: [] } }; // assigner une valeur vide à data
       }
       return responseformaterTypeUniV3(data, dexConfigs, dexName);
     }
 
-    console.info(`\nInfo: START ${dexName}`);
+    console.info(i18n.t("utils.queryDexs.infoQueryStart", { dex: dexName }));
 
     if (dexConfigs === undefined) {
-      console.info(`INFO: getRegBalances${dexName} -> dexConfigs is undefined for "${network}"`);
+      console.info(i18n.t("utils.queryDexs.infoGetRegBalances", { dexName, network }));
       return [];
     }
 
@@ -375,7 +374,7 @@ async function getRegBalancesTypeUniV3(
         (def): def is OperationDefinitionNode => def.kind === "OperationDefinition" && def.name?.value === operationName
       );
       if (!operation) {
-        throw new Error(`Query "${operationName}" not found in the GraphQL document`);
+        throw new Error(i18n.t("utils.queryDexs.errorQueryNotFound", { operationName }));
       }
       return print(operation);
     };
@@ -401,11 +400,11 @@ async function getRegBalancesTypeUniV3(
           return data;
         })
         .catch((error) => {
-          console.error(`Une erreur est survenue lors des 3 tentatives de requêtes pool_query : ${pool_id}:`, error);
+          console.error(i18n.t("utils.queryDexs.errorQueryPool", { pool_id }), error);
         });
 
       if (dataPools.pools.length === 0) {
-        console.error(`les pools ${pool_id} n'ont pas été trouvées`);
+        console.error(i18n.t("utils.queryDexs.errorPoolNotFound", { pool_id }));
         //throw new Error("pool not found");
         continue;
       }
@@ -431,10 +430,7 @@ async function getRegBalancesTypeUniV3(
               return data;
             })
             .catch((error) => {
-              console.error(
-                `Une erreur est survenue lors des 3 tentatives de requêtes position_query pour les pools : ${pool_id}:`,
-                error
-              );
+              console.error(i18n.t("utils.queryDexs.errorQueryPosition", { pool_id }), error);
             });
 
           // console.log("DEBUG data.positions", data.positions);
@@ -450,7 +446,7 @@ async function getRegBalancesTypeUniV3(
       // console.log("dataPositions");
       // console.dir(dataPositions, { depth: null });
       if (dataPositions.positions.length === 0) {
-        console.info(`les pools ${pool_id} n'ont pas de positions ouvert`);
+        console.info(i18n.t("utils.queryDexs.infoQueryPosition", { pool_id }));
       }
 
       result.data.positions.push(...dataPositions.positions);
@@ -475,7 +471,7 @@ function responseformaterTypeUniV3(
   dexName: string
 ): ResponseFunctionGetRegBalances[] {
   if (MAJ_MOCK_DATA) {
-    console.info("Info: MAJ_MOCK_DATA");
+    console.info(i18n.t("utils.queryDexs.infoMajMockData"));
     // const dataMock = { data: { pairs: data } };
     const path = join(__dirname, "..", "mocks", dexConfigs.mockData);
     writeFileSync(path, JSON.stringify(data, null, 2));
@@ -571,7 +567,7 @@ function responseformaterTypeUniV3(
     );
 
     if (poolPositions.length === 0) {
-      console.warn("\nWARNING", `le pool ${pool.id} n'ont pas de positions ouvert`);
+      console.warn(i18n.t("utils.queryDexs.warnPoolNoPosition", { pool_id: pool.id }));
       continue;
     }
 
@@ -589,9 +585,14 @@ function responseformaterTypeUniV3(
     const current_sqrt_price = tick_to_price(currentTick / 2);
     const adjusted_current_price = current_price / 10 ** (decimals1 - decimals0);
     console.info(
-      `\nINFO: Current price=${adjusted_current_price.toFixed(6)} pool ${
-        pool.id
-      }, ${token1} for ${token0} fee ${feeTier}% at tick ${currentTick}`
+      i18n.t("utils.queryDexs.infoTickToPrice", {
+        price: adjusted_current_price.toFixed(6),
+        pool_id: pool.id,
+        token1,
+        token0,
+        feeTier,
+        tick: currentTick,
+      })
     );
 
     // Print all active positions
@@ -631,23 +632,40 @@ function responseformaterTypeUniV3(
         adjusted_amount0,
         adjusted_amount1,
       });
+
       console.info(
-        `${
-          isActive ? "IN RANGE" : "OUT RANGE"
-        } : ${owner}  position ${id} in range [${tick_lower},${tick_upper}]: ${adjusted_amount1.toFixed(
-          2
-        )} ${token1} and ${adjusted_amount0.toFixed(2)} ${token0} at the current price`
+        i18n.t("utils.queryDexs.infoInOutRange", {
+          isActive: isActive ? "IN RANGE" : "OUT RANGE",
+          owner,
+          id,
+          tick_lower,
+          tick_upper,
+          adjusted_amount1: adjusted_amount1.toFixed(2),
+          token1,
+          adjusted_amount0: adjusted_amount0.toFixed(2),
+          token0,
+        })
       );
     }
-
-    console.info(
-      `In total (including inactive positions): ${(total_amount0 / 10 ** decimals0).toFixed(2)} ${token0} and ${(
+    /**
+ * `In total (including inactive positions): ${(total_amount0 / 10 ** decimals0).toFixed(2)} ${token0} and ${(
         total_amount1 /
         10 ** decimals1
       ).toFixed(2)} ${token1}`
+ */
+    console.info(
+      i18n.t("utils.queryDexs.infoInactivePosition", {
+        total_amount0: (total_amount0 / 10 ** decimals0).toFixed(2),
+        token0,
+        total_amount1: (total_amount1 / 10 ** decimals1).toFixed(2),
+        token1,
+      })
     );
     console.info(
-      `Total liquidity from active positions: ${active_positions_liquidity}, from pool: ${poolLiquidity} (should be equal)`
+      i18n.t("utils.queryDexs.infoTotalLiquidity", {
+        active_positions_liquidity,
+        poolLiquidity,
+      })
     );
     dataBalancesResponse.push({
       poolId: pool.id as string,

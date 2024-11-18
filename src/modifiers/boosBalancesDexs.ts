@@ -1,7 +1,8 @@
+import { BigNumber } from "bignumber.js";
 import { DexValue, Network } from "../configs/constantes.js";
+import { i18n } from "../i18n/index.js";
 import { SourceBalancesREG } from "../types/REG.types.js";
 import { NormalizeOptions } from "../types/inputModles.types.js";
-import { BigNumber } from "bignumber.js";
 
 /**
  * Modifie les balances des DEX en fonction des options spécifiées
@@ -16,7 +17,7 @@ export function boosBalancesDexs(
   data: SourceBalancesREG[],
   options: NormalizeOptions["boosBalancesDexs"]
 ): SourceBalancesREG[] {
-  console.log("Début de boosBalancesDexs", options);
+  console.info(i18n.t("modifiers.infoApplyModifier", { modifier: "boosBalancesDexs" }), options);
 
   // Si aucune option de boost n'est fournie, retourner les données inchangées
   if (!options || Object.keys(options).length === 0) {
@@ -45,8 +46,7 @@ export function boosBalancesDexs(
             : tokensToApply.indexOf("*");
 
           if (symbolIndex >= 0) {
-            const networkMaj =
-              network.charAt(0).toUpperCase() + network.slice(1);
+            const networkMaj = network.charAt(0).toUpperCase() + network.slice(1);
             const newBalance = new BigNumber(balance.equivalentREG)
               .multipliedBy(boostFactors[symbolIndex])
               .toString(10);
@@ -54,29 +54,19 @@ export function boosBalancesDexs(
             balance.equivalentREG = newBalance;
 
             // Mettre à jour les totaux
-            const totalBalanceKey =
-              balance.tokenSymbol === "REG"
-                ? "totalBalanceREG"
-                : "totalBalanceEquivalentREG";
+            const totalBalanceKey = balance.tokenSymbol === "REG" ? "totalBalanceREG" : "totalBalanceEquivalentREG";
             const totalBalanceKeyNetwork =
-              balance.tokenSymbol === "REG"
-                ? `totalBalanceReg${networkMaj}`
-                : `totalBalanceEquivalentReg${networkMaj}`;
+              balance.tokenSymbol === "REG" ? `totalBalanceReg${networkMaj}` : `totalBalanceEquivalentReg${networkMaj}`;
 
             user[totalBalanceKey] = new BigNumber(user[totalBalanceKey])
               .minus(oldEquivalentREG)
               .plus(newBalance)
               .toString(10);
-            user[totalBalanceKeyNetwork] = new BigNumber(
-              user[totalBalanceKeyNetwork]
-            )
+            user[totalBalanceKeyNetwork] = new BigNumber(user[totalBalanceKeyNetwork])
               .minus(oldEquivalentREG)
               .plus(newBalance)
               .toString(10);
-            user.totalBalance = new BigNumber(user.totalBalance)
-              .minus(oldEquivalentREG)
-              .plus(newBalance)
-              .toString(10);
+            user.totalBalance = new BigNumber(user.totalBalance).minus(oldEquivalentREG).plus(newBalance).toString(10);
           }
         });
       }

@@ -4,7 +4,9 @@
  * DEX et portefeuilles pour une période donnée.
  */
 
-import { RetourREG } from "../types/REG.types.js";
+import { BigNumber } from "bignumber.js";
+import fs, { readFileSync } from "fs";
+import path from "path";
 import {
   DexValue,
   MODE_DEBUG,
@@ -15,18 +17,17 @@ import {
   theGraphApiUrlsREG,
   TOKEN_ADDRESS,
 } from "../configs/constantes.js";
-import fs, { readFileSync } from "fs";
-import path from "path";
-import { readContentFromFile } from "../utils/lib.js";
-import { askChoiseCheckbox, askDateRange, askUrls, askUseconfirm } from "../utils/inquirer.js";
-import { BigNumber } from "bignumber.js";
+import { i18n } from "../i18n/index.js";
+import { NetworkConfig, TokenInfo } from "../types/dexConfig.types.js";
+import { RetourREG } from "../types/REG.types.js";
 import {
   createGraphQLClient,
   getRegBalances,
   getRegBalancesByDexs,
   getRegBalancesVaultIncentives,
 } from "../utils/graphql.js";
-import { NetworkConfig, TokenInfo } from "../types/dexConfig.types.js";
+import { askChoiseCheckbox, askDateRange, askUrls, askUseconfirm } from "../utils/inquirer.js";
+import { readContentFromFile } from "../utils/lib.js";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 
@@ -53,7 +54,7 @@ export async function taskGetBalancesREG(tempData: string): Promise<string> {
 
     // Traitement pour chaque réseau sélectionné
     for (const network of networksSelected) {
-      console.info("INFO: Traitement pour le timestamp", timestamp, new Date(timestamp * 1000));
+      console.info(i18n.t("tasks.getBalancesREG.processingTimestamp", { timestamp, date: new Date(timestamp * 1000) }));
 
       // Traitement des données pour le réseau actuel
       await processNetwork(network, timestamp, allBalancesWallets, SelectDex, listeSelectedUrlGraph, pools_id);
@@ -76,7 +77,7 @@ export async function taskGetBalancesREG(tempData: string): Promise<string> {
  */
 async function setupNetworksAndDexs() {
   // Demande à l'utilisateur s'il souhaite utiliser des données de test
-  const mock = await askUseconfirm("Utiliser des données de test mock ? (y/N)", false);
+  const mock = await askUseconfirm(i18n.t("tasks.getBalancesREG.askUseMock"), false);
   if (mock) {
     // Si mock est activé, retourne une configuration prédéfinie
     return {
@@ -88,7 +89,7 @@ async function setupNetworksAndDexs() {
 
   // Demande à l'utilisateur de sélectionner les réseaux à analyser
   const networks = await askChoiseCheckbox(
-    "Pour quels réseaux allons-nous extraire les soldes des DEX et portefeuilles ?",
+    i18n.t("tasks.getBalancesREG.askDexsNetwork"),
     { name: [...Object.values(NETWORK)], value: [...Object.values(NETWORK)] },
     true
   );
@@ -109,11 +110,11 @@ async function setupNetworksAndDexs() {
     listeSelectedUrlGraph.push(urlGraph);
 
     // Demande à l'utilisateur s'il souhaite extraire les soldes pour les DEX
-    const askDexs = await askUseconfirm(`Voulez-vous extraire les soldes pour les DEX ? (Y/n)`, true);
+    const askDexs = await askUseconfirm(i18n.t("tasks.getBalancesREG.askDexs"), true);
     if (askDexs) {
       // Si oui, demande quels DEX analyser pour ce réseau
       SelectDex[network] = await askChoiseCheckbox(
-        `Pour le réseau ${network}, pour quels DEX voulez-vous extraire les soldes ?`,
+        i18n.t("tasks.getBalancesREG.askDexsForNetwork", { network }),
         { name: networkToDexsMap[network as Network], value: networkToDexsMap[network as Network] },
         true
       );
@@ -133,7 +134,7 @@ async function setupNetworksAndDexs() {
 function initializeBalances(tempData: string): Array<RetourREG> {
   if (tempData === "") return [];
   const { result } = JSON.parse(tempData);
-  console.info("Nombre de détenteurs chargés du fichier temporaire:", result.balances.length);
+  console.info(i18n.t("tasks.getBalancesREG.numberOfHoldersTemporaryFile", { count: result.balances.length }));
   return result.balances;
 }
 
@@ -232,9 +233,9 @@ async function fetchBalancesHolderREG(network: Network, timestamp: number, liste
   const url = await askUrls(
     [listeSelectedUrlGraph[Object.values(NETWORK).indexOf(network as NETWORK)]],
     false,
-    `Quelle URL GraphQL utiliser pour le réseau "${network}" ?`
+    i18n.t("tasks.getBalancesREG.askUrlGraphQL", { network })
   );
-  console.info("INFO: URL GraphQL", url);
+  console.info(i18n.t("tasks.getBalancesREG.urlGraphQL"), url);
 
   // Crée un client GraphQL et récupère les soldes
   const client = createGraphQLClient(typeof url === "string" ? url : url[0]);

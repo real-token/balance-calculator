@@ -1,3 +1,4 @@
+import { i18n } from "../i18n/index.js";
 import { SourceBalancesREG } from "../types/REG.types.js";
 
 /**
@@ -7,10 +8,8 @@ import { SourceBalancesREG } from "../types/REG.types.js";
  * Peut être une clé unique ou un tableau de clés permettant d'accéder à des données imbriquées
  * @returns Données de type SourceBalancesREG[] avec totalBalance modifié
  */
-export function balanceKey(
-  data: SourceBalancesREG[],
-  balanceKey: string | string[]
-): SourceBalancesREG[] {
+export function balanceKey(data: SourceBalancesREG[], balanceKey: string | string[]): SourceBalancesREG[] {
+  console.info(i18n.t("modifiers.infoApplyModifier", { modifier: "balanceKey" }), balanceKey);
   return data.map((item: SourceBalancesREG) => {
     let selectedBalance: unknown;
     if (typeof balanceKey === "string") {
@@ -26,9 +25,7 @@ export function balanceKey(
 
     // Remplacer la valeur de totalBalance par la valeur sélectionnée
     newItem.totalBalance =
-      typeof selectedBalance === "string"
-        ? selectedBalance
-        : String(selectedBalance || "Balance not found");
+      typeof selectedBalance === "string" ? selectedBalance : String(selectedBalance || "Balance not found");
 
     return newItem;
   });
