@@ -19,7 +19,7 @@ export async function taskCalculatePowerVotingREG(): Promise<string> {
   const jsonFiles = await getJsonFiles(dirPath);
 
   if (jsonFiles.length === 0) {
-    console.error(i18n.t("tasks.calculatePowerVotingREG.noJsonFiles"));
+    console.error(i18n.t("tasks.calculatePowerVoting.noJsonFiles"));
     return "";
   }
 
@@ -39,12 +39,12 @@ export async function taskCalculatePowerVotingREG(): Promise<string> {
 
   // Si aucun modèle n'est détecté automatiquement, demander à l'utilisateur
   if (!selectedModelName) {
-    selectedModelName = await askChoiseListe(i18n.t("tasks.calculatePowerVotingREG.askModel"), {
+    selectedModelName = await askChoiseListe(i18n.t("tasks.calculatePowerVoting.askModel"), {
       value: modelNames,
       name: modelNames,
     });
   } else {
-    console.info(i18n.t("tasks.calculatePowerVotingREG.infoModelAutoDetected", { model: selectedModelName }));
+    console.info(i18n.t("tasks.calculatePowerVoting.infoModelAutoDetected", { model: selectedModelName }));
   }
 
   // Normalisation des données d'entrée
@@ -53,16 +53,16 @@ export async function taskCalculatePowerVotingREG(): Promise<string> {
 
   // Sélection du modèle de calcul du pouvoir de vote
   const powerVotingModelNames = Object.keys(powerVotingModels);
-  const selectedPowerVotingModelName = await askChoiseListe(
-    i18n.t("tasks.calculatePowerVotingREG.askPowerVotingModel"),
-    { value: powerVotingModelNames, name: powerVotingModelNames }
-  );
+  const selectedPowerVotingModelName = await askChoiseListe(i18n.t("tasks.calculatePowerVoting.askPowerVotingModel"), {
+    value: powerVotingModelNames,
+    name: powerVotingModelNames,
+  });
 
   const selectedPowerVotingModel: PowerVotingModel =
     powerVotingModels[selectedPowerVotingModelName as keyof typeof powerVotingModels];
 
   const previousDataPowerVotingJsonFileName = await askChoiseListe(
-    i18n.t("tasks.calculatePowerVotingREG.askPreviousDataPowerVotingJsonFile"),
+    i18n.t("tasks.calculatePowerVoting.askPreviousDataPowerVotingJsonFile"),
     { value: jsonFiles, name: jsonFiles }
   );
   const previousDataPowerVotingJsonFilePath = path.join(dirPath, previousDataPowerVotingJsonFileName);
@@ -80,10 +80,10 @@ export async function taskCalculatePowerVotingREG(): Promise<string> {
   // Formatage des données pour la transaction on-chain
   const BATCH_SIZE = parseInt(
     await askInput(
-      i18n.t("tasks.calculatePowerVotingREG.askBatchSize"),
+      i18n.t("tasks.calculatePowerVoting.askBatchSize"),
       {
         regex: /^\d+$/,
-        messageEchec: i18n.t("tasks.calculatePowerVotingREG.messageBatchSizeError"),
+        messageEchec: i18n.t("tasks.calculatePowerVoting.messageBatchSizeError"),
       },
       "1000"
     )
@@ -97,7 +97,7 @@ export async function taskCalculatePowerVotingREG(): Promise<string> {
 
       if (!powerVoting.isFinite() || powerVoting.isNaN()) {
         console.warn(
-          i18n.t("tasks.calculatePowerVotingREG.warnPowerVotinValue", {
+          i18n.t("tasks.calculatePowerVoting.warnPowerVotinValue", {
             address: item.address,
             value: item.powerVoting,
           })
@@ -115,7 +115,7 @@ export async function taskCalculatePowerVotingREG(): Promise<string> {
       return [item.address, finalValue.toString(10)];
     } catch (error: any) {
       console.warn(
-        i18n.t("tasks.calculatePowerVotingREG.warnPowerVotingTraitment", {
+        i18n.t("tasks.calculatePowerVoting.warnPowerVotingTraitment", {
           address: item.address,
           error: error.message,
         })

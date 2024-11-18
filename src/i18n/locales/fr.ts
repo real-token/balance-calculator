@@ -7,9 +7,9 @@ export default {
       numberOfHolders: "Info: nombre de détenteurs: {{count}}",
       numberOfHoldersTemporaryFile: "Nombre de détenteurs chargés du fichier temporaire:",
       urlGraphQL: "INFO: URL GraphQL",
-      askUseMock: "Utiliser des données de test mock ? (y/N)",
+      askUseMock: "Utiliser des données de test mock ?",
       askDexsNetwork: "Pour quels réseaux allons-nous extraire les soldes des DEX et portefeuilles ?",
-      askDexs: "Voulez-vous extraire les soldes pour les DEX ? (Y/n)",
+      askDexs: "Voulez-vous extraire les soldes pour les DEX ?",
       askDexsForNetwork: "Pour le réseau {{network}}, pour quels DEX voulez-vous extraire les soldes ?",
       askUrlGraphQL: "Quelle URL GraphQL utiliser pour le réseau {{network}} ?",
     },
@@ -53,7 +53,7 @@ export default {
     },
     ask: {
       askTask: "Quelle tâche voulez-vous exécuter ?",
-      askUseTempFile: "Voulez-vous utiliser un fichier temporaire pour reprendre ? (Y/n)",
+      askUseTempFile: "Voulez-vous utiliser un fichier temporaire pour reprendre ?",
     },
   },
   utils: {
