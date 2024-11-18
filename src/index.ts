@@ -37,6 +37,11 @@ const __dirname = new URL(".", import.meta.url).pathname;
 async function main() {
   let result: any;
 
+  // Attendre le chargement des traductions
+  await i18n.waitForLoad();
+  // Définir la langue par défaut
+  i18n.setLocale((process.env.LOCALE as "fr" | "en") || "fr");
+
   // Générer la liste des tâches disponibles
   const tasksDir = path.join(__dirname, "tasks");
   const taskFiles = fs.readdirSync(tasksDir);
@@ -53,14 +58,14 @@ async function main() {
     );
 
   // Demander à l'utilisateur quelle tâche exécuter
-  const task = await askChoiseListe(i18n.t("common.errors.askTask"), askTask);
+  const task = await askChoiseListe(i18n.t("common.ask.askTask"), askTask);
 
   // Gestion des fichiers temporaires
   const outDir = path.join(__dirname, "..", "outDatas");
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir);
   const tempFiles = await getTempJsonFiles(outDir);
   const tempData =
-    tempFiles.length > 0 && (await askUseconfirm(i18n.t("common.errors.askUseTempFile"), true))
+    tempFiles.length > 0 && (await askUseconfirm(i18n.t("common.ask.askUseTempFile"), true))
       ? await fs.promises.readFile(path.join(outDir, await askUseTempFile(tempFiles)), "utf-8")
       : "";
 
@@ -96,8 +101,8 @@ async function main() {
   // Sauvegarder les résultats en JSON et CSV
   await Promise.all([fs.promises.rename(result, jsonFilename), fs.promises.writeFile(csvFilename, csv)]);
 
-  console.info(i18n.t("common.errors.infoJsonFileGenerated"), jsonFilename);
-  console.info(i18n.t("common.errors.infoCsvFileGenerated"), csvFilename);
+  console.info(i18n.t("common.infos.infoJsonFileGenerated"), jsonFilename);
+  console.info(i18n.t("common.infos.infoCsvFileGenerated"), csvFilename);
 }
 
 main();
