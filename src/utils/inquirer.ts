@@ -1,4 +1,4 @@
-import { confirm, input, select, checkbox } from "@inquirer/prompts";
+import { checkbox, confirm, input, select } from "@inquirer/prompts";
 import { setTimeout } from "timers/promises";
 
 export async function askGraphQLUrl(): Promise<string> {
@@ -14,9 +14,7 @@ export async function askGraphQLUrl(): Promise<string> {
   return answers;
 }
 
-export async function askTokenAddresses(
-  tokens: Array<[string, string]>
-): Promise<string[]> {
+export async function askTokenAddresses(tokens: Array<[string, string]>): Promise<string[]> {
   const choices = tokens.map(([address, shortName]) => ({
     name: `${shortName} (${address.slice(0, 6)}...${address.slice(-4)})`,
     value: address,
@@ -45,9 +43,10 @@ export async function askDateRange(
   snapshotTime: string;
 }> {
   const today = new Date();
-  const defaultDate = `${today.getUTCFullYear()}-${String(
-    today.getUTCMonth() + 1
-  ).padStart(2, "0")}-${String(today.getUTCDate()).padStart(2, "0")}`;
+  const defaultDate = `${today.getUTCFullYear()}-${String(today.getUTCMonth() + 1).padStart(
+    2,
+    "0"
+  )}-${String(today.getUTCDate()).padStart(2, "0")}`;
   const defaultTime = `${String(today.getUTCHours()).padStart(2, "0")}:00`;
   console.log("function askDateRange", { options }, options.skipAsk);
   if (options.skipAsk) {
@@ -59,11 +58,7 @@ export async function askDateRange(
   }
 
   //Option par defaut si demande date
-  const {
-    startDate = defaultDate,
-    endDate = defaultDate,
-    snapshotTime = defaultTime,
-  } = options;
+  const { startDate = defaultDate, endDate = defaultDate, snapshotTime = defaultTime } = options;
 
   console.log("askDateRange demande", { startDate, endDate, snapshotTime });
 
@@ -109,10 +104,7 @@ export async function askDateRange(
   return { startDate: start, endDate: end, snapshotTime: time };
 }
 
-export async function askUseconfirm(
-  message: string,
-  defaultValue?: boolean
-): Promise<boolean> {
+export async function askUseconfirm(message: string, defaultValue?: boolean): Promise<boolean> {
   const answers = await confirm({
     message: message, //`Voulez-vous utiliser le fichier temporaire "${filename}" ? (Y/n)`,
     default: defaultValue ?? true,
@@ -139,10 +131,7 @@ export async function askUseTempFile(listFile: string[]): Promise<string> {
  *                un array string de nom (name:string[]) qui peux etre un array vide.
  * @returns Une promesse qui se résout à la valeur de l'option sélectionnée.
  */
-export async function askChoiseListe(
-  message: string,
-  list: { value: string[]; name: string[] }
-): Promise<string> {
+export async function askChoiseListe(message: string, list: { value: string[]; name: string[] }): Promise<string> {
   const answers: string = await select({
     message: message,
     choices: list.value.map((str, i) => ({ name: list.name[i], value: str })),
@@ -181,10 +170,12 @@ export async function askChoiseCheckbox(
 
 export async function askInput(
   message: string,
-  validate: { regex: RegExp; messageEchec: string }
+  validate: { regex: RegExp; messageEchec: string },
+  defaultValue?: string
 ): Promise<string> {
   const answers: string = await input({
     message: message,
+    default: defaultValue,
     validate: (value: string) => {
       if (value.match(validate.regex)) {
         return true;
@@ -214,10 +205,7 @@ export async function askUrls(
   });
 
   if (multiSelect) {
-    urls = await Promise.race([
-      askChoiseCheckbox(message, askGraphQLUrl),
-      timer,
-    ]);
+    urls = await Promise.race([askChoiseCheckbox(message, askGraphQLUrl), timer]);
   } else {
     urls = await Promise.race([askChoiseListe(message, askGraphQLUrl), timer]);
   }
@@ -226,8 +214,7 @@ export async function askUrls(
     ? [
         await askInput("Quelle es l'url custom ?", {
           regex: /^https?:\/\/[a-zA-Z0-9_-]*\.[a-z]{2,}/,
-          messageEchec:
-            "Veuillez entrer une url valide (http://... ou https://...)",
+          messageEchec: "Veuillez entrer une url valide (http://... ou https://...)",
         }),
         ...urls,
       ]

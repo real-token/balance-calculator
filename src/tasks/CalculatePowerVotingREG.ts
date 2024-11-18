@@ -1,11 +1,10 @@
+import { BigNumber } from "bignumber.js";
 import fs from "fs";
 import path from "path";
-import { askChoiseListe, askUseTempFile } from "../utils/inquirer.js";
+import { optionsModifiers } from "../configs/optionsModifiers.js";
+import { askChoiseListe, askInput, askUseTempFile } from "../utils/inquirer.js";
 import { getJsonFiles } from "../utils/lib.js";
 import { PowerVotingModel, calculatePowerVoting, powerVotingModels } from "./../models/powerVotingModels.js";
-import { optionsModifiers } from "../configs/optionsModifiers.js";
-import { BigNumber } from "bignumber.js";
-import { MODE_DEBUG } from "../configs/constantes.js";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 
@@ -78,7 +77,16 @@ export async function taskCalculatePowerVotingREG(): Promise<string> {
   );
 
   // Formatage des données pour la transaction on-chain
-  const BATCH_SIZE = 150; // Taille de chaque lot
+  const BATCH_SIZE = parseInt(
+    await askInput(
+      "Quelle taille de lot voulez-vous utiliser pour la transaction on-chain ?",
+      {
+        regex: /^\d+$/,
+        messageEchec: "La taille du lot doit être un nombre entier.",
+      },
+      "1000"
+    )
+  ); // Taille de chaque lot
   let TotalPowerVoting = new BigNumber(0);
 
   // Création du tableau complet des données

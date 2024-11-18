@@ -16,7 +16,7 @@ if (!process.env.THEGRAPH_API_KEY) {
 
 export const PRINT_QUERY = false;
 export const MAJ_MOCK_DATA = false;
-export const MODE_DEBUG = true;
+export const MODE_DEBUG = false;
 
 export enum TOKEN_ADDRESS {
   REG = "0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce",
