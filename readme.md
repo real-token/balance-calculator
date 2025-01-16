@@ -2,71 +2,71 @@
 
 ## Introduction
 
-Outil pour calculer et analyser les balances des tokens sur différentes blockchains DEX et autres type de Smart Contracts. Cet outil est spécialement conçu pour :
+Tool for calculating and analyzing token balances across different DEX blockchains and other types of Smart Contracts. This tool is specifically designed for:
 
-- **Analyse Multi-DEX** : Récupération et analyse des balances de tokens à travers différents DEX (Honeyswap, Sushiswap, Balancer, SwaprHQ)
-- **Support Multi-Chaînes** : Compatible avec plusieurs réseaux blockchain (Gnosis, Ethereum, Polygon)
-- **Calcul de Pouvoir de Vote** : Génération de pouvoir de vote a partir de snapshot avec possibilité d'appliquer différents modèles de calcul et modifier les balances
-- **Analyse Temporelle** : Capacité d'analyser les balances à différents moments dans le temps (snapshot)
-- **Classement des Holders** : Création de classements des détenteurs de tokens
-- **Export Flexible** : Génération de rapports au format JSON et CSV
+- **Multi-DEX Analysis**: Retrieval and analysis of token balances across different DEX (Honeyswap, Sushiswap, Balancer, SwaprHQ)
+- **Multi-Chain Support**: Compatible with multiple blockchain networks (Gnosis, Ethereum, Polygon)
+- **Voting Power Calculation**: Generation of voting power from snapshots with the ability to apply different calculation models and modify balances
+- **Temporal Analysis**: Ability to analyze balances at different points in time (snapshot)
+- **Holders Ranking**: Creation of rankings of token holders
+- **Flexible Export**: Generation of reports in JSON and CSV format
 
-L'outil est particulièrement utile pour :
+The tool is particularly useful for:
 
-- Les administrateurs de DAO souhaitant calculer la distribution des droits de vote
-- Les analystes cherchant à comprendre la répartition des tokens
-- Les développeurs blockchain nécessitant des données précises sur les balances de tokens
-- Les auditeurs voulant vérifier les holdings à travers différentes plateformes
+- DAO administrators wishing to calculate the distribution of voting rights
+- Analysts seeking to understand token distribution
+- Blockchain developers needing precise data on token balances
+- Auditors wanting to verify holdings across different platforms
 
-## Table des matières
+## Table of Contents
 
 - [Installation](#installation)
 - [Configuration](#configuration)
-- [Structure du projet](#structure-du-projet)
-- [Utilisation](#utilisation)
-- [Modification de code et ajout de fonctionnalité](#modification-de-code-et-ajout-de-fonctionnalité)
-  - [Tache GetBalancesREG](#tache-getbalancesreg)
-  - [Tache CalculatePowerVotingREG](#tache-calculatepowervotingreg)
+- [Project Structure](#project-structure)
+- [Usage](#usage)
+- [Code Modification and Feature Addition](#code-modification-and-feature-addition)
+  - [Task GetBalancesREG](#task-getbalancesreg)
+  - [Task CalculatePowerVotingREG](#task-calculatepowervotingreg)
 - [Contribution](#contribution)
-- [Licence](#licence)
+- [License](#license)
 - [Support](#support)
 - [TODO](#todo)
 
 ## Installation
 
-### Cloner le projet
+### Clone the project
 
 ```bash
-git clone [url-du-projet]
+git clone [project-url]
 ```
 
-### utilisation avec nvm
+### Using with nvm
 
-Installer la version LTS de node se trouvant dans le fichier .nvmrc ou utiliser nvm pour gérer les versions de node
+Install the LTS version of node found in the .nvmrc file or use nvm to manage node versions
 
 ```bash
 nvm install
 ```
 
-utiliser la version de node
+use the node version
 
 ```bash
 nvm use
 ```
 
-### installation du gestionnaire de paquet yarn
+### Install the yarn package manager
 
 ```bash
 npm install -g yarn
 ```
 
-### Installer les dépendances
+### Install dependencies
 
 ```bash
 yarn install
 ```
 
-### Créer et configurer le fichier .env
+### Create and configure the .env file
 
 ```bash
 cp .env.example .env
@@ -74,75 +74,75 @@ cp .env.example .env
 
 ## Configuration
 
-### Variables d'environnement
+### Environment Variables
 
-Modifier la copie du fichier `.env.example` en `.env` à la racine du projet avec les variables suivantes :
+Modify the copy of the `.env.example` file to `.env` at the root of the project with the following variables:
 
 1. **The Graph API Key**
 
-   - Visitez [The Graph](https://thegraph.com/studio/)
-   - Créez un compte ou connectez-vous
-   - Allez dans votre profil > Settings > API Keys
-   - Créez une nouvelle clé API
-   - Copiez la clé dans votre .env :
-     `THEGRAPH_API_KEY=votre_clé_api`
+   - Visit [The Graph](https://thegraph.com/studio/)
+   - Create an account or log in
+   - Go to your profile > Settings > API Keys
+   - Create a new API key
+   - Copy the key into your .env:
+     `THEGRAPH_API_KEY=your_api_key`
 
 2. **Etherscan API Key**
 
-   - Visitez [Etherscan](https://etherscan.io/apis)
-   - Créez un compte ou connectez-vous
-   - Allez dans API Keys > Add
-   - Créez une nouvelle clé API
-   - Copiez la clé dans votre .env :
-     `API_KEY_ETHERSCAN=votre_clé_etherscan`
+   - Visit [Etherscan](https://etherscan.io/apis)
+   - Create an account or log in
+   - Go to API Keys > Add
+   - Create a new API key
+   - Copy the key into your .env:
+     `API_KEY_ETHERSCAN=your_etherscan_key`
 
 3. **Gnosisscan API Key**
 
-   - Visitez [Gnosisscan](https://gnosisscan.io/)
-   - Créez un compte ou connectez-vous
-   - Allez dans API Keys > Add
-   - Créez une nouvelle clé API
-   - Copiez la clé dans votre .env :
-     `API_KEY_GNOSISSCAN=votre_clé_gnosisscan`
+   - Visit [Gnosisscan](https://gnosisscan.io/)
+   - Create an account or log in
+   - Go to API Keys > Add
+   - Create a new API key
+   - Copy the key into your .env:
+     `API_KEY_GNOSISSCAN=your_gnosisscan_key`
 
 4. **Polygonscan API Key**
 
-   - Visitez [Polygonscan](https://polygonscan.com/apis)
-   - Créez un compte ou connectez-vous
-   - Allez dans API Keys > Add
-   - Créez une nouvelle clé API
-   - Copiez la clé dans votre .env :
-     `API_KEY_POLYGONSCAN=votre_clé_polygonscan`
+   - Visit [Polygonscan](https://polygonscan.com/apis)
+   - Create an account or log in
+   - Go to API Keys > Add
+   - Create a new API key
+   - Copy the key into your .env:
+     `API_KEY_POLYGONSCAN=your_polygonscan_key`
 
-5. **Endpoints supplémentaires (Optionnel)**
-   Permet d'utiliser un endpoint Graphql personnalisé qui fourni le bon format de données
+5. **Additional Endpoints (Optional)**
+   Allows the use of a custom GraphQL endpoint that provides the correct data format
 
-   - Ajoutez vos endpoints supplémentaires sous forme de tableau JSON :
+   - Add your additional endpoints as a JSON array:
      `ENDPOINT_EXTRA=["https://endpoint1.com","https://endpoint2.com"]`
 
-6. **URLs de développement The Graph (Optionnel)**
-   Si vous développez avec des endpoints The Graph personnalisés :
+6. **The Graph Development URLs (Optional)**
+   If you are developing with custom The Graph endpoints:
    ```
-   THE_GRAPH_DEV_URL_REG_GNOSIS="votre_url"
-   THE_GRAPH_DEV_URL_REG_ETHEREUM="votre_url"
-   THE_GRAPH_DEV_URL_REG_POLYGON="votre_url"
-   THE_GRAPH_DEV_URL_GOV_GNOSIS="votre_url"
+   THE_GRAPH_DEV_URL_REG_GNOSIS="your_url"
+   THE_GRAPH_DEV_URL_REG_ETHEREUM="your_url"
+   THE_GRAPH_DEV_URL_REG_POLYGON="your_url"
+   THE_GRAPH_DEV_URL_GOV_GNOSIS="your_url"
    ```
 
-Votre fichier .env final devrait ressembler à ceci :
+Your final .env file should look like this:
 
 ```
-API_KEY_GNOSISSCAN="votre_clé_gnosisscan"
-API_KEY_ETHERSCAN="votre_clé_etherscan"
-API_KEY_POLYGONSCAN="votre_clé_polygonscan"
+API_KEY_GNOSISSCAN="your_gnosisscan_key"
+API_KEY_ETHERSCAN="your_etherscan_key"
+API_KEY_POLYGONSCAN="your_polygonscan_key"
 
-THEGRAPH_API_KEY="votre_clé_thegraph"
+THEGRAPH_API_KEY="your_thegraph_key"
 
-# Optionnel
+# Optional
 
 ENDPOINT_EXTRA=["https://endpoint1.com","https://endpoint2.com"]
 
-# The Graph DEV URLs (Optionnel)
+# The Graph DEV URLs (Optional)
 
 THE_GRAPH_DEV_URL_REG_GNOSIS=""
 THE_GRAPH_DEV_URL_REG_ETHEREUM=""
@@ -150,140 +150,140 @@ THE_GRAPH_DEV_URL_REG_POLYGON=""
 THE_GRAPH_DEV_URL_GOV_GNOSIS=""
 ```
 
-## Structure du projet
+## Project Structure
 
 ```
 src/
-├── abi/            # Fichiers des ABIs
-├── configs/        # Fichiers de configuration
-├── graphql/        # Fichiers des requêtes GraphQL
-├── mocks/          # Fichiers des mocks
-├── models/         # Modèles de données
-├── modifiers/      # Modificateurs de balances
-├── tasks/          # Tâches principales
-├── types/          # Définitions de types TypeScript
-├── utils/          # Utilitaires et fonctions communes
-└── index.ts        # Point d'entrée
-.env                # Variables d'environnement
-.env.example        # Exemple de fichier .env
-.gitignore          # Fichier ignoré par git
-.nvmrc              # Version de node
-package.json        # Fichier de configuration de l'application
+├── abi/            # ABI files
+├── configs/        # Configuration files
+├── graphql/        # GraphQL query files
+├── mocks/          # Mock files
+├── models/         # Data models
+├── modifiers/      # Balance modifiers
+├── tasks/          # Main tasks
+├── types/          # TypeScript type definitions
+├── utils/          # Utilities and common functions
+└── index.ts        # Entry point
+.env                # Environment variables
+.env.example        # Example .env file
+.gitignore          # Git ignored file
+.nvmrc              # Node version
+package.json        # Application configuration file
 readme.md           # Documentation
-tsconfig.json       # Configuration TypeScript
+tsconfig.json       # TypeScript configuration
 ```
 
-### Dossiers principaux
+### Main Folders
 
 #### configs/
 
-- `constantes.ts` : Définitions des constantes globales
-- `dex.json` : Configuration des DEX
-- `optionsModifiers.ts` : Fichier de configuration pour les calculs du pouvoir de vote
+- `constants.ts`: Definitions of global constants
+- `dex.json`: DEX configuration
+- `optionsModifiers.ts`: Configuration file for voting power calculations
 
 #### models/
 
-- `powerVotingModels.ts` : Modèles de calcul du pouvoir de vote
-- `inputModels.ts` : Modèles de données d'entrée
+- `powerVotingModels.ts`: Voting power calculation models
+- `inputModels.ts`: Input data models
 
 #### tasks/
 
-Contient les tâches principales de l'application :
+Contains the main tasks of the application:
 
-- GetBalancesREG : Récupère les balances REG sur différents DEX et réseaux
-- GetAddressOwnRealToken : Liste les adresses possédant des RealTokens
-- ClassementREG : Génère un classement des holders REG a partir des snapshot REG
-- CalculatePowerVotingREG : Calcule le pouvoir de vote pour chaque adresse a partir des snapshot REG
+- GetBalancesREG: Retrieves REG balances across different DEX and networks
+- GetAddressOwnRealToken: Lists addresses owning RealTokens
+- RankingREG: Generates a ranking of REG holders from REG snapshots
+- CalculatePowerVotingREG: Calculates voting power for each address from REG snapshots
 
 #### utils/
 
-- `graphql.ts` : Fonctions d'interaction avec TheGraph
-- `lib.ts` : Fonctions utilitaires générales
-- `queryDexs.ts` : Requêtes spécifiques aux DEX
+- `graphql.ts`: Functions for interacting with TheGraph
+- `lib.ts`: General utility functions
+- `queryDexs.ts`: DEX-specific queries
 
-## Utilisation
+## Usage
 
 ```bash
-# Démarrer l'application en mode normal
+# Start the application in normal mode
 yarn start
 
-# Démarrer l'application en mode écrit dans un fichier logs.log
+# Start the application in log writing mode to a file logs.log
 yarn start:logs
 ```
 
-### Tâches disponibles
+### Available Tasks
 
 #### GetBalancesREG
 
-Récupère les balances REG sur différents DEX et réseaux.
+Retrieves REG balances across different DEX and networks.
 
 ```bash
-# Options disponibles :
-- Sélection des réseaux (Gnosis, Ethereum, Polygon)
-- Sélection des DEX par réseau
-- Période temporelle personnalisable
+# Available options:
+- Network selection (Gnosis, Ethereum, Polygon)
+- DEX selection by network
+- Customizable time period
 ```
 
 #### GetAddressOwnRealToken
 
-Liste les adresses possédant des RealTokens.
+Lists addresses owning RealTokens.
 
 ```bash
-# Fonctionnalités :
-- Sélection des tokens
-- Période temporelle personnalisable
-- Exclusion d'adresses spécifiques
+# Features:
+- Token selection
+- Customizable time period
+- Exclusion of specific addresses
 ```
 
-#### ClassementREG
+#### RankingREG
 
-Génère un classement des holders REG a partir des snapshot REG.
+Generates a ranking of REG holders from REG snapshots.
 
 ```bash
-# Options :
-- Top N holders configurable
-- Filtrage par type de balance
+# Options:
+- Configurable Top N holders
+- Filtering by balance type
 ```
 
 #### CalculatePowerVotingREG
 
-Calcule le pouvoir de vote pour chaque adresse a partir des snapshot REG.
+Calculates voting power for each address from REG snapshots.
 
 ```bash
-# Caractéristiques :
-- Différents modèles de calcul disponibles
-- Support des modificateurs de balance
-- Génération des datas de transactions par lots de 500
+# Features:
+- Different calculation models available
+- Support for balance modifiers
+- Generation of transaction data in batches of 500
 ```
 
-## Modification de code et ajout de fonctionnalité
+## Code Modification and Feature Addition
 
-### Tache GetBalancesREG
+### Task GetBalancesREG
 
-#### Ajout d'un nouveau DEX
+#### Adding a New DEX
 
-Pour ajouter un nouveau DEX à notre application, suivez les étapes suivantes :
+To add a new DEX to our application, follow these steps:
 
-1. **Créez une nouvelle fonction de récupération des soldes** : Cette fonction doit être capable de récupérer les soldes pour le nouveau DEX. Elle doit être définie dans le fichier approprié ("src/utils/queryDeks.ts") et exportée pour pouvoir être utilisée ailleurs dans l'application.
+1. **Create a new balance retrieval function**: This function must be able to retrieve balances for the new DEX. It should be defined in the appropriate file ("src/utils/queryDeks.ts") and exported for use elsewhere in the application.
 
 ```typescript
-// Exemple de fonction de récupération des soldes pour un nouveau DEX
-export async function getRegBalancesNewDexExemple(
+// Example of a balance retrieval function for a new DEX
+export async function getRegBalancesNewDexExample(
   configs: any,
   network?: Network,
   timestamp?: number | undefined,
   mock?: boolean | undefined
 ): Promise<ResponseFunctionGetRegBalances> {
-  // Votre code ici...
-  return responseformaterNewDexExemple(result);
+  // Your code here...
+  return responseFormatterNewDexExample(result);
 }
 ```
 
-2. **Créez une nouvelle fonction de convertion de la réponse** : Cette fonction doit convertir et standardiser la réponse du graph au fromat "ResponseFunctionGetRegBalances" ("src/utils/queryDeks.ts"), utiliser dans la fonction précédente pour formater le return.
+2. **Create a new response conversion function**: This function must convert and standardize the response from the graph to the "ResponseFunctionGetRegBalances" format ("src/utils/queryDeks.ts"), used in the previous function to format the return.
 
 ```typescript
-// Exemple de fonction de formatage de la réponse du graph
-function responseformaterNewDexExemple(pairs: any): ResponseFunctionGetRegBalances[] {
+// Example of a response formatting function from the graph
+function responseFormatterNewDexExample(pairs: any): ResponseFunctionGetRegBalances[] {
   return pairs.map((pair: any) => {
     const totalSupply = pair.totalSupply;
     return {
@@ -316,57 +316,57 @@ function responseformaterNewDexExemple(pairs: any): ResponseFunctionGetRegBalanc
 }
 ```
 
-3. **ajouter les infos sur le dex dans le fichier des constantes**
-   Compléter l'énim DEX, NETWORK, la constante networkToDexsMap et dexFunctionMap
+3. **Add DEX information in the constants file**
+   Complete the DEX, NETWORK, the constant networkToDexsMap, and dexFunctionMap
 
-4. **Completez le fichier de config des dex pour le dex que vous ajoutez**
-   ajouter les infos de config dans le fichier "src/configs/dex.json"
+4. **Complete the DEX configuration file for the added DEX**
+   Add configuration information in the "src/configs/dex.json" file
 
-5. **Optionel, ajouter un fichier mock pour le dex ajouter**
-   le fichier mock permet de faire des test sans devoir faire appel a theGrph
+5. **Optionally, add a mock file for the added DEX**
+   The mock file allows testing without having to call TheGraph
 
-### Tache CalculatePowerVotingREG
+### Task CalculatePowerVotingREG
 
-#### Ajout de modifier pour le pouvoir de vote
+#### Adding a Modifier for Voting Power
 
-Crée un fichier ts dans le dossier modifiers avec le nom du modifier de la fonction qui sera exporter, un fichier par modifier.
-modifier le type `NormalizeOptions` dans le fichier `inputModels.types.ts` avec la clé du modifier.
-Crée le code du modifier avec la structure minimum :
+Create a ts file in the modifiers folder with the name of the modifier function that will be exported, one file per modifier.
+Modify the `NormalizeOptions` type in the `inputModels.types.ts` file with the key of the modifier.
+Create the code for the modifier with the minimum structure:
 
 ```typescript
 export function modifierName(
   data: SourceBalancesREG[],
   options: NormalizeOptions["modifierName"]
 ): SourceBalancesREG[] {
-  // Votre code ici...
+  // Your code here...
 }
 ```
 
-Le modifier doit retourner un tableau de `SourceBalancesREG[]` qui es la version modifiée des données d'entrée `data` sans en changer la structure.
-ajouter dans le fichier `index.ts` du dossier modifiers la fonction exportée dans le module.
+The modifier must return an array of `SourceBalancesREG[]` which is the modified version of the input data `data` without changing its structure.
+Add the exported function to the module in the `index.ts` file of the modifiers folder.
 
-pour utiliser le nouveau modifier, ajouter la clé et la valeur dans le fichier `optionsModifiers.ts`
+To use the new modifier, add the key and value in the `optionsModifiers.ts` file.
 
-#### Ajout de modèle de calcul pour le pouvoir de vote
+#### Adding a Calculation Model for Voting Power
 
-A rédigé
+To be written
 
 ## Contribution
 
-1. Fork le projet
-2. Créer une branche (`git checkout -b feature/nouvelle-fonctionnalite`)
-3. Commit les changements (`git commit -am 'Ajout nouvelle fonctionnalité'`)
-4. Push la branche (`git push origin feature/nouvelle-fonctionnalite`)
-5. Créer une Pull Request
+1. Fork the project
+2. Create a branch (`git checkout -b feature/new-feature`)
+3. Commit the changes (`git commit -am 'Add new feature'`)
+4. Push the branch (`git push origin feature/new-feature`)
+5. Create a Pull Request
 
-## Licence
+## License
 
 MIT
 
 ## Support
 
-Pour toute question ou problème, veuillez ouvrir une issue dans le repository ou nous contacter sur telegram.
+For any questions or issues, please open an issue in the repository or contact us on Telegram.
 
 ## TODO
 
-- [ ] Rédiger la partie Modification de code et ajout de fonctionnalité -> ajouter modèle de calcul pour le pouvoir de vote
+- [ ] Write the Code Modification and Feature Addition section -> add calculation model for voting power
