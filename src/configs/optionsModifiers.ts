@@ -25,6 +25,11 @@ const excludeAddressREG = [
   "0xe1877d33471e37fe0f62d20e60c469eff83fb4a0", // Vault incentives
   "0xba12222222228d8ba445958a75a0704d566bf2c8", // Vault Balancer
   "0x0212b941cb5c80c9fcda00035d126ac067169e72", // Safe DAO liquidity
+  "0x3A37b789D3117F9B4f92F563358D70336F893E21", // NFT Collector
+  "0x65CFC5514ABa2eDB84ecdE3757C7647D2Df4E6Af", // NFT Activity
+  "0x91036536da4c5155D1d05bA235B93192d92DaE1d", // NFT Cityzen
+  "0xDff7A394Bd57593b3caA8f601e0A162bf711655E", // Contribution Communautaire
+  "0x6B85a87d8990e77A86ab16A44b162de48BFb64E9", // Provision D'ajustement
   ...getDexPoolAddresses(),
 ];
 

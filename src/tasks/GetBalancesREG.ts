@@ -110,7 +110,7 @@ async function setupNetworksAndDexs() {
     listeSelectedUrlGraph.push(urlGraph);
 
     // Demande à l'utilisateur s'il souhaite extraire les soldes pour les DEX
-    const askDexs = await askUseconfirm(i18n.t("tasks.getBalancesREG.askDexs"), true);
+    const askDexs = await askUseconfirm(`${i18n.t("tasks.getBalancesREG.askDexs")} (${network})`, true);
     if (askDexs) {
       // Si oui, demande quels DEX analyser pour ce réseau
       SelectDex[network] = await askChoiseCheckbox(
