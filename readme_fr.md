@@ -370,3 +370,4 @@ Pour toute question ou problème, veuillez ouvrir une issue dans le repository o
 ## TODO
 
 - [ ] Rédiger la partie Modification de code et ajout de fonctionnalité -> ajouter modèle de calcul pour le pouvoir de vote
+- [ ] Ajouter un logger custom pour retirer les clé api thegraph dans les logs

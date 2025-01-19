@@ -370,3 +370,4 @@ For any questions or issues, please open an issue in the repository or contact u
 ## TODO
 
 - [ ] Write the Code Modification and Feature Addition section -> add calculation model for voting power
+- [ ] Add a custom logger to remove TheGraph API keys from the logs
