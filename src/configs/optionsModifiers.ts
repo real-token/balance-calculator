@@ -16,7 +16,7 @@ const getDexPoolAddresses = () => {
 
 /**
  * Liste des adresses à exclure, combinant les adresses fixes et les pools DEX
- * !! Adresses en minuscule
+ * !! Adresses à mettre en minuscule (lowerCase)
  */
 const excludeAddressREG = [
   "0xc49bb05ac57f371bbc30ea0b7b0679343cad71c0", // safe marketing
