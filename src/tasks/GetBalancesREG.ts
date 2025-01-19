@@ -350,8 +350,19 @@ function updateExistingWalletEntry(
  * @param allBalancesWallets - Tableau contenant tous les soldes des portefeuilles
  */
 async function processVaultIncentives(network: Network, timestamp: number, allBalancesWallets: Array<RetourREG>) {
+  // Vérifier et utiliser une URL valide
+  const envURL = process.env[`THE_GRAPH_DEV_URL_GOV_${network.toUpperCase()}`] ?? "";
+  const urlGraph = /^https?:\/\/([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/.test(envURL)
+    ? envURL
+    : theGraphApiUrlsGov[network];
+
+  if (!urlGraph) {
+    console.error(i18n.t("utils.lib.errorApiUrlNotFound", { network }));
+    return;
+  }
+
   // Création du client GraphQL pour les requêtes
-  const client = createGraphQLClient(process.env.THE_GRAPH_DEV_URL_GOV_GNOSIS ?? theGraphApiUrlsGov[network]);
+  const client = createGraphQLClient(urlGraph);
 
   // Récupération des soldes des incitations de coffre-fort
   const balancesVaultIncentives = await getRegBalancesVaultIncentives(client, timestamp, network);

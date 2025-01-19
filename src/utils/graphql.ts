@@ -341,6 +341,7 @@ export async function makeRequestWithRetry(
     // console.log("makeRequestWithRetry bearer", query?.bearer);
     // console.log("makeRequestWithRetry document", query.query);
     // console.log("makeRequestWithRetry variables", query.variables);
+    //console.log("makeRequestWithRetry client", JSON.stringify(client, null, 2));
     const headers = query?.bearer ? { Authorization: query?.bearer } : undefined;
     response = await client.request({
       document: query.query,
@@ -348,6 +349,9 @@ export async function makeRequestWithRetry(
       requestHeaders: headers,
     });
   } catch (error: unknown) {
+    if (typeof error === "string") {
+      console.error("makeRequestWithRetry error", error);
+    }
     const graphQLError = error as GraphQLError;
     console.error("graphQLError", JSON.stringify(graphQLError, null, 2));
     if (retries === 1) {
