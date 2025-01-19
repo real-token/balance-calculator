@@ -2,7 +2,7 @@ import { BigNumber } from "bignumber.js";
 import fs from "fs";
 import path from "path";
 import { optionsModifiers } from "../configs/optionsModifiers.js";
-import { askChoiseListe, askInput, askUseTempFile } from "../utils/inquirer.js";
+import { askChoiseListe, askInput } from "../utils/inquirer.js";
 import { getJsonFiles } from "../utils/lib.js";
 import { PowerVotingModel, calculatePowerVoting, powerVotingModels } from "./../models/powerVotingModels.js";
 
@@ -24,7 +24,10 @@ export async function taskCalculatePowerVotingREG(): Promise<string> {
   }
 
   // Sélection du fichier JSON d'entrée
-  const jsonFileName = await askUseTempFile(jsonFiles);
+  const jsonFileName = await askChoiseListe(i18n.t("tasks.calculatePowerVoting.askDataBalancesRegSnapshotJsonFile"), {
+    value: jsonFiles,
+    name: jsonFiles,
+  });
   const jsonFilePath = path.join(dirPath, jsonFileName);
   //console.debug("Chemin du fichier JSON d'entrée:", jsonFilePath);
   const jsonData = JSON.parse(fs.readFileSync(jsonFilePath, "utf-8"));
@@ -63,12 +66,17 @@ export async function taskCalculatePowerVotingREG(): Promise<string> {
 
   const previousDataPowerVotingJsonFileName = await askChoiseListe(
     i18n.t("tasks.calculatePowerVoting.askPreviousDataPowerVotingJsonFile"),
-    { value: jsonFiles, name: jsonFiles }
+    { value: [...jsonFiles, "none"], name: [...jsonFiles, "None"] }
   );
-  const previousDataPowerVotingJsonFilePath = path.join(dirPath, previousDataPowerVotingJsonFileName);
-  const previousDataPowerVotingJsonData: {
+
+  let previousDataPowerVotingJsonData: {
     tx_datas: Array<Array<Array<string>>>;
-  } = JSON.parse(fs.readFileSync(previousDataPowerVotingJsonFilePath, "utf-8"));
+  } = { tx_datas: [] };
+
+  if (previousDataPowerVotingJsonFileName !== "none") {
+    const previousDataPowerVotingJsonFilePath = path.join(dirPath, previousDataPowerVotingJsonFileName);
+    previousDataPowerVotingJsonData = JSON.parse(fs.readFileSync(previousDataPowerVotingJsonFilePath, "utf-8"));
+  }
 
   // Calcul du pouvoir de vote
   const powerVotingResults = calculatePowerVoting(

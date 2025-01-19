@@ -19,8 +19,9 @@ export default {
       askModel: "Which input model do you want to use?",
       infoModelAutoDetected: "Input model detected automatically: {{model}}",
       askPowerVotingModel: "Which power voting calculation model do you want to use?",
+      askDataBalancesRegSnapshotJsonFile: "Which snapshot file contains the REG balance data? (balancesREG......json)",
       askPreviousDataPowerVotingJsonFile:
-        "Which JSON file contains the previously used voting power data to update the voting power?",
+        "Which JSON file contains the previously used voting power data to update the voting power?  (powerVotingREG......json)",
       askBatchSize: "What batch size do you want to use for the on-chain transaction?",
       messageBatchSizeError: "The batch size must be an integer!",
       warnPowerVotingValue: "Invalid voting power value for address {{address}}: {{value}}",

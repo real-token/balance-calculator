@@ -19,8 +19,10 @@ export default {
       askModel: "Quel modèle d'entrée voulez-vous utiliser ?",
       infoModelAutoDetected: "Modèle d'entrée détecté automatiquement : {{model}}",
       askPowerVotingModel: "Quel modèle de calcul de pouvoir de vote voulez-vous utiliser ?",
+      askDataBalancesRegSnapshotJsonFile:
+        "Quel fichier snapshot contien les datas des balances REG ? (balancesREG......json)",
       askPreviousDataPowerVotingJsonFile:
-        "Quel fichier contien les datas de pouvoir de vote précedemment utilisées pour mettre à jour le pouvoir de vote ?",
+        "Quel fichier contien les datas de pouvoir de vote précedemment utilisées pour mettre à jour le pouvoir de vote ? (powerVotingREG......json)",
       askBatchSize: "Quelle taille de lot voulez-vous utiliser pour la transaction on-chain ?",
       messageBatchSizeError: "La taille du lot doit être un nombre entier!",
       warnPowerVotingValue: "Valeur de pouvoir de vote invalide pour l'adresse {{address}}: {{value}}",
