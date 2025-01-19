@@ -30,6 +30,8 @@ const excludeAddressREG = [
   "0x91036536da4c5155D1d05bA235B93192d92DaE1d", // NFT Cityzen
   "0xDff7A394Bd57593b3caA8f601e0A162bf711655E", // Contribution Communautaire
   "0x6B85a87d8990e77A86ab16A44b162de48BFb64E9", // Provision D'ajustement
+  "0x9a760aa1fe631fd9ac0aee0965736121c7c132cc", // MtP OnOff Ramp
+  "0xb65a382e536cf80a792e10b1ff24f3c04845d4a3", // Realt gestion Budget MtP
   ...getDexPoolAddresses(),
 ];
 
