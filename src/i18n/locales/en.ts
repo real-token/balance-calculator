@@ -12,6 +12,9 @@ export default {
       askDexs: "Do you want to extract the balances for the DEXs?",
       askDexsForNetwork: "For the network {{network}}, for which DEXs do you want to extract the balances?",
       askUrlGraphQL: "What URL GraphQL to use for the network {{network}}?",
+      askCalculationType: "For a multi-day range, do you want a sum or an average of balances?",
+      calculationTypeSum: "Total sum of balances",
+      calculationTypeAverage: "Daily average of balances",
     },
     calculatePowerVoting: {
       noJsonFiles: "No JSON files found in the outDatas directory",

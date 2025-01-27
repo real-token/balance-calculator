@@ -26,7 +26,7 @@ import {
   getRegBalancesByDexs,
   getRegBalancesVaultIncentives,
 } from "../utils/graphql.js";
-import { askChoiseCheckbox, askDateRange, askUrls, askUseconfirm } from "../utils/inquirer.js";
+import { askChoiseCheckbox, askChoiseListe, askDateRange, askUrls, askUseconfirm } from "../utils/inquirer.js";
 import { readContentFromFile } from "../utils/lib.js";
 
 const __dirname = new URL(".", import.meta.url).pathname;
@@ -47,7 +47,9 @@ export async function taskGetBalancesREG(tempData: string): Promise<string> {
   // Conversion des dates en objets Date
   let startDateStr = new Date(`${startDate}T${snapshotTime}:00Z`);
   const endDateStr = new Date(`${endDate}T${snapshotTime}:00Z`);
+  const numberOfDays = Math.ceil((endDateStr.getTime() - startDateStr.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
+  const typeSumm = numberOfDays > 1 ? "sum" : "onDay";
   // Boucle principale pour le traitement des données
   while (startDateStr <= endDateStr) {
     const timestamp = Math.floor(startDateStr.getTime() / 1000);
@@ -61,10 +63,29 @@ export async function taskGetBalancesREG(tempData: string): Promise<string> {
     }
 
     // Écriture des données temporaires dans un fichier
-    writeTempFile(timestamp, startDateStr, startDate, endDate, snapshotTime, allBalancesWallets, pathFile);
+    writeTempFile(timestamp, startDateStr, startDate, endDate, snapshotTime, allBalancesWallets, pathFile, typeSumm);
 
     // Passage au jour suivant
     startDateStr.setDate(startDateStr.getDate() + 1);
+  }
+
+  // Si le range est sur plusieurs jours, demander le type de calcul
+  if (numberOfDays > 1) {
+    const calculationType = await askChoiseListe(i18n.t("tasks.getBalancesREG.askCalculationType"), {
+      value: ["sum", "average"],
+      name: [i18n.t("tasks.getBalancesREG.calculationTypeSum"), i18n.t("tasks.getBalancesREG.calculationTypeAverage")],
+    });
+
+    if (calculationType === "average") {
+      // Calcul de la moyenne pour chaque portefeuille
+      for (const wallet of allBalancesWallets) {
+        calculateAverageBalances(wallet, numberOfDays);
+      }
+      const timestamp = Math.floor(startDateStr.getTime() / 1000);
+
+      // Écriture des données temporaires dans un fichier
+      writeTempFile(timestamp, startDateStr, startDate, endDate, snapshotTime, allBalancesWallets, pathFile, "average");
+    }
   }
 
   // Retourne le chemin du fichier contenant les résultats
@@ -565,7 +586,8 @@ function writeTempFile(
   endDate: string,
   snapshotTime: string,
   balances: Array<RetourREG>,
-  pathFile: string
+  pathFile: string,
+  typeSumm: "sum" | "average" | "onDay"
 ) {
   fs.writeFileSync(
     pathFile,
@@ -578,10 +600,64 @@ function writeTempFile(
           dateStart: startDate,
           dateEnd: endDate,
           snapshotTime,
+          typeSumm,
         },
       },
       null,
       2
     )
   );
+}
+
+/**
+ * Calcule la moyenne des soldes sur une période donnée
+ * @param wallet - Le portefeuille dont les soldes doivent être moyennés
+ * @param numberOfDays - Le nombre de jours de la période
+ */
+function calculateAverageBalances(wallet: RetourREG, numberOfDays: number) {
+  // Moyennes des soldes totaux
+  const totalBalanceKeys = [
+    "totalBalanceREG",
+    "totalBalance",
+    "totalBalanceRegGnosis",
+    "totalBalanceRegEthereum",
+    "totalBalanceRegPolygon",
+    "totalBalanceEquivalentRegGnosis",
+    "totalBalanceEquivalentRegEthereum",
+    "totalBalanceEquivalentRegPolygon",
+    "totalBalanceEquivalentREG",
+  ] as const;
+
+  for (const key of totalBalanceKeys) {
+    wallet[key] = new BigNumber(wallet[key]).dividedBy(numberOfDays).toString(10);
+  }
+
+  // Moyennes des soldes par réseau dans sourceBalance
+  if (wallet.sourceBalance) {
+    for (const network of Object.keys(wallet.sourceBalance)) {
+      const networkBalance = wallet.sourceBalance[network as Network];
+      if (networkBalance) {
+        // Moyenne du solde du portefeuille
+        networkBalance.walletBalance = new BigNumber(networkBalance.walletBalance).dividedBy(numberOfDays).toString(10);
+
+        // Moyenne du solde des incentives
+        networkBalance.vaultIncentiveV1 = new BigNumber(networkBalance.vaultIncentiveV1)
+          .dividedBy(numberOfDays)
+          .toString(10);
+
+        // Moyenne des soldes DEX
+        if (networkBalance.dexs) {
+          for (const dex of Object.keys(networkBalance.dexs)) {
+            const dexBalances = networkBalance.dexs[dex as DexValue];
+            if (dexBalances) {
+              for (const position of dexBalances) {
+                position.tokenBalance = new BigNumber(position.tokenBalance).dividedBy(numberOfDays).toString(10);
+                position.equivalentREG = new BigNumber(position.equivalentREG).dividedBy(numberOfDays).toString(10);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }

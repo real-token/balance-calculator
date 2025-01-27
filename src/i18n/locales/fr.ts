@@ -12,6 +12,9 @@ export default {
       askDexs: "Voulez-vous extraire les soldes pour les DEX ?",
       askDexsForNetwork: "Pour le réseau {{network}}, pour quels DEX voulez-vous extraire les soldes ?",
       askUrlGraphQL: "Quelle URL GraphQL utiliser pour le réseau {{network}} ?",
+      askCalculationType: "Pour un range de plusieurs jours, voulez-vous une somme ou une moyenne des soldes ?",
+      calculationTypeSum: "Somme totale des soldes",
+      calculationTypeAverage: "Moyenne des soldes par jour",
     },
     calculatePowerVoting: {
       noJsonFiles: "Aucun fichier JSON trouvé dans le dossier outDatas",
