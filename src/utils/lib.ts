@@ -2,9 +2,17 @@ import axios from "axios";
 import { BigNumber } from "bignumber.js";
 import dotenv from "dotenv";
 import fs, { readFileSync } from "fs";
+import Moralis from "moralis";
 import path from "path";
 import util from "util";
-import { NETWORK, Network, blockStartREG, etherscanApiUrls } from "../configs/constantes.js";
+import {
+  NETWORK,
+  NETWORK_ID,
+  Network,
+  blockStartREG,
+  etherscanApiUrls,
+  moralisApiUrls,
+} from "../configs/constantes.js";
 import { i18n } from "../i18n/index.js";
 dotenv.config();
 type KeyString = {
@@ -12,6 +20,11 @@ type KeyString = {
 };
 
 const readdir = util.promisify(fs.readdir);
+
+// Ajout d'un cache pour les block numbers
+const blockNumberCache = new Map<string, number>();
+
+let moralisStarted = false;
 
 export function jsonToCsv(jsonData: any) {
   let data: any[];
@@ -107,13 +120,6 @@ export async function getBlockNumber(timestamp: number | undefined, network: Net
 
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {
-      const params = {
-        module: "block",
-        action: "getblocknobytime",
-        timestamp: timestamp,
-        closest: "before",
-        apikey: apiKey,
-      };
       const response = await axios.get(apiUrl, {
         params: {
           module: "block",
@@ -132,10 +138,71 @@ export async function getBlockNumber(timestamp: number | undefined, network: Net
       return blockNumber >= blockStartREG[network] ? blockNumber : blockStartREG[network];
     } catch (error) {
       if (attempt === 3) {
-        throw error;
+        try {
+          const blockNumber = await getBlockNumberByMoralis(timestamp, network);
+          return blockNumber >= blockStartREG[network] ? blockNumber : blockStartREG[network];
+        } catch (error) {
+          console.error("MY  EReeur", { apiUrl, attempt, delayTime: attempt }, error);
+          throw error;
+        }
       }
       console.error(i18n.t("utils.lib.errorApiRequestFailedAfterRetry", { apiUrl, attempt, delayTime: attempt }));
       await delay(attempt * 1000);
+    }
+  }
+  throw new Error(i18n.t("utils.lib.errorGetBlockNumberFromTimestamp"));
+}
+
+// Fonction utilitaire pour générer la clé du cache
+function getCacheKey(timestamp: number, network: Network): string {
+  return `${network}-${timestamp}`;
+}
+
+async function getBlockNumberByMoralis(timestamp: number | undefined, network: Network): Promise<number> {
+  if (!timestamp) return -1;
+
+  // Vérifier si la valeur est dans le cache
+  const cacheKey = getCacheKey(timestamp, network);
+  const cachedValue = blockNumberCache.get(cacheKey);
+  if (cachedValue !== undefined) {
+    console.info(`Cache hit pour block number: ${network} - ${timestamp}`);
+    return cachedValue;
+  }
+
+  const apiUrl = moralisApiUrls[network];
+
+  if (!apiUrl || !apiUrl.length) {
+    throw new Error(i18n.t("utils.lib.errorApiUrlNotFound", { network }));
+  }
+
+  const apiKey = process.env["API_KEY_MORALIS"];
+
+  if (!apiKey || !apiKey.length) {
+    throw new Error(i18n.t("common.errors.errorApiKeyNotFound", { network, apiKey }));
+  }
+
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      if (!moralisStarted) {
+        await Moralis.start({
+          apiKey,
+        });
+        moralisStarted = true;
+      }
+      const response = await Moralis.EvmApi.block.getDateToBlock({
+        chain: NETWORK_ID[network],
+        date: new Date(timestamp * 1000),
+      });
+
+      console.log("DEBUG response Moralis", response.raw.block);
+
+      // Stocker le résultat dans le cache
+      const blockNumber = response.raw.block;
+      blockNumberCache.set(cacheKey, blockNumber);
+
+      return blockNumber;
+    } catch (e) {
+      throw e;
     }
   }
   throw new Error(i18n.t("utils.lib.errorGetBlockNumberFromTimestamp"));

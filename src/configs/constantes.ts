@@ -37,6 +37,12 @@ export enum NETWORK {
   POLYGON = "polygon",
 }
 
+export enum NETWORK_ID {
+  gnosis = "100",
+  ethereum = "1",
+  polygon = "137",
+}
+
 export type DexConfigs = {
   pool_id: string[];
   graphUrl: string;
@@ -64,6 +70,12 @@ export const etherscanApiUrls: NetworkApiUrls = {
   [NETWORK.ETHEREUM]: "https://api.etherscan.io/api",
   [NETWORK.POLYGON]: "https://api.polygonscan.com/api",
   // Ajoutez d'autres URL d'API ici...
+};
+
+export const moralisApiUrls: NetworkApiUrls = {
+  [NETWORK.GNOSIS]: "https://deep-index.moralis.io/api/v2.2/dateToBlock?chain=gnosis",
+  [NETWORK.ETHEREUM]: "https://deep-index.moralis.io/api/v2.2/dateToBlock?chain=ethereum",
+  [NETWORK.POLYGON]: "https://deep-index.moralis.io/api/v2.2/dateToBlock?chain=polygon",
 };
 
 export const theGraphApiUrlsREG = {
