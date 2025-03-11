@@ -114,13 +114,21 @@ Modify the copy of the `.env.example` file to `.env` at the root of the project 
    - Copy the key into your .env:
      `API_KEY_POLYGONSCAN=your_polygonscan_key`
 
-5. **Additional Endpoints (Optional)**
-   Allows the use of a custom GraphQL endpoint that provides the correct data format
+5. **Moralis API Key**
+
+   - Visit [Moralis](https://developer.moralis.com/)
+   - Create an account or log in
+   - Go to API Keys
+   - Create a new API key
+   - Copy the key into your .env:
+     `API_KEY_MORALIS=your_moralis_key`
+
+6. **Additional Endpoints (Optional)**
 
    - Add your additional endpoints as a JSON array:
      `ENDPOINT_EXTRA=["https://endpoint1.com","https://endpoint2.com"]`
 
-6. **The Graph Development URLs (Optional)**
+7. **The Graph Development URLs (Optional)**
    If you are developing with custom The Graph endpoints:
    ```
    THE_GRAPH_DEV_URL_REG_GNOSIS="your_url"
@@ -371,3 +379,4 @@ For any questions or issues, please open an issue in the repository or contact u
 
 - [ ] Write the Code Modification and Feature Addition section -> add calculation model for voting power
 - [ ] Add a custom logger to remove TheGraph API keys from the logs
+- [ ] Add the dex keys management in the ranking calculation

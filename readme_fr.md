@@ -114,13 +114,22 @@ Modifier la copie du fichier `.env.example` en `.env` à la racine du projet ave
    - Copiez la clé dans votre .env :
      `API_KEY_POLYGONSCAN=votre_clé_polygonscan`
 
-5. **Endpoints supplémentaires (Optionnel)**
+5. **Moralis API Key**
+
+   - Visitez [Moralis](https://developer.moralis.com/)
+   - Créez un compte ou connectez-vous
+   - Allez dans API Keys
+   - Créez une nouvelle clé API
+   - Copiez la clé dans votre .env :
+     `API_KEY_MORALIS=votre_clé_moralis`
+
+6. **Endpoints supplémentaires (Optionnel)**
    Permet d'utiliser un endpoint Graphql personnalisé qui fourni le bon format de données
 
    - Ajoutez vos endpoints supplémentaires sous forme de tableau JSON :
      `ENDPOINT_EXTRA=["https://endpoint1.com","https://endpoint2.com"]`
 
-6. **URLs de développement The Graph (Optionnel)**
+7. **URLs de développement The Graph (Optionnel)**
    Si vous développez avec des endpoints The Graph personnalisés :
    ```
    THE_GRAPH_DEV_URL_REG_GNOSIS="votre_url"
@@ -135,6 +144,8 @@ Votre fichier .env final devrait ressembler à ceci :
 API_KEY_GNOSISSCAN="votre_clé_gnosisscan"
 API_KEY_ETHERSCAN="votre_clé_etherscan"
 API_KEY_POLYGONSCAN="votre_clé_polygonscan"
+
+API_KEY_MORALIS="votre_clé_moralis"
 
 THEGRAPH_API_KEY="votre_clé_thegraph"
 
@@ -371,3 +382,4 @@ Pour toute question ou problème, veuillez ouvrir une issue dans le repository o
 
 - [ ] Rédiger la partie Modification de code et ajout de fonctionnalité -> ajouter modèle de calcul pour le pouvoir de vote
 - [ ] Ajouter un logger custom pour retirer les clé api thegraph dans les logs
+- [ ] Ajouter la gestion des clés de dex dans le calcule du classement
