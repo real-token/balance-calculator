@@ -37,6 +37,8 @@ export default {
       infoJsonFileAvailable: "Fichiers JSON disponibles:",
       messageEchec: "Veuillez entrer un nombre entier positif ou 'all'.",
       askTopN: "Combien de top holders voulez-vous afficher (all ou nombre) ?",
+      askUseBalance: "Quelle balance voulez-vous utiliser pour le classement ?",
+      noBalanceKeysFound: "Aucune clé de balance trouvée dans le fichier JSON. Vérifiez le format des données.",
     },
     getAddressOwnRealToken: {
       askDateRange: "Dates de début et de fin:",

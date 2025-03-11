@@ -112,7 +112,6 @@ export async function getBlockNumber(timestamp: number | undefined, network: Net
     network === NETWORK.ETHEREUM
       ? process.env[keyFactory("API_KEY_", "etherscan", "upper")]
       : process.env[keyFactory("API_KEY_", network, "upper", "SCAN")];
-  // console.log("DEBUG apiKey", apiKey);
 
   if (!apiKey || !apiKey.length) {
     throw new Error(i18n.t("common.errors.errorApiKeyNotFound", { network, apiKey }));
@@ -193,8 +192,6 @@ async function getBlockNumberByMoralis(timestamp: number | undefined, network: N
         chain: NETWORK_ID[network],
         date: new Date(timestamp * 1000),
       });
-
-      console.log("DEBUG response Moralis", response.raw.block);
 
       // Stocker le résultat dans le cache
       const blockNumber = response.raw.block;

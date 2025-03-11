@@ -35,6 +35,8 @@ export default {
       infoJsonFileAvailable: "JSON files available:",
       messageEchec: "Please enter a positive integer or 'all'.",
       askTopN: "How many top holders do you want to display (all or number)?",
+      askUseBalance: "Which balance would you like to use for the ranking?",
+      noBalanceKeysFound: "No balance keys found in the JSON file. Please check the data format.",
     },
     getAddressOwnRealToken: {
       askDateRange: "Start and end dates:",
