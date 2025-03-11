@@ -107,6 +107,13 @@ export async function getBlockNumber(timestamp: number | undefined, network: Net
 
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {
+      const params = {
+        module: "block",
+        action: "getblocknobytime",
+        timestamp: timestamp,
+        closest: "before",
+        apikey: apiKey,
+      };
       const response = await axios.get(apiUrl, {
         params: {
           module: "block",
@@ -116,9 +123,8 @@ export async function getBlockNumber(timestamp: number | undefined, network: Net
           apikey: apiKey,
         },
       });
-
-      if (response.data.status !== "1") {
-        throw new Error(`La requête a échoué avec le message : ${response.data.message}`);
+      if (response.data.status !== "1" || response.data.message === "NOTOK") {
+        throw new Error(`La requête ${apiUrl} a échoué avec le message : ${response.data.message}`);
       }
 
       //vérifuer que le block est esgal ou plus grand que le block de déploiement
@@ -128,9 +134,7 @@ export async function getBlockNumber(timestamp: number | undefined, network: Net
       if (attempt === 3) {
         throw error;
       }
-      console.error(
-        i18n.t("utils.lib.errorApiRequestFailedAfterRetry", { apiUrl, attempt, delayTime: attempt * 1000 })
-      );
+      console.error(i18n.t("utils.lib.errorApiRequestFailedAfterRetry", { apiUrl, attempt, delayTime: attempt }));
       await delay(attempt * 1000);
     }
   }
