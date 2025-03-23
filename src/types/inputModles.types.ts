@@ -1,6 +1,6 @@
 import { BigNumber } from "bignumber.js";
-import { SourceBalancesREG } from "./REG.types.js";
 import { DexValue } from "../configs/constantes.js";
+import { SourceBalancesREG } from "./REG.types.js";
 
 export interface InputModel {
   normalize: (data: SourceBalancesREG, options?: NormalizeOptions) => Array<InputModelNormalizedData>;
@@ -24,6 +24,7 @@ export interface NormalizeOptions {
   boostBalancesIncentivesVault?: number;
   boostBalancesWallet?: number;
   balanceKey?: string | string[];
+  zeroforced?: number;
   preProcessing?: (data: any) => any;
   // Ajoutez d'autres options selon vos besoins
 }
