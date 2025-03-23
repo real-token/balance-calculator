@@ -45,22 +45,22 @@ export const optionsModifiers: NormalizeOptions = {
   boosBalancesDexs: {
     sushiswap: [
       ["REG", "*"],
-      [1.2, 0.5],
+      [4, 2],
     ],
     balancer: [
       ["REG", "*"],
-      [1.2, 0.5],
+      [4, 2],
     ],
     honeyswap: [
       ["REG", "*"],
-      [1.2, 0.5],
+      [4, 2],
     ],
     swaprhq: [
       ["REG", "*"],
-      [1.2, 0.5],
+      [4, 2],
     ],
   },
-  boostBalancesIncentivesVault: 1,
+  boostBalancesIncentivesVault: 2, // 2 vault locked, 1 vault unlocked
   boostBalancesWallet: 1,
   balanceKey: "totalBalance",
 };
