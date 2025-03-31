@@ -1,4 +1,4 @@
-import { NETWORK, DEX, TOKEN_ADDRESS, Network, DexConfigs, DexValue } from "../configs/constantes.js";
+import { DEX, DexConfigs, DexValue, NETWORK, Network, TOKEN_ADDRESS } from "../configs/constantes.js";
 
 /**
  * Types de base pour les tokens supportés
@@ -73,7 +73,8 @@ export type DexQueryFunction = (
   dexConfigs: DexConfigs,
   network: Network,
   timestamp?: number,
-  mock?: boolean
+  mock?: boolean,
+  targetAddress?: string
 ) => Promise<ResponseFunctionGetRegBalances[]>;
 
 export type DexFunctionMapping = {

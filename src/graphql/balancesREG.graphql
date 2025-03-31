@@ -3,11 +3,12 @@ query getRegBalances(
   $paramBlockNumber: Block_height
   $currentAddressWallet: String!
   $balance_gt: Int!
+  $targetAddress: [String!]
 ) {
   accounts(
     first: $first
     block: $paramBlockNumber
-    where: { id_gt: $currentAddressWallet, balance_gt: $balance_gt }
+    where: { id_gt: $currentAddressWallet, balance_gt: $balance_gt, id_in: $targetAddress }
   ) {
     id
     balance

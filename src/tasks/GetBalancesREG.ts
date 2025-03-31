@@ -26,7 +26,14 @@ import {
   getRegBalancesByDexs,
   getRegBalancesVaultIncentives,
 } from "../utils/graphql.js";
-import { askChoiseCheckbox, askChoiseListe, askDateRange, askUrls, askUseconfirm } from "../utils/inquirer.js";
+import {
+  askChoiseCheckbox,
+  askChoiseListe,
+  askDateRange,
+  askInput,
+  askUrls,
+  askUseconfirm,
+} from "../utils/inquirer.js";
 import { readContentFromFile } from "../utils/lib.js";
 
 const __dirname = new URL(".", import.meta.url).pathname;
@@ -44,6 +51,16 @@ export async function taskGetBalancesREG(tempData: string): Promise<string> {
   const { startDate, endDate, snapshotTime } = await setupDateRange(allBalancesWallets, pathFile);
   const pools_id = loadPoolIds();
 
+  // Demande de l'adresse à analyser
+  const targetAddress = await askInput(
+    i18n.t("tasks.getBalancesREG.askTargetAddress"),
+    {
+      regex: /^(0x[a-fA-F0-9]{40}|all)$/,
+      messageEchec: i18n.t("tasks.getBalancesREG.errorInvalidAddress"),
+    },
+    "all"
+  );
+
   // Conversion des dates en objets Date
   let startDateStr = new Date(`${startDate}T${snapshotTime}:00Z`);
   const endDateStr = new Date(`${endDate}T${snapshotTime}:00Z`);
@@ -59,7 +76,15 @@ export async function taskGetBalancesREG(tempData: string): Promise<string> {
       console.info(i18n.t("tasks.getBalancesREG.processingTimestamp", { timestamp, date: new Date(timestamp * 1000) }));
 
       // Traitement des données pour le réseau actuel
-      await processNetwork(network, timestamp, allBalancesWallets, SelectDex, listeSelectedUrlGraph, pools_id);
+      await processNetwork(
+        network,
+        timestamp,
+        allBalancesWallets,
+        SelectDex,
+        listeSelectedUrlGraph,
+        pools_id,
+        targetAddress
+      );
     }
 
     // Écriture des données temporaires dans un fichier
@@ -221,6 +246,7 @@ function loadPoolIds(): string[] {
  * @param SelectDex - Map des DEX sélectionnés par réseau
  * @param listeSelectedUrlGraph - Liste des URLs GraphQL
  * @param pools_id - Liste des IDs des pools de liquidité
+ * @param targetAddress - Adresse cible à analyser (ou "all" pour toutes les adresses)
  */
 async function processNetwork(
   network: Network,
@@ -228,17 +254,18 @@ async function processNetwork(
   allBalancesWallets: Array<RetourREG>,
   SelectDex: { [key: string]: string[] },
   listeSelectedUrlGraph: string[],
-  pools_id: string[]
+  pools_id: string[],
+  targetAddress: string
 ) {
-  const balancesHolderREG = await fetchBalancesHolderREG(network, timestamp, listeSelectedUrlGraph);
+  const balancesHolderREG = await fetchBalancesHolderREG(network, timestamp, listeSelectedUrlGraph, targetAddress);
   processWalletBalances(balancesHolderREG, network, allBalancesWallets, pools_id);
 
   if (network === NETWORK.GNOSIS) {
-    await processVaultIncentives(network, timestamp, allBalancesWallets);
+    await processVaultIncentives(network, timestamp, allBalancesWallets, targetAddress);
   }
 
   if (SelectDex[network]?.length > 0) {
-    await processDexBalances(network, timestamp, SelectDex, allBalancesWallets);
+    await processDexBalances(network, timestamp, SelectDex, allBalancesWallets, targetAddress);
   }
 }
 
@@ -247,9 +274,15 @@ async function processNetwork(
  * @param network - Le réseau pour lequel récupérer les soldes (Gnosis, Ethereum, Polygon)
  * @param timestamp - Le timestamp pour lequel récupérer les soldes
  * @param listeSelectedUrlGraph - Liste des URLs GraphQL disponibles pour chaque réseau
+ * @param targetAddress - Adresse cible à analyser (ou "all" pour toutes les adresses)
  * @returns Un objet contenant les soldes REG par adresse de portefeuille
  */
-async function fetchBalancesHolderREG(network: Network, timestamp: number, listeSelectedUrlGraph: string[]) {
+async function fetchBalancesHolderREG(
+  network: Network,
+  timestamp: number,
+  listeSelectedUrlGraph: string[],
+  targetAddress: string
+) {
   // Récupère l'URL GraphQL correspondant au réseau
   const url = await askUrls(
     [listeSelectedUrlGraph[Object.values(NETWORK).indexOf(network as NETWORK)]],
@@ -260,7 +293,7 @@ async function fetchBalancesHolderREG(network: Network, timestamp: number, liste
 
   // Crée un client GraphQL et récupère les soldes
   const client = createGraphQLClient(typeof url === "string" ? url : url[0]);
-  return await getRegBalances(client, timestamp, network);
+  return await getRegBalances(client, timestamp, network, targetAddress);
 }
 
 /**
@@ -369,8 +402,14 @@ function updateExistingWalletEntry(
  * @param network - Le réseau à traiter
  * @param timestamp - Le timestamp pour lequel récupérer les soldes
  * @param allBalancesWallets - Tableau contenant tous les soldes des portefeuilles
+ * @param targetAddress - Adresse cible à analyser (ou "all" pour toutes les adresses)
  */
-async function processVaultIncentives(network: Network, timestamp: number, allBalancesWallets: Array<RetourREG>) {
+async function processVaultIncentives(
+  network: Network,
+  timestamp: number,
+  allBalancesWallets: Array<RetourREG>,
+  targetAddress: string
+) {
   // Vérifier et utiliser une URL valide
   const envURL = process.env[`THE_GRAPH_DEV_URL_GOV_${network.toUpperCase()}`] ?? "";
   const urlGraph = /^https?:\/\/([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/.test(envURL)
@@ -386,7 +425,7 @@ async function processVaultIncentives(network: Network, timestamp: number, allBa
   const client = createGraphQLClient(urlGraph);
 
   // Récupération des soldes des incitations de coffre-fort
-  const balancesVaultIncentives = await getRegBalancesVaultIncentives(client, timestamp, network);
+  const balancesVaultIncentives = await getRegBalancesVaultIncentives(client, timestamp, network, targetAddress);
 
   // Traitement de chaque solde d'incitation
   for (const [addressHolder, balance] of Object.entries(balancesVaultIncentives)) {
@@ -409,7 +448,7 @@ async function processVaultIncentives(network: Network, timestamp: number, allBa
         totalBalance: vaultIncentiveV1Balance,
         sourceBalance: {
           [NETWORK.GNOSIS]: {
-            walletBalance: "0", // Important: initialiser à 0
+            walletBalance: "0",
             vaultIncentiveV1: vaultIncentiveV1Balance,
             dexs: {},
           },
@@ -450,15 +489,17 @@ async function processVaultIncentives(network: Network, timestamp: number, allBa
  * @param timestamp - Le timestamp pour lequel récupérer les soldes
  * @param SelectDex - Les DEX sélectionnés pour chaque réseau
  * @param allBalancesWallets - Tableau contenant tous les soldes des portefeuilles
+ * @param targetAddress - Adresse cible à analyser (ou "all" pour toutes les adresses)
  */
 async function processDexBalances(
   network: Network,
   timestamp: number,
   SelectDex: { [key: string]: string[] },
-  allBalancesWallets: Array<RetourREG>
+  allBalancesWallets: Array<RetourREG>,
+  targetAddress: string
 ) {
   // Récupère les soldes des DEX pour le réseau et les DEX sélectionnés
-  const balancesDexs = await getRegBalancesByDexs(network, SelectDex[network], timestamp, false);
+  const balancesDexs = await getRegBalancesByDexs(network, SelectDex[network], timestamp, false, targetAddress);
 
   // Enregistre les données de débogage si le mode DEBUG est activé
   if (MODE_DEBUG) {
@@ -471,6 +512,7 @@ async function processDexBalances(
       // Pour chaque position de liquidité dans le pool
       for (const position of pool.liquidityPositions) {
         const holderAddress = position.user.id;
+
         // Met à jour le solde DEX pour chaque liquidité
         for (const liquidity of position.liquidity) {
           updateDexBalance(network, dex as DexValue, holderAddress, pool.poolId, liquidity, allBalancesWallets);

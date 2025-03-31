@@ -3,11 +3,12 @@ query getRegBalancesVaultIncentives(
   $paramBlockNumber: Block_height
   $currentAddressWallet: String!
   $balance_gt: Int!
+  $targetAddress: [String!]
 ) {
   userGlobalStates(
     first: $first
     block: $paramBlockNumber
-    where: { id_gt: $currentAddressWallet, currentDeposit_gt: $balance_gt }
+    where: { id_gt: $currentAddressWallet, currentDeposit_gt: $balance_gt, id_in: $targetAddress }
   ) {
     currentDeposit
     id

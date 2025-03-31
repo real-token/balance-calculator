@@ -1,8 +1,4 @@
-query getHoneySwapBalances(
-  $first: Int!
-  $paramBlockNumber: Block_height
-  $pool_id: [String]!
-) {
+query getHoneySwapBalances($first: Int!, $paramBlockNumber: Block_height, $pool_id: [String]!) {
   pairs(first: $first, block: $paramBlockNumber, where: { id_in: $pool_id }) {
     id
     reserve0

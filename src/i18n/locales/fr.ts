@@ -15,6 +15,8 @@ export default {
       askCalculationType: "Pour un range de plusieurs jours, voulez-vous une somme ou une moyenne des soldes ?",
       calculationTypeSum: "Somme totale des soldes",
       calculationTypeAverage: "Moyenne des soldes par jour",
+      askTargetAddress: "Quelle adresse souhaitez-vous analyser (all ou adresse 0x) ?",
+      errorInvalidAddress: "Veuillez entrer une adresse 0x valide ou 'all'",
     },
     calculatePowerVoting: {
       noJsonFiles: "Aucun fichier JSON trouvé dans le dossier outDatas",

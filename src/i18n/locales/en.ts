@@ -15,6 +15,8 @@ export default {
       askCalculationType: "For a multi-day range, do you want a sum or an average of balances?",
       calculationTypeSum: "Total sum of balances",
       calculationTypeAverage: "Daily average of balances",
+      askTargetAddress: "Which address would you like to analyze (all or 0x address)?",
+      errorInvalidAddress: "Please enter a valid 0x address or 'all'",
     },
     calculatePowerVoting: {
       noJsonFiles: "No JSON files found in the outDatas directory",

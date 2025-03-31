@@ -65,6 +65,7 @@ type PositionSushiSwapV3 = {
  * @param {Network} network - Le réseau sur lequel effectuer la requête (ex: Gnosis)
  * @param {number} [timestamp] - Timestamp optionnel pour obtenir les données à un moment précis
  * @param {boolean} [mock] - Si vrai, utilise des données mockées au lieu d'interroger l'API
+ * @param {string} [targetAddress] - Adresse cible pour le filtrage
  *
  * @returns {Promise<ResponseFunctionGetRegBalances[]>} Un tableau de positions de liquidité formatées
  *
@@ -74,12 +75,13 @@ export async function getRegBalancesHoneySwap(
   dexConfigs: DexConfigs,
   network: Network,
   timestamp?: number | undefined,
-  mock?: boolean
+  mock?: boolean,
+  targetAddress: string = "all"
 ): Promise<ResponseFunctionGetRegBalances[]> {
   if (mock) {
     console.info(i18n.t("utils.queryDexs.infoUseMockData", { dex: "HoneySwap" }));
     const data = JSON.parse(readFileSync(join(__dirname, "..", "mocks", `${dexConfigs.mockData}`), "utf-8"));
-    return responseformaterHoneySwap(data);
+    return responseformaterHoneySwap(data, targetAddress);
   }
 
   console.info(i18n.t("utils.queryDexs.infoQueryStart", { dex: "HoneySwap" }));
@@ -117,13 +119,14 @@ export async function getRegBalancesHoneySwap(
     console.timeEnd("Durée de la requête");
   }
 
-  return responseformaterHoneySwap(result);
+  return responseformaterHoneySwap(result, targetAddress);
 }
 
 /**
  * Formate la réponse des paires HoneySwap pour correspondre à la structure attendue.
  *
  * @param {any} pairs - Les données brutes des paires HoneySwap.
+ * @param {string} [targetAddress] - Adresse cible pour le filtrage
  * @returns {ResponseFunctionGetRegBalances[]} Un tableau d'objets formatés contenant les informations de liquidité.
  *
  * @description
@@ -135,7 +138,7 @@ export async function getRegBalancesHoneySwap(
  * const rawPairs = [...]; // Données brutes des paires HoneySwap
  * const formattedResponse = responseformaterHoneySwap(rawPairs);
  */
-function responseformaterHoneySwap(pairs: any): ResponseFunctionGetRegBalances[] {
+function responseformaterHoneySwap(pairs: any, targetAddress: string = "all"): ResponseFunctionGetRegBalances[] {
   if (MAJ_MOCK_DATA) {
     console.info(i18n.t("utils.queryDexs.infoMajMockData"));
     // const dataMaj = { data: { pairs: pairs } };
@@ -143,52 +146,68 @@ function responseformaterHoneySwap(pairs: any): ResponseFunctionGetRegBalances[]
     writeFileSync(path, JSON.stringify(pairs, null, 2));
   }
 
-  return pairs.map((pair: any) => {
-    const totalSupply = pair.totalSupply;
-    return {
-      poolId: pair.id as string,
-      dexName: "HoneySwap",
-      liquidityPositions: pair.liquidityPositions.map((liquidityPosition: any) => {
-        const userLiquidityTokenBalance = liquidityPosition.liquidityTokenBalance;
-        const userLiquidityPercentage = userLiquidityTokenBalance / totalSupply;
-        const tokenBalance0 = new BigNumber(pair.reserve0).multipliedBy(userLiquidityPercentage).toString(10);
-        const tokenBalance1 = new BigNumber(pair.reserve1).multipliedBy(userLiquidityPercentage).toString(10);
-        return {
-          user: {
-            id: liquidityPosition.user.id as string,
-          },
-          liquidity: [
-            {
-              tokenId: pair.token0.id as string,
-              tokenDecimals: pair.token0.decimals as number,
-              tokenSymbol: pair.token0.symbol as string,
-              tokenBalance: tokenBalance0,
-              equivalentREG:
-                pair.token0.id === TOKEN_ADDRESS.REG
-                  ? tokenBalance0
-                  : new BigNumber(pair.reserve0)
-                      .multipliedBy(pair.token1Price)
-                      .multipliedBy(userLiquidityPercentage)
-                      .toString(10),
+  return pairs
+    .map((pair: any) => {
+      const totalSupply = pair.totalSupply;
+
+      // Filtrer les positions de liquidité par adresse si une adresse spécifique est fournie
+      const filteredPositions =
+        targetAddress.toLowerCase() === "all"
+          ? pair.liquidityPositions
+          : pair.liquidityPositions.filter(
+              (position: any) => position.user.id.toLowerCase() === targetAddress.toLowerCase()
+            );
+
+      // Si aucune position ne correspond à l'adresse cible, ignorer cette paire
+      if (filteredPositions.length === 0) {
+        return null;
+      }
+
+      return {
+        poolId: pair.id as string,
+        dexName: "HoneySwap",
+        liquidityPositions: filteredPositions.map((liquidityPosition: any) => {
+          const userLiquidityTokenBalance = liquidityPosition.liquidityTokenBalance;
+          const userLiquidityPercentage = userLiquidityTokenBalance / totalSupply;
+          const tokenBalance0 = new BigNumber(pair.reserve0).multipliedBy(userLiquidityPercentage).toString(10);
+          const tokenBalance1 = new BigNumber(pair.reserve1).multipliedBy(userLiquidityPercentage).toString(10);
+          return {
+            user: {
+              id: liquidityPosition.user.id as string,
             },
-            {
-              tokenId: pair.token1.id as string,
-              tokenDecimals: pair.token1.decimals as number,
-              tokenSymbol: pair.token1.symbol as string,
-              tokenBalance: tokenBalance1,
-              equivalentREG:
-                pair.token1.id === TOKEN_ADDRESS.REG
-                  ? tokenBalance1
-                  : new BigNumber(pair.reserve1)
-                      .multipliedBy(pair.token0Price)
-                      .multipliedBy(userLiquidityPercentage)
-                      .toString(10),
-            },
-          ],
-        };
-      }),
-    };
-  });
+            liquidity: [
+              {
+                tokenId: pair.token0.id as string,
+                tokenDecimals: pair.token0.decimals as number,
+                tokenSymbol: pair.token0.symbol as string,
+                tokenBalance: tokenBalance0,
+                equivalentREG:
+                  pair.token0.id === TOKEN_ADDRESS.REG
+                    ? tokenBalance0
+                    : new BigNumber(pair.reserve0)
+                        .multipliedBy(pair.token1Price)
+                        .multipliedBy(userLiquidityPercentage)
+                        .toString(10),
+              },
+              {
+                tokenId: pair.token1.id as string,
+                tokenDecimals: pair.token1.decimals as number,
+                tokenSymbol: pair.token1.symbol as string,
+                tokenBalance: tokenBalance1,
+                equivalentREG:
+                  pair.token1.id === TOKEN_ADDRESS.REG
+                    ? tokenBalance1
+                    : new BigNumber(pair.reserve1)
+                        .multipliedBy(pair.token0Price)
+                        .multipliedBy(userLiquidityPercentage)
+                        .toString(10),
+              },
+            ],
+          };
+        }),
+      };
+    })
+    .filter(Boolean); // Filtrer les valeurs null
 }
 
 /**
@@ -198,13 +217,15 @@ function responseformaterHoneySwap(pairs: any): ResponseFunctionGetRegBalances[]
  * @param network - Réseau sur lequel effectuer la requête
  * @param timestamp - Horodatage optionnel pour obtenir les données à un moment spécifique
  * @param mock - Indique s'il faut utiliser des données simulées
+ * @param targetAddress - Adresse cible pour le filtrage
  * @returns Une promesse résolvant en un tableau de ResponseFunctionGetRegBalances
  */
 export async function getRegBalancesBalancer(
   dexConfigs: DexConfigs,
   network: Network,
   timestamp?: number | undefined,
-  mock?: boolean
+  mock?: boolean,
+  targetAddress: string = "all"
 ): Promise<ResponseFunctionGetRegBalances[]> {
   if (mock) {
     console.info(i18n.t("utils.queryDexs.infoUseMockData", { dex: "Balancer" }));
@@ -217,7 +238,7 @@ export async function getRegBalancesBalancer(
       );
       data = []; // assigner une valeur vide à data
     }
-    return responseformaterBalancer(data);
+    return responseformaterBalancer(data, targetAddress);
   }
   console.info(i18n.t("utils.queryDexs.infoQueryStart", { dex: "Balancer" }));
 
@@ -258,61 +279,80 @@ export async function getRegBalancesBalancer(
     result.push(...response.balancers.flatMap((balancer: { pools: any }) => balancer.pools));
   }
 
-  return responseformaterBalancer(result);
+  return responseformaterBalancer(result, targetAddress);
 }
 
 /**
  * Formate la réponse de l'API Balancer en un format standardisé.
  *
  * @param pairs - Données brutes des paires de tokens
+ * @param targetAddress - Adresse cible pour le filtrage
  * @returns Un tableau de ResponseFunctionGetRegBalances formaté
  */
-function responseformaterBalancer(pairs: any): ResponseFunctionGetRegBalances[] {
+function responseformaterBalancer(pairs: any, targetAddress: string = "all"): ResponseFunctionGetRegBalances[] {
   if (MAJ_MOCK_DATA) {
     console.info(i18n.t("utils.queryDexs.infoMajMockData"));
     const path = join(__dirname, "..", "mocks", `balancer.json`);
     writeFileSync(path, JSON.stringify(pairs, null, 2));
   }
 
-  return pairs.map((pair: any) => {
-    const totalSupply = pair.totalShares;
+  return pairs
+    .map((pair: any) => {
+      const totalSupply = pair.totalShares;
 
-    return {
-      poolId: pair.address as string,
-      dexName: "Balancer",
-      liquidityPositions: pair.shares.map((share: any) => {
-        const userLiquidityPercentage = share.balance / totalSupply;
-        return {
-          user: {
-            id: share.userAddress.id as string,
-          },
-          liquidity: pair.tokens.map((token: any) => {
-            const tokenBalance = new BigNumber(token.balance).multipliedBy(userLiquidityPercentage).toString(10);
+      // Filtrer les parts par adresse si une adresse spécifique est fournie
+      const filteredShares =
+        targetAddress.toLowerCase() === "all"
+          ? pair.shares
+          : pair.shares.filter((share: any) => share.userAddress.id.toLowerCase() === targetAddress.toLowerCase());
 
-            // Calculer l'équivalent REG si autre token si non met la blance REG
-            let equivalentREG = "0";
-            if (token.address === TOKEN_ADDRESS.REG) {
-              equivalentREG = tokenBalance;
-            } else {
-              try {
-                equivalentREG = calculateTokenEquivalentBalancer(pair, token.address, TOKEN_ADDRESS.REG, tokenBalance);
-              } catch (error) {
-                console.error(i18n.t("utils.queryDexs.errorCalculateTokenEquivalent", { token: token.symbol }));
+      // Si aucune part ne correspond à l'adresse cible, ignorer cette paire
+      if (filteredShares.length === 0) {
+        return null;
+      }
+
+      return {
+        poolId: pair.address as string,
+        dexName: "Balancer",
+        liquidityPositions: filteredShares.map((share: any) => {
+          const userLiquidityPercentage = share.balance / totalSupply;
+          return {
+            user: {
+              id: share.userAddress.id as string,
+            },
+            liquidity: pair.tokens.map((token: any) => {
+              const tokenBalance = new BigNumber(token.balance).multipliedBy(userLiquidityPercentage).toString(10);
+
+              // Calculer l'équivalent REG si autre token si non met la blance REG
+              let equivalentREG = "0";
+              if (token.address === TOKEN_ADDRESS.REG) {
+                equivalentREG = tokenBalance;
+              } else {
+                try {
+                  equivalentREG = calculateTokenEquivalentBalancer(
+                    pair,
+                    token.address,
+                    TOKEN_ADDRESS.REG,
+                    tokenBalance
+                  );
+                } catch (error) {
+                  console.error(i18n.t("utils.queryDexs.errorCalculateTokenEquivalent", { token: token.symbol }));
+                }
               }
-            }
 
-            return {
-              tokenId: token.address as string,
-              tokenDecimals: token.decimals as number,
-              tokenSymbol: token.symbol as string,
-              tokenBalance: tokenBalance,
-              equivalentREG: equivalentREG,
-            };
-          }),
-        };
-      }),
-    };
-  });
+              return {
+                tokenId: token.address as string,
+                tokenDecimals: token.decimals as number,
+                tokenSymbol: token.symbol as string,
+                tokenBalance: tokenBalance,
+                equivalentREG: equivalentREG,
+              };
+            }),
+          };
+        }),
+      };
+    })
+    .filter(Boolean); // Filtrer les valeurs null
 }
 
 /**
@@ -327,6 +367,7 @@ function responseformaterBalancer(pairs: any): ResponseFunctionGetRegBalances[] 
  * @param dexName
  * @param timestamp
  * @param mock
+ * @param targetAddress
  * @returns
  */
 async function getRegBalancesTypeUniV3(
@@ -334,7 +375,8 @@ async function getRegBalancesTypeUniV3(
   network: Network,
   dexName: string,
   timestamp?: number | undefined,
-  mock?: boolean
+  mock?: boolean,
+  targetAddress: string = "all"
 ): Promise<ResponseFunctionGetRegBalances[]> {
   {
     if (mock) {
@@ -346,7 +388,7 @@ async function getRegBalancesTypeUniV3(
         console.warn(i18n.t("utils.queryDexs.warnFileNotFound", { dexName, filePath: dexConfigs.mockData }));
         data = { data: { pools: [], positions: [] } }; // assigner une valeur vide à data
       }
-      return responseformaterTypeUniV3(data, dexConfigs, dexName);
+      return responseformaterTypeUniV3(data, dexConfigs, dexName, targetAddress);
     }
 
     console.info(i18n.t("utils.queryDexs.infoQueryStart", { dex: dexName }));
@@ -378,83 +420,98 @@ async function getRegBalancesTypeUniV3(
       }
       return print(operation);
     };
-    const fieldsSearch = dexName === "SushiSwap" ? "fee" : "feeTier";
-    const poolsQueryBody = getQueryBody("getPoolsTypeUniV3").replace(fieldsSearch, "");
-    const positionsQueryBody = getQueryBody("getPositionsTypeUniV3");
 
-    // console.log("queries", queryDocument);
-    // console.log("poolsQuery", poolsQueryBody);
-    // console.log("positionsQuery", positionsQueryBody);
+    // Sélectionner la requête appropriée selon le DEX
+    const poolsQueryName = dexName === "SushiSwap" ? "getPoolsTypeUniV3SushiSwap" : "getPoolsTypeUniV3SwaprHQ";
+    const poolsQuery = getQueryBody(poolsQueryName);
+
+    // Pour le cas où targetAddress est "all", utiliser la requête sans filtre owner_in
+    const isFilteringByAddress = targetAddress.toLowerCase() !== "all";
+    const positionsQueryName = isFilteringByAddress ? "getPositionsTypeUniV3WithAddress" : "getPositionsTypeUniV3All";
+    const positionsQuery = getQueryBody(positionsQueryName);
+
+    // Si une adresse cible est spécifiée, on la met dans un tableau pour le filtre owner_in
+    const targetAddressFilter = isFilteringByAddress ? [targetAddress.toLowerCase()] : undefined;
+
     for (const pool_id of batchs_pool_ids) {
       const poolsRequestBody = {
-        query: poolsQueryBody,
+        query: poolsQuery,
         variables: {
           first,
           paramBlockNumber,
           pool_id,
         },
       };
-      // get pools info
-      const dataPools: any = await makeRequestWithRetry(client, poolsRequestBody)
-        .then((data) => {
-          return data;
-        })
-        .catch((error) => {
-          console.error(i18n.t("utils.queryDexs.errorQueryPool", { pool_id }), error);
-        });
 
-      if (dataPools.pools.length === 0) {
-        console.error(i18n.t("utils.queryDexs.errorPoolNotFound", { pool_id }));
-        //throw new Error("pool not found");
-        continue;
-      }
-      //console.log("dataPools", dataPools.pools);
-      result.data.pools.push(...dataPools.pools);
+      try {
+        // get pools info
+        const dataPools: any = await makeRequestWithRetry(client, poolsRequestBody)
+          .then((data) => {
+            return data;
+          })
+          .catch((error) => {
+            console.error(i18n.t("utils.queryDexs.errorQueryPool", { pool_id }), error);
+            throw error; // Relancer l'erreur pour être attrapée par le try/catch
+          });
 
-      const dataAllPositions = async () => {
-        let positions_id = "0";
-        const dataResult: any = { positions: [] };
-        while (true) {
-          const positionsRequestBody = {
-            query: positionsQueryBody,
-            variables: {
-              first,
-              paramBlockNumber,
-              positions_id,
-              pool_id,
-            },
-          };
-
-          const data = await makeRequestWithRetry(client, positionsRequestBody)
-            .then((data) => {
-              return data;
-            })
-            .catch((error) => {
-              console.error(i18n.t("utils.queryDexs.errorQueryPosition", { pool_id }), error);
-            });
-
-          // console.log("DEBUG data.positions", data.positions);
-          positions_id = data.positions[data.positions.length - 1]?.id ?? "0";
-          dataResult.positions.push(...data.positions);
-          if (data.positions.length < first) break;
+        if (!dataPools || !dataPools.pools || dataPools.pools.length === 0) {
+          console.error(i18n.t("utils.queryDexs.errorPoolNotFound", { pool_id }));
+          continue;
         }
 
-        return dataResult;
-      };
+        result.data.pools.push(...dataPools.pools);
 
-      const dataPositions: any = await dataAllPositions();
-      // console.log("dataPositions");
-      // console.dir(dataPositions, { depth: null });
-      if (dataPositions.positions.length === 0) {
-        console.info(i18n.t("utils.queryDexs.infoQueryPosition", { pool_id }));
+        const dataAllPositions = async () => {
+          let positions_id = "0";
+          const dataResult: any = { positions: [] };
+          while (true) {
+            const positionsRequestBody = {
+              query: positionsQuery,
+              variables: {
+                first,
+                paramBlockNumber,
+                positions_id,
+                pool_id,
+                ...(isFilteringByAddress && { targetAddress: targetAddressFilter }),
+              },
+            };
+
+            const data = await makeRequestWithRetry(client, positionsRequestBody)
+              .then((data) => {
+                return data;
+              })
+              .catch((error) => {
+                console.error(i18n.t("utils.queryDexs.errorQueryPosition", { pool_id }), error);
+                return { positions: [] }; // Retourner un objet vide en cas d'erreur plutôt que de planter
+              });
+
+            if (!data || !data.positions || data.positions.length === 0) {
+              break; // Sortir de la boucle s'il n'y a pas de positions
+            }
+
+            positions_id = data.positions[data.positions.length - 1]?.id ?? "0";
+            dataResult.positions.push(...data.positions);
+
+            // Si on filtre par adresse spécifique, on peut sortir de la boucle après la première itération
+            if (isFilteringByAddress || data.positions.length < first) break;
+          }
+
+          return dataResult;
+        };
+
+        const dataPositions: any = await dataAllPositions();
+        if (!dataPositions || !dataPositions.positions || dataPositions.positions.length === 0) {
+          console.info(i18n.t("utils.queryDexs.infoQueryPosition", { pool_id }));
+        } else {
+          result.data.positions.push(...dataPositions.positions);
+        }
+      } catch (error) {
+        console.error(`Erreur lors du traitement du pool ${pool_id}:`, error);
+        // Continuer avec le prochain pool_id plutôt que de planter complètement
       }
-
-      result.data.positions.push(...dataPositions.positions);
     }
 
-    // console.log("result");
-    // console.dir(result, { depth: null });
-    return responseformaterTypeUniV3(result, dexConfigs, dexName);
+    return responseformaterTypeUniV3(result, dexConfigs, dexName, targetAddress);
   }
 }
 
@@ -468,7 +525,8 @@ async function getRegBalancesTypeUniV3(
 function responseformaterTypeUniV3(
   data: ResponseSushiSwapV3GraphALL,
   dexConfigs: DexConfigs,
-  dexName: string
+  dexName: string,
+  targetAddress: string = "all"
 ): ResponseFunctionGetRegBalances[] {
   if (MAJ_MOCK_DATA) {
     console.info(i18n.t("utils.queryDexs.infoMajMockData"));
@@ -571,7 +629,20 @@ function responseformaterTypeUniV3(
       continue;
     }
 
-    for (const position of poolPositions) {
+    // Filtrer les positions par adresse si une adresse spécifique est fournie
+    const filteredPoolPositions =
+      targetAddress.toLowerCase() === "all"
+        ? poolPositions
+        : poolPositions.filter(
+            (position: PositionSushiSwapV3) => position.owner.toLowerCase() === targetAddress.toLowerCase()
+          );
+
+    // Si aucune position ne correspond à l'adresse cible, ignorer ce pool
+    if (filteredPoolPositions.length === 0) {
+      continue;
+    }
+
+    for (const position of filteredPoolPositions) {
       const owner = position.owner;
       const tick_lower = parseInt(position.tickLower.tickIdx);
       const tick_upper = parseInt(position.tickUpper.tickIdx);
@@ -720,15 +791,17 @@ function responseformaterTypeUniV3(
  * @param network
  * @param timestamp
  * @param mock
+ * @param targetAddress
  * @returns
  */
 export async function getRegBalancesSushiSwap(
   dexConfigs: DexConfigs,
   network: Network,
   timestamp?: number | undefined,
-  mock?: boolean
+  mock?: boolean,
+  targetAddress: string = "all"
 ): Promise<ResponseFunctionGetRegBalances[]> {
-  return await getRegBalancesTypeUniV3(dexConfigs, network, "SushiSwap", timestamp, mock);
+  return await getRegBalancesTypeUniV3(dexConfigs, network, "SushiSwap", timestamp, mock, targetAddress);
 }
 
 /**
@@ -737,13 +810,15 @@ export async function getRegBalancesSushiSwap(
  * @param network
  * @param timestamp
  * @param mock
+ * @param targetAddress
  * @returns
  */
 export async function getRegBalancesSwaprHQ(
   dexConfigs: DexConfigs,
   network: Network,
   timestamp?: number | undefined,
-  mock?: boolean
+  mock?: boolean,
+  targetAddress: string = "all"
 ): Promise<ResponseFunctionGetRegBalances[]> {
-  return await getRegBalancesTypeUniV3(dexConfigs, network, "SwaprHQ", timestamp, mock);
+  return await getRegBalancesTypeUniV3(dexConfigs, network, "SwaprHQ", timestamp, mock, targetAddress);
 }

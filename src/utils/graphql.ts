@@ -4,6 +4,7 @@ import { GraphQLClient } from "graphql-request";
 import { gql } from "graphql-tag";
 import path, { join } from "path";
 import {
+  DexConfigs,
   DexValue,
   Dexs,
   MAJ_MOCK_DATA,
@@ -13,7 +14,7 @@ import {
   networkToDexsMap,
 } from "../configs/constantes.js";
 import { i18n } from "../i18n/index.js";
-import { DexBalanceResult } from "../types/dexConfig.types.js";
+import { DexBalanceResult, ResponseFunctionGetRegBalances } from "../types/dexConfig.types.js";
 import { askUseconfirm } from "./inquirer.js";
 import { delay, getBlockNumber } from "./lib.js";
 
@@ -31,6 +32,28 @@ interface GraphQLError {
       message: string;
     }>;
   };
+}
+
+interface UniV3Position {
+  id: string;
+  owner: {
+    id: string;
+  };
+  pool: {
+    id: string;
+  };
+  token0: {
+    id: string;
+    decimals: number;
+    symbol: string;
+  };
+  token1: {
+    id: string;
+    decimals: number;
+    symbol: string;
+  };
+  amount0: string;
+  amount1: string;
 }
 
 /**
@@ -110,27 +133,46 @@ export async function getHoldersOwnRealToken(
   return data;
 }
 
-export async function getRegBalances(client: GraphQLClient, timestamp: number, network: Network): Promise<any> {
+export async function getRegBalances(
+  client: GraphQLClient,
+  timestamp: number,
+  network: Network,
+  targetAddress: string = "all"
+): Promise<{ [key: string]: string }> {
   let currentAddressWallet = "0x0000000000000000000000000000000000000000";
   let allData = {};
   const first = 1000;
   const blockNumber = await getBlockNumber(timestamp, network);
   const paramBlockNumber = { number: blockNumber };
   const balance_gt = 0;
+
+  // Si une adresse cible est spécifiée, on la met dans un tableau pour le filtre id_in
+  const targetAddressFilter = targetAddress.toLowerCase() === "all" ? [] : [targetAddress.toLowerCase()];
+
   //Boucle qui permet de récupérer toutes les adresses de wallet avec un solde supérieur à 0 (par 1000)
   while (true) {
     const query = loadGraphQLQuery("src/graphql/balancesREG.graphql");
+
+    const queryBody =
+      targetAddressFilter.length == 0
+        ? query.loc?.source.body.replace(", id_in: $targetAddress", "")
+        : query.loc?.source.body;
+
     const requestBody = {
-      query: query.loc?.source.body ?? "", // Utiliser le corps de la requête
+      query: queryBody ?? "", // Utiliser le corps de la requête
       variables: {
         first,
         paramBlockNumber,
         currentAddressWallet,
         balance_gt,
+        targetAddress: targetAddressFilter,
       },
     };
-    console.info("Info: Start client.request(query)");
+
+    // console.debug("requestBody", requestBody);
+    console.info(i18n.t("utils.graphql.infoQueryStart", { startWallet: currentAddressWallet }));
     console.time("client.request");
+
     const response = await makeRequestWithRetry(client, requestBody)
       .then((response) => {
         // Gérer la réponse
@@ -139,23 +181,28 @@ export async function getRegBalances(client: GraphQLClient, timestamp: number, n
       .catch((error) => {
         console.error(`La requête a échoué après 3 tentatives :`, error);
       });
-    console.info("Info: End client.request(query)");
+    console.info(i18n.t("utils.graphql.infoQueryEnd"));
     console.timeEnd("client.request");
 
+    // console.debug("response", response);
+
     const accounts = response.accounts;
-    allData = accounts.reduce((acc: { [x: string]: any }, account: { id: string | number; balance: any }) => {
+    allData = accounts.reduce((acc: { [x: string]: any }, account: { id: string | number; balance: string }) => {
       acc[account.id] = account.balance;
       return acc;
     }, allData);
-    if (accounts.length < first) {
+
+    // Si on filtre par adresse spécifique, on peut sortir de la boucle après la première itération
+    if (targetAddressFilter.length > 0 || accounts.length < first) {
       break;
     }
 
     currentAddressWallet = accounts[accounts.length - 1].id;
   }
+
   if (MAJ_MOCK_DATA) {
-    console.info("Info: MAJ_MOCK_DATA");
-    const path = join(__dirname, "..", "mocks", `balancesWalletsREG.json`);
+    console.info(i18n.t("utils.graphql.infoQueryMockData"));
+    const path = join(__dirname, "..", "mocks", `balancesREG.json`);
     writeFileSync(path, JSON.stringify(allData, null, 2));
   }
   return allData;
@@ -165,20 +212,14 @@ export async function getRegBalancesByDexs(
   network: Network,
   dexs: Dexs,
   timestamp?: number | undefined,
-  mock?: boolean
+  mock?: boolean,
+  targetAddress: string = "all"
 ): Promise<DexBalanceResult> {
   const result: DexBalanceResult = {};
   const first = 1000;
 
   const configs = JSON.parse(readFileSync(join(__dirname, "..", "configs", "dex.json"), "utf-8"));
 
-  // const dexs = await askChoiseCheckbox(
-  //   "Pour quelle DEX devons extraire les balances ?",
-  //   {
-  //     name: [...configs.network[network].dex],
-  //     value: [...configs.network[network].dex],
-  //   }
-  // );
   for (const dex of dexs) {
     if (networkToDexsMap[network].includes(dex)) {
       console.info(i18n.t("utils.graphql.infoDexProcessing", { dex, network }));
@@ -186,12 +227,7 @@ export async function getRegBalancesByDexs(
 
       // Obtenez la fonction appropriée pour le DEX actuel
       const getRegBalancesFunction = dexFunctionMap[dex as DexValue];
-      // console.debug(
-      //   "DEBUG getRegBalancesFunction",
-      //   getRegBalancesFunction,
-      //   typeof getRegBalancesFunction,
-      //   !(typeof getRegBalancesFunction === "function")
-      // );
+
       // Vérifiez si la fonction existe
       if (!(typeof getRegBalancesFunction === "function")) {
         console.warn(i18n.t("utils.graphql.warnNoFunctionForDex", { dex }));
@@ -199,7 +235,13 @@ export async function getRegBalancesByDexs(
         continue;
       }
 
-      result[dex] = await getRegBalancesFunction(configs.network[network][dex], network, timestamp, mock);
+      result[dex] = await getRegBalancesFunction(
+        configs.network[network][dex],
+        network,
+        timestamp,
+        mock,
+        targetAddress
+      );
       console.timeEnd(i18n.t("utils.graphql.timeQuery", { dex, network }));
     } else {
       console.error(i18n.t("utils.graphql.errorDexOrNetworkNotFound", { dex, network }));
@@ -211,7 +253,8 @@ export async function getRegBalancesByDexs(
 export async function getRegBalancesVaultIncentives(
   client: GraphQLClient,
   timestamp: number,
-  network: Network
+  network: Network,
+  targetAddress: string = "all"
 ): Promise<{ [key: string]: string }> {
   let currentAddressWallet = "0x0000000000000000000000000000000000000000";
   let allData = {};
@@ -219,19 +262,29 @@ export async function getRegBalancesVaultIncentives(
   const blockNumber = await getBlockNumber(timestamp, network);
   const paramBlockNumber = { number: blockNumber };
   const balance_gt = 0;
+
+  // Si une adresse cible est spécifiée, on la met dans un tableau pour le filtre id_in
+  const targetAddressFilter = targetAddress.toLowerCase() === "all" ? [] : [targetAddress.toLowerCase()];
+
   //Boucle qui permet de récupérer toutes les adresses de wallet avec un solde supérieur à 0 (par 1000)
   while (true) {
     const query = loadGraphQLQuery("src/graphql/balancesVaultIncentives.graphql");
+    const queryBody =
+      targetAddressFilter.length == 0
+        ? query.loc?.source.body.replace(", id_in: $targetAddress", "")
+        : query.loc?.source.body;
+
     const requestBody = {
-      query: query.loc?.source.body ?? "", // Utiliser le corps de la requête
+      query: queryBody ?? "", // Utiliser le corps de la requête
       variables: {
         first,
         paramBlockNumber,
         currentAddressWallet,
         balance_gt,
+        targetAddress: targetAddressFilter,
       },
     };
-    console.info(i18n.t("utils.graphql.infoQueryStart"));
+    console.info(i18n.t("utils.graphql.infoQueryStart"), { startWallet: currentAddressWallet });
     console.time("client.request");
     const response = await makeRequestWithRetry(client, requestBody)
       .then((response) => {
@@ -249,7 +302,9 @@ export async function getRegBalancesVaultIncentives(
       acc[account.id] = account.currentDeposit;
       return acc;
     }, allData);
-    if (accounts.length < first) {
+
+    // Si on filtre par adresse spécifique, on peut sortir de la boucle après la première itération
+    if (targetAddressFilter.length > 0 || accounts.length < first) {
       break;
     }
 
@@ -390,4 +445,109 @@ export async function makeRequestWithRetry(
     return await makeRequestWithRetry(client, query, retries - 1, delayTime * 2);
   }
   return response;
+}
+
+export async function getRegBalancesUniV3(
+  dexConfigs: DexConfigs,
+  network: Network,
+  timestamp?: number,
+  mock?: boolean,
+  targetAddress: string = "all"
+): Promise<ResponseFunctionGetRegBalances[]> {
+  let currentAddressWallet = "0x0000000000000000000000000000000000000000";
+  let allData: ResponseFunctionGetRegBalances[] = [];
+  const first = 1000;
+  const blockNumber = await getBlockNumber(timestamp, network);
+  const paramBlockNumber = { number: blockNumber };
+  const balance_gt = 0;
+
+  // Création du client GraphQL
+  const client = createGraphQLClient(dexConfigs.graphUrl);
+
+  // Si une adresse cible est spécifiée, on la met dans un tableau pour le filtre owner_in
+  const targetAddressFilter = targetAddress.toLowerCase() === "all" ? [] : [targetAddress.toLowerCase()];
+
+  //Boucle qui permet de récupérer toutes les adresses de wallet avec un solde supérieur à 0 (par 1000)
+  while (true) {
+    const query = loadGraphQLQuery("src/graphql/positionsUniV3.graphql");
+    const queryBody =
+      targetAddressFilter.length == 0
+        ? query.loc?.source.body.replace(", owner_in: $targetAddress", "")
+        : query.loc?.source.body;
+
+    const requestBody = {
+      query: queryBody ?? "", // Utiliser le corps de la requête
+      variables: {
+        first,
+        paramBlockNumber,
+        currentAddressWallet,
+        balance_gt,
+        targetAddress: targetAddressFilter,
+      },
+    };
+    console.info(i18n.t("utils.graphql.infoQueryStart"), { startWallet: currentAddressWallet });
+    console.time("client.request");
+    const response = await makeRequestWithRetry(client, requestBody)
+      .then((response) => {
+        // Gérer la réponse
+        return response;
+      })
+      .catch((error) => {
+        console.error(`La requête a échoué après 3 tentatives :`, error);
+      });
+    console.info(i18n.t("utils.graphql.infoQueryEnd"));
+    console.timeEnd("client.request");
+
+    const positions = response.positions as UniV3Position[];
+
+    // Filtrer les positions par adresse si nécessaire
+    // const filteredPositions = targetAddressFilter
+    //   ? positions.filter((position: UniV3Position) => position.owner.id.toLowerCase() === targetAddress.toLowerCase())
+    //   : positions;
+
+    // Structurer les données selon le format attendu
+    const formattedPositions: ResponseFunctionGetRegBalances[] = positions.map((position: UniV3Position) => ({
+      poolId: position.pool.id,
+      dexName: "UniV3",
+      liquidityPositions: [
+        {
+          user: {
+            id: position.owner.id,
+          },
+          liquidity: [
+            {
+              tokenId: position.token0.id,
+              tokenDecimals: position.token0.decimals,
+              tokenSymbol: position.token0.symbol,
+              tokenBalance: position.amount0,
+              equivalentREG: "0", // À calculer si nécessaire
+            },
+            {
+              tokenId: position.token1.id,
+              tokenDecimals: position.token1.decimals,
+              tokenSymbol: position.token1.symbol,
+              tokenBalance: position.amount1,
+              equivalentREG: "0", // À calculer si nécessaire
+            },
+          ],
+        },
+      ],
+    }));
+
+    allData = [...allData, ...formattedPositions];
+
+    // Si on filtre par adresse spécifique, on peut sortir de la boucle après la première itération
+    if (targetAddressFilter.length > 0 || positions.length < first) {
+      break;
+    }
+
+    currentAddressWallet = positions[positions.length - 1].id;
+  }
+
+  if (MAJ_MOCK_DATA) {
+    console.info(i18n.t("utils.graphql.infoQueryMockData"));
+    const path = join(__dirname, "..", "mocks", `balancesUniV3REG.json`);
+    writeFileSync(path, JSON.stringify(allData, null, 2));
+  }
+  return allData;
 }
