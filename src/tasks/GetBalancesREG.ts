@@ -394,7 +394,9 @@ function updateExistingWalletEntry(
   if (!wallet.sourceBalance[network]) {
     wallet.sourceBalance[network] = { walletBalance: "0", vaultIncentiveV1: "0", dexs: {} };
   }
-  wallet.sourceBalance[network].walletBalance = newBalance;
+  wallet.sourceBalance[network].walletBalance = new BigNumber(wallet.sourceBalance[network].walletBalance)
+    .plus(newBalance)
+    .toString(10);
 }
 
 /**
@@ -471,7 +473,11 @@ async function processVaultIncentives(
       }
 
       // Mise à jour du solde vaultIncentiveV1
-      wallet.sourceBalance[NETWORK.GNOSIS].vaultIncentiveV1 = vaultIncentiveV1Balance;
+      wallet.sourceBalance[NETWORK.GNOSIS].vaultIncentiveV1 = new BigNumber(
+        wallet.sourceBalance[NETWORK.GNOSIS].vaultIncentiveV1
+      )
+        .plus(vaultIncentiveV1Balance)
+        .toString(10);
 
       // Mise à jour des soldes totaux
       wallet.totalBalanceRegGnosis = new BigNumber(wallet.totalBalanceRegGnosis)
