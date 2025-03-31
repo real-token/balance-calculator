@@ -567,6 +567,11 @@ function updateDexBalance(
   wallet[balanceKey] = new BigNumber(wallet[balanceKey]).plus(balanceToAdd).toString(10);
   wallet.totalBalanceREG = new BigNumber(wallet.totalBalanceREG).plus(balanceToAdd).toString(10);
   wallet.totalBalance = new BigNumber(wallet.totalBalance).plus(balanceToAdd).toString(10);
+
+  // Ajout de cette ligne pour mettre à jour totalBalanceEquivalentREG
+  if (!isRegToken) {
+    wallet.totalBalanceEquivalentREG = new BigNumber(wallet.totalBalanceEquivalentREG).plus(balanceToAdd).toString(10);
+  }
 }
 
 /**
