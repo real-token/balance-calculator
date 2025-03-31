@@ -565,13 +565,16 @@ function updateDexBalance(
   const balanceKey = isRegToken ? `totalBalanceReg${camelCaseNetwork}` : `totalBalanceEquivalentReg${camelCaseNetwork}`;
 
   wallet[balanceKey] = new BigNumber(wallet[balanceKey]).plus(balanceToAdd).toString(10);
-  wallet.totalBalanceREG = new BigNumber(wallet.totalBalanceREG).plus(balanceToAdd).toString(10);
-  wallet.totalBalance = new BigNumber(wallet.totalBalance).plus(balanceToAdd).toString(10);
 
-  // Ajout de cette ligne pour mettre à jour totalBalanceEquivalentREG
-  if (!isRegToken) {
+  // Mise à jour conditionnelle de totalBalanceREG et totalBalanceEquivalentREG
+  if (isRegToken) {
+    wallet.totalBalanceREG = new BigNumber(wallet.totalBalanceREG).plus(balanceToAdd).toString(10);
+  } else {
     wallet.totalBalanceEquivalentREG = new BigNumber(wallet.totalBalanceEquivalentREG).plus(balanceToAdd).toString(10);
   }
+
+  // Le totalBalance inclut toujours tout
+  wallet.totalBalance = new BigNumber(wallet.totalBalance).plus(balanceToAdd).toString(10);
 }
 
 /**
