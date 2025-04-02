@@ -24,6 +24,7 @@ export type RetourREG = {
           tokenAddress: string;
           poolAddress: string;
           equivalentREG: string;
+          positionId?: number;
         }>;
       };
     };

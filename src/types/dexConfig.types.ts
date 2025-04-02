@@ -21,6 +21,8 @@ export interface DexConfig {
   graphUrl: string;
   /** Nom du fichier de données simulées pour les tests */
   mockData: string;
+  /** Type de DEX (v2 ou v3) */
+  dexType: "v2" | "v3";
 }
 
 /**
@@ -112,6 +114,7 @@ export interface UserPosition {
   user: {
     id: string;
   };
+  positionId?: number; // ID de la position NFT pour les pools de type V3
   liquidity: TokenInfo[];
 }
 

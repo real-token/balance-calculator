@@ -11,17 +11,20 @@
           "0x59f9b6b3ac4795eb34b8c64e17b2300baa7e4ebc"
         ],
         "graphUrl": "https:gateway.thegraph.com/api/[api-key]/subgraphs/id/HTxWvPGcZ5oqWLYEVtWnVJDfnai2Ud1WaABiAR72JaSJ",
-        "mockData": "honeyswap.json"
+        "mockData": "honeyswap.json",
+        "dexType": "v2"
       },
       "sushiswap": {
         "pool_id": [
           "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8",
           "0x1ace772b5bbe3c6e96f2e94df9470f4b984c2ea1",
           "0x8ed9fc5aa26342cd89cbddb0cb36dce091e5ecf6",
-          "0xc24be395a73ad1b4a612c08729f630cbb270a6cd"
+          "0xc24be395a73ad1b4a612c08729f630cbb270a6cd",
+          "0x77d7f3f81e66fd6a2f295f63bc1b4144531b0815"
         ],
         "graphUrl": "https:gateway.thegraph.com/api/[api-key]/subgraphs/id/GFvGfWBX47RNnvgwL6SjAAf2mrqrPxF91eA53F4eNegW",
-        "mockData": "sushiswap_v3.json"
+        "mockData": "sushiswap_v3.json",
+        "dexType": "v3"
       },
       "balancer": {
         "pool_id": [
@@ -33,12 +36,14 @@
           "0xf11ad03bbe64a493482c9a263995a6bec4343d6b"
         ],
         "graphUrl": "https:gateway.thegraph.com/api/[api-key]/subgraphs/id/EJezH1Cp31QkKPaBDerhVPRWsKVZLrDfzjrLqpmv6cGg",
-        "mockData": "balancer.json"
+        "mockData": "balancer.json",
+        "dexType": "v2"
       },
       "swaprhq": {
         "pool_id": ["0x4332031095bb5da682c88e7e14fc033e212f8290"],
         "graphUrl": "https:gateway.thegraph.com/api/[api-key]/subgraphs/id/AAA1vYjxwFHzbt6qKwLHNcDSASyr1J1xVViDH8gTMFMR",
-        "mockData": "swaprhq.json"
+        "mockData": "swaprhq.json",
+        "dexType": "v3"
       }
     },
     "ethereum": {},

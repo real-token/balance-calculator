@@ -507,6 +507,9 @@ async function processDexBalances(
   // Récupère les soldes des DEX pour le réseau et les DEX sélectionnés
   const balancesDexs = await getRegBalancesByDexs(network, SelectDex[network], timestamp, false, targetAddress);
 
+  // Chargement de la configuration des DEX
+  const dexConfigs = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "configs", "dex.json"), "utf-8"));
+
   // Enregistre les données de débogage si le mode DEBUG est activé
   if (MODE_DEBUG) {
     fs.writeFileSync("debugBalancesDexs.json", JSON.stringify(balancesDexs, null, 2));
@@ -514,6 +517,9 @@ async function processDexBalances(
 
   // Parcourt les DEX et leurs pools
   for (const [dex, pools] of Object.entries(balancesDexs)) {
+    // Récupère le type de DEX à partir de la configuration
+    const dexType = dexConfigs.network[network]?.[dex]?.dexType || "v2";
+
     for (const pool of pools) {
       // Pour chaque position de liquidité dans le pool
       for (const position of pool.liquidityPositions) {
@@ -521,7 +527,16 @@ async function processDexBalances(
 
         // Met à jour le solde DEX pour chaque liquidité
         for (const liquidity of position.liquidity) {
-          updateDexBalance(network, dex as DexValue, holderAddress, pool.poolId, liquidity, allBalancesWallets);
+          updateDexBalance(
+            network,
+            dex as DexValue,
+            holderAddress,
+            pool.poolId,
+            liquidity,
+            allBalancesWallets,
+            dexType,
+            position.positionId
+          );
         }
       }
     }
@@ -536,6 +551,8 @@ async function processDexBalances(
  * @param poolAddress - Adresse du pool
  * @param liquidity - Informations de liquidité
  * @param allBalancesWallets - Tableau des soldes
+ * @param dexType - Type de DEX (v2 ou v3)
+ * @param positionId - ID de la position (pour les DEX V3)
  */
 function updateDexBalance(
   network: Network,
@@ -543,7 +560,9 @@ function updateDexBalance(
   holderAddress: string,
   poolAddress: string,
   liquidity: TokenInfo,
-  allBalancesWallets: Array<RetourREG>
+  allBalancesWallets: Array<RetourREG>,
+  dexType: "v2" | "v3" = "v2", // Par défaut, on considère que c'est un DEX V2
+  positionId?: number
 ) {
   const walletIndex = allBalancesWallets.findIndex((wallet) => wallet.walletAddress === holderAddress);
 
@@ -598,10 +617,21 @@ function updateDexBalance(
     wallet.sourceBalance[network].dexs![dex] = [];
   }
 
-  // Vérifier si cette position existe déjà dans le tableau (même pool et même token)
-  const existingPositionIndex = wallet.sourceBalance[network].dexs![dex].findIndex(
-    (pos) => pos.poolAddress === poolAddress && pos.tokenAddress === liquidity.tokenId
-  );
+  // Vérifier si cette position existe déjà dans le tableau
+  // Pour les DEX V3, on vérifie aussi l'ID de position
+  const isV3 = dexType === "v3";
+
+  const existingPositionIndex = wallet.sourceBalance[network].dexs![dex].findIndex((pos) => {
+    // Condition de base: même pool et même token
+    const baseCondition = pos.poolAddress === poolAddress && pos.tokenAddress === liquidity.tokenId;
+
+    // Si c'est un DEX V3 et qu'on a un ID de position, on vérifie aussi l'ID
+    if (isV3 && positionId !== undefined) {
+      return baseCondition && pos.positionId === positionId;
+    }
+
+    return baseCondition;
+  });
 
   if (existingPositionIndex !== -1) {
     // Si la position existe, on additionne les valeurs
@@ -623,6 +653,7 @@ function updateDexBalance(
       tokenAddress: liquidity.tokenId ?? "0x0",
       poolAddress: poolAddress,
       equivalentREG: liquidity.equivalentREG ?? "0",
+      positionId: isV3 ? positionId : undefined, // Ajouter l'ID de position uniquement pour les DEX V3
     });
   }
 

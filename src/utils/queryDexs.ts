@@ -694,6 +694,7 @@ function responseformaterTypeUniV3(
       calculedPositions.push({
         owner,
         isActive,
+        id,
         token0Id: pool.token0.id,
         token1Id: pool.token1.id,
         token0Symbol: pool.token0.symbol,
@@ -746,6 +747,7 @@ function responseformaterTypeUniV3(
           user: {
             id: position.owner as string,
           },
+          positionId: position.id,
           liquidity: [
             {
               tokenId: position.token0Id as string,
