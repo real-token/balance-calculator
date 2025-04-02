@@ -598,14 +598,33 @@ function updateDexBalance(
     wallet.sourceBalance[network].dexs![dex] = [];
   }
 
-  // Le reste de la fonction reste inchangé...
-  wallet.sourceBalance[network].dexs![dex].push({
-    tokenBalance: liquidity.tokenBalance ?? "0",
-    tokenSymbol: liquidity.tokenSymbol ?? "undefined",
-    tokenAddress: liquidity.tokenId ?? "0x0",
-    poolAddress: poolAddress,
-    equivalentREG: liquidity.equivalentREG ?? "0",
-  });
+  // Vérifier si cette position existe déjà dans le tableau (même pool et même token)
+  const existingPositionIndex = wallet.sourceBalance[network].dexs![dex].findIndex(
+    (pos) => pos.poolAddress === poolAddress && pos.tokenAddress === liquidity.tokenId
+  );
+
+  if (existingPositionIndex !== -1) {
+    // Si la position existe, on additionne les valeurs
+    const existingPosition = wallet.sourceBalance[network].dexs![dex][existingPositionIndex];
+
+    // Additionner les balances
+    existingPosition.tokenBalance = new BigNumber(existingPosition.tokenBalance)
+      .plus(liquidity.tokenBalance ?? "0")
+      .toString(10);
+
+    existingPosition.equivalentREG = new BigNumber(existingPosition.equivalentREG)
+      .plus(liquidity.equivalentREG ?? "0")
+      .toString(10);
+  } else {
+    // Si la position n'existe pas, on l'ajoute au tableau
+    wallet.sourceBalance[network].dexs![dex].push({
+      tokenBalance: liquidity.tokenBalance ?? "0",
+      tokenSymbol: liquidity.tokenSymbol ?? "undefined",
+      tokenAddress: liquidity.tokenId ?? "0x0",
+      poolAddress: poolAddress,
+      equivalentREG: liquidity.equivalentREG ?? "0",
+    });
+  }
 
   const isRegToken = liquidity.tokenId === TOKEN_ADDRESS.REG;
   const balanceToAdd = isRegToken ? liquidity.tokenBalance : liquidity.equivalentREG;
