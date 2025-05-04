@@ -60,7 +60,7 @@ export const optionsModifiers: NormalizeOptions = {
       [4, 2],
     ],
   },
-  boostBalancesIncentivesVault: 2, // 2 vault locked, 1 vault unlocked
+  boostBalancesIncentivesVault: 1, // 2 vault locked, 1 vault unlocked
   boostBalancesWallet: 1,
   balanceKey: "totalBalance",
   zeroforced: 1, // Si le pouvoir de vote est inférieur à x, il sera mis à zéro

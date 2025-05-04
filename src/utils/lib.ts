@@ -297,9 +297,19 @@ export async function getTempJsonFiles(dir: string): Promise<string[]> {
   return files.filter((file) => path.extname(file) === ".json" && file.endsWith("_tmp.json"));
 }
 
-export async function getJsonFiles(dir: string): Promise<string[]> {
+/**
+ * Obtient la liste des fichiers JSON dans un répertoire donné.
+ * @param {string} dir - Le répertoire dans lequel rechercher les fichiers.
+ * @param {string} [filter] optionnel - Le filtre à appliquer aux noms de fichiers. Exemples de filtres : "*.json" pour tous les fichiers JSON, "balancesREG" pour les fichiers dont le nom commence par "balancesREG".
+ * @returns {Promise<string[]>} - La liste des noms de fichiers JSON.
+ */
+export async function getJsonFiles(dir: string, filter?: string): Promise<string[]> {
   const files = await readdir(dir);
-  return files.filter((file) => path.extname(file) === ".json" && file.endsWith(".json"));
+  return files
+    .filter(
+      (file) => path.extname(file) === ".json" && file.endsWith(".json") && (filter ? file.includes(filter) : true)
+    )
+    .sort((a, b) => b.localeCompare(a));
 }
 
 export function formatDate(date: Date, timeZone: string): string {

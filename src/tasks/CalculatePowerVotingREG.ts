@@ -16,17 +16,17 @@ const __dirname = new URL(".", import.meta.url).pathname;
 export async function taskCalculatePowerVotingREG(): Promise<string> {
   // Définition du chemin du dossier contenant les fichiers de données
   const dirPath = path.join(__dirname, "..", "..", "outDatas");
-  const jsonFiles = await getJsonFiles(dirPath);
+  const jsonFilesBalancesREG = await getJsonFiles(dirPath, "balancesREG_");
 
-  if (jsonFiles.length === 0) {
+  if (jsonFilesBalancesREG.length === 0) {
     console.error(i18n.t("tasks.calculatePowerVoting.noJsonFiles"));
     return "";
   }
 
   // Sélection du fichier JSON d'entrée
   const jsonFileName = await askChoiseListe(i18n.t("tasks.calculatePowerVoting.askDataBalancesRegSnapshotJsonFile"), {
-    value: jsonFiles,
-    name: jsonFiles,
+    value: jsonFilesBalancesREG,
+    name: jsonFilesBalancesREG,
   });
   const jsonFilePath = path.join(dirPath, jsonFileName);
   //console.debug("Chemin du fichier JSON d'entrée:", jsonFilePath);
@@ -64,9 +64,16 @@ export async function taskCalculatePowerVotingREG(): Promise<string> {
   const selectedPowerVotingModel: PowerVotingModel =
     powerVotingModels[selectedPowerVotingModelName as keyof typeof powerVotingModels];
 
+  const jsonFilesPowerVotingREG = await getJsonFiles(dirPath, "powerVotingREG");
+
+  if (jsonFilesPowerVotingREG.length === 0) {
+    console.error(i18n.t("tasks.calculatePowerVoting.noJsonFiles"));
+    return "";
+  }
+
   const previousDataPowerVotingJsonFileName = await askChoiseListe(
     i18n.t("tasks.calculatePowerVoting.askPreviousDataPowerVotingJsonFile"),
-    { value: [...jsonFiles, "none"], name: [...jsonFiles, "None"] }
+    { value: [...jsonFilesPowerVotingREG, "none"], name: [...jsonFilesPowerVotingREG, "None"] }
   );
 
   let previousDataPowerVotingJsonData: {
