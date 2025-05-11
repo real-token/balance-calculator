@@ -114,8 +114,17 @@ export interface UserPosition {
   user: {
     id: string;
   };
-  positionId?: number; // ID de la position NFT pour les pools de type V3
   liquidity: TokenInfo[];
+  positionId?: number;
+  // Champs spécifiques pour les positions V3
+  isActive?: boolean;
+  tickLower?: number;
+  tickUpper?: number;
+  currentTick?: number;
+  currentPrice?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  liquidityAmount?: string;
 }
 
 export interface ResponseFunctionGetRegBalances {
