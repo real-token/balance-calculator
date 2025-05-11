@@ -648,177 +648,64 @@ function updateDexBalance(
     wallet.sourceBalance[network].dexs![dex] = [];
   }
 
+  // Vérifier si cette position existe déjà dans le tableau
+  // Pour les DEX V3, on vérifie aussi l'ID de position
   const isV3 = dexType === "v3";
+
+  const existingPositionIndex = wallet.sourceBalance[network].dexs![dex].findIndex((pos) => {
+    // Condition de base: même pool et même token
+    const baseCondition = pos.poolAddress === poolAddress && pos.tokenAddress === liquidity.tokenId;
+
+    // Si c'est un DEX V3 et qu'on a un ID de position, on vérifie aussi l'ID
+    if (isV3 && positionId !== undefined) {
+      return baseCondition && pos.positionId === positionId;
+    }
+
+    return baseCondition;
+  });
+
+  if (existingPositionIndex !== -1) {
+    // Si la position existe, on additionne les valeurs
+    const existingPosition = wallet.sourceBalance[network].dexs![dex][existingPositionIndex];
+
+    // Additionner les balances
+    existingPosition.tokenBalance = new BigNumber(existingPosition.tokenBalance)
+      .plus(liquidity.tokenBalance ?? "0")
+      .toString(10);
+
+    existingPosition.equivalentREG = new BigNumber(existingPosition.equivalentREG)
+      .plus(liquidity.equivalentREG ?? "0")
+      .toString(10);
+  } else {
+    // Si la position n'existe pas, on l'ajoute au tableau
+    wallet.sourceBalance[network].dexs![dex].push({
+      tokenBalance: liquidity.tokenBalance ?? "0",
+      tokenSymbol: liquidity.tokenSymbol ?? "undefined",
+      tokenDecimals: liquidity.tokenDecimals ?? 18,
+      tokenAddress: liquidity.tokenId ?? "0x0",
+      poolAddress: poolAddress,
+      equivalentREG: liquidity.equivalentREG ?? "0",
+      positionId: isV3 ? positionId : undefined, // Ajouter l'ID de position uniquement pour les DEX V3
+      ...(isV3 && v3Data ? v3Data : {}),
+    });
+  }
+
   const isRegToken = liquidity.tokenId === TOKEN_ADDRESS.REG;
   const balanceToAdd = isRegToken ? liquidity.tokenBalance : liquidity.equivalentREG;
   const camelCaseNetwork = network.charAt(0).toUpperCase() + network.slice(1);
   const balanceKey = isRegToken ? `totalBalanceReg${camelCaseNetwork}` : `totalBalanceEquivalentReg${camelCaseNetwork}`;
 
-  // Pour les DEX V3, nous avons besoin d'une approche spéciale
-  if (isV3 && positionId !== undefined) {
-    // Mise à jour des soldes globaux (totalBalanceReg*, totalBalanceEquivalentReg*, etc.)
-    wallet[balanceKey] = new BigNumber(wallet[balanceKey]).plus(balanceToAdd).toString(10);
-    if (isRegToken) {
-      wallet.totalBalanceREG = new BigNumber(wallet.totalBalanceREG).plus(balanceToAdd).toString(10);
-    } else {
-      wallet.totalBalanceEquivalentREG = new BigNumber(wallet.totalBalanceEquivalentREG)
-        .plus(balanceToAdd)
-        .toString(10);
-    }
-    wallet.totalBalance = new BigNumber(wallet.totalBalance).plus(balanceToAdd).toString(10);
+  wallet[balanceKey] = new BigNumber(wallet[balanceKey]).plus(balanceToAdd).toString(10);
 
-    // Pour les DEX V3, nous devons vérifier si la position existe déjà
-    let positionExists = false;
-    for (let i = 0; i < wallet.sourceBalance[network].dexs![dex].length; i++) {
-      const position = wallet.sourceBalance[network].dexs![dex][i];
-      if (position.positionId === positionId && position.tokenAddress === liquidity.tokenId) {
-        // Si on trouve une position avec le même ID et le même token, on met à jour la balance
-        positionExists = true;
-        position.tokenBalance = liquidity.tokenBalance || "0";
-        position.equivalentREG = liquidity.equivalentREG || "0";
-
-        // Si nous avons des données supplémentaires V3, mettons à jour les champs spécifiques
-        if (v3Data) {
-          position.isActive = v3Data.isActive;
-          position.tickLower = v3Data.tickLower;
-          position.tickUpper = v3Data.tickUpper;
-          position.currentTick = v3Data.currentTick;
-          position.currentPrice = v3Data.currentPrice;
-          position.minPrice = v3Data.minPrice;
-          position.maxPrice = v3Data.maxPrice;
-          position.liquidityAmount = v3Data.liquidityAmount;
-          position.scaleFactor = v3Data.scaleFactor;
-          position.token0Decimals = v3Data.token0Decimals;
-          position.token1Decimals = v3Data.token1Decimals;
-          position.feeTier = v3Data.feeTier;
-        }
-        break;
-      }
-    }
-
-    // Si la position n'existe pas encore, on l'ajoute
-    if (!positionExists) {
-      const newPosition: any = {
-        tokenBalance: liquidity.tokenBalance ?? "0",
-        tokenSymbol: liquidity.tokenSymbol ?? "undefined",
-        tokenAddress: liquidity.tokenId ?? "0x0",
-        poolAddress: poolAddress,
-        equivalentREG: liquidity.equivalentREG ?? "0",
-        positionId: positionId,
-      };
-
-      // Ajout des données spécifiques V3 si présentes
-      if (v3Data) {
-        newPosition.isActive = v3Data.isActive;
-        newPosition.tickLower = v3Data.tickLower;
-        newPosition.tickUpper = v3Data.tickUpper;
-        newPosition.currentTick = v3Data.currentTick;
-        newPosition.currentPrice = v3Data.currentPrice;
-        newPosition.minPrice = v3Data.minPrice;
-        newPosition.maxPrice = v3Data.maxPrice;
-        newPosition.liquidityAmount = v3Data.liquidityAmount;
-        newPosition.scaleFactor = v3Data.scaleFactor;
-        newPosition.token0Decimals = v3Data.token0Decimals;
-        newPosition.token1Decimals = v3Data.token1Decimals;
-        newPosition.feeTier = v3Data.feeTier;
-
-        // Calcul du scaleFactor si absent mais que nous avons les prix et ticks
-        if (!v3Data.scaleFactor && v3Data.currentTick !== undefined && v3Data.currentPrice) {
-          // Pour être cohérent avec queryDexs.ts et graphql.ts
-          // Si nous avons les décimales des tokens, calculer scaleFactor en fonction des décimales
-          if (v3Data.token0Decimals !== undefined && v3Data.token1Decimals !== undefined) {
-            // Dans le cas d'une paire standard REG/USDC (token0 avec 18 décimales, token1 avec 6 décimales)
-            // le scaleFactor est 1.0
-            if (v3Data.token0Decimals === 18 && v3Data.token1Decimals === 6) {
-              newPosition.scaleFactor = 1.0;
-            } else {
-              // Pour d'autres combinaisons de décimales, le scaleFactor est 1.0
-              // car l'ajustement est déjà fait dans le calcul du prix ajusté
-              newPosition.scaleFactor = 1.0;
-            }
-          } else {
-            // Si nous n'avons pas les décimales, recalculer le scaleFactor à partir des prix et ticks
-            const rawPrice = Math.pow(1.0001, v3Data.currentTick);
-            newPosition.scaleFactor = new BigNumber(v3Data.currentPrice).dividedBy(rawPrice).toNumber();
-
-            // Si le scaleFactor calculé est trop extrême, utiliser la valeur par défaut
-            if (
-              newPosition.scaleFactor <= 0 ||
-              newPosition.scaleFactor > 1000000000000 ||
-              newPosition.scaleFactor < 0.000000000001
-            ) {
-              console.warn(
-                `ScaleFactor anormal (${newPosition.scaleFactor}) détecté pour la position ${positionId}, utilisation de la valeur par défaut (1.0)`
-              );
-              newPosition.scaleFactor = 1.0;
-            }
-          }
-
-          // Vérification de cohérence entre ticks et prix
-          if (v3Data.tickLower !== undefined && v3Data.minPrice) {
-            const rawMinPrice = Math.pow(1.0001, v3Data.tickLower);
-            const calculatedMinPrice = new BigNumber(rawMinPrice).times(newPosition.scaleFactor).toNumber();
-            if (Math.abs(calculatedMinPrice - v3Data.minPrice) > 0.01) {
-              console.warn(
-                `Incohérence détectée: minPrice ${v3Data.minPrice} ne correspond pas au tickLower ${v3Data.tickLower} (calculé: ${calculatedMinPrice})`
-              );
-            }
-          }
-
-          if (v3Data.tickUpper !== undefined && v3Data.maxPrice) {
-            const rawMaxPrice = Math.pow(1.0001, v3Data.tickUpper);
-            const calculatedMaxPrice = new BigNumber(rawMaxPrice).times(newPosition.scaleFactor).toNumber();
-            if (Math.abs(calculatedMaxPrice - v3Data.maxPrice) > 0.01) {
-              console.warn(
-                `Incohérence détectée: maxPrice ${v3Data.maxPrice} ne correspond pas au tickUpper ${v3Data.tickUpper} (calculé: ${calculatedMaxPrice})`
-              );
-            }
-          }
-        }
-      }
-
-      wallet.sourceBalance[network].dexs![dex].push(newPosition);
-    }
+  // Mise à jour conditionnelle de totalBalanceREG et totalBalanceEquivalentREG
+  if (isRegToken) {
+    wallet.totalBalanceREG = new BigNumber(wallet.totalBalanceREG).plus(balanceToAdd).toString(10);
   } else {
-    // Pour les DEX V2, on garde la logique existante
-    const existingPositionIndex = wallet.sourceBalance[network].dexs![dex].findIndex(
-      (pos) => pos.poolAddress === poolAddress && pos.tokenAddress === liquidity.tokenId
-    );
-
-    if (existingPositionIndex !== -1) {
-      // Si la position existe, on additionne les valeurs
-      const existingPosition = wallet.sourceBalance[network].dexs![dex][existingPositionIndex];
-
-      // Additionner les balances
-      existingPosition.tokenBalance = new BigNumber(existingPosition.tokenBalance)
-        .plus(liquidity.tokenBalance ?? "0")
-        .toString(10);
-
-      existingPosition.equivalentREG = new BigNumber(existingPosition.equivalentREG)
-        .plus(liquidity.equivalentREG ?? "0")
-        .toString(10);
-    } else {
-      // Si la position n'existe pas, on l'ajoute au tableau
-      wallet.sourceBalance[network].dexs![dex].push({
-        tokenBalance: liquidity.tokenBalance ?? "0",
-        tokenSymbol: liquidity.tokenSymbol ?? "undefined",
-        tokenAddress: liquidity.tokenId ?? "0x0",
-        poolAddress: poolAddress,
-        equivalentREG: liquidity.equivalentREG ?? "0",
-      });
-    }
-
-    // Mise à jour des soldes globaux
-    wallet[balanceKey] = new BigNumber(wallet[balanceKey]).plus(balanceToAdd).toString(10);
-    if (isRegToken) {
-      wallet.totalBalanceREG = new BigNumber(wallet.totalBalanceREG).plus(balanceToAdd).toString(10);
-    } else {
-      wallet.totalBalanceEquivalentREG = new BigNumber(wallet.totalBalanceEquivalentREG)
-        .plus(balanceToAdd)
-        .toString(10);
-    }
-    wallet.totalBalance = new BigNumber(wallet.totalBalance).plus(balanceToAdd).toString(10);
+    wallet.totalBalanceEquivalentREG = new BigNumber(wallet.totalBalanceEquivalentREG).plus(balanceToAdd).toString(10);
   }
+
+  // Le totalBalance inclut toujours tout
+  wallet.totalBalance = new BigNumber(wallet.totalBalance).plus(balanceToAdd).toString(10);
 }
 
 /**

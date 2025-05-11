@@ -21,6 +21,7 @@ export type RetourREG = {
         [key in DEX]?: Array<{
           tokenBalance: string;
           tokenSymbol: string;
+          tokenDecimals: number;
           tokenAddress: string;
           poolAddress: string;
           equivalentREG: string;

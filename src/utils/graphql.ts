@@ -220,6 +220,7 @@ export async function getRegBalancesByDexs(
 
   const configs = JSON.parse(readFileSync(join(__dirname, "..", "configs", "dex.json"), "utf-8"));
 
+  // Boucle sur les DEXs pour calculer les balances de chaque DEX
   for (const dex of dexs) {
     if (networkToDexsMap[network].includes(dex)) {
       console.info(i18n.t("utils.graphql.infoDexProcessing", { dex, network }));
