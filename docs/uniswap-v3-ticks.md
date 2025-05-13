@@ -19,83 +19,96 @@ Où:
 - `1.0001` est la base (chaque tick représente une variation de prix de 0.01%)
 - `token0Decimals` et `token1Decimals` sont les nombres de décimales des tokens dans la paire
 
-## Exemple: REG/USDC
-
-Pour la paire REG/USDC:
-
-- REG (token0) a généralement 18 décimales
-- USDC (token1) a généralement 6 décimales
-- La différence est donc (6 - 18) = -12
-
-Donc:
-
-```
-prixAjusté = 1.0001^tick / 10^(-12) = 1.0001^tick * 10^12
-```
-
-Mais comme notre application utilise des prix en "token1 par token0" (USDC par REG), nous ajustons la formule:
-
-```
-prixAjusté = 1.0001^tick / 10^(6 - 18) = 1.0001^tick * 10^12
-```
-
-## Exemples de Calculs
-
-### Exemple 1: Tick = 0
-
-- Prix brut = 1.0001^0 = 1
-- Prix ajusté = 1 \* 10^12 / 10^12 = 1 USDC par REG
-
-### Exemple 2: Tick = 6932
-
-- Prix brut = 1.0001^6932 ≈ 1.5
-- Prix ajusté = 1.5 \* 10^12 / 10^12 = 1.5 USDC par REG
-
-### Exemple 3: Tick = -46052
-
-- Prix brut = 1.0001^(-46052) ≈ 0.01
-- Prix ajusté = 0.01 \* 10^12 / 10^12 = 0.01 USDC par REG
-
 ## Implémentation dans l'Application
 
-Dans notre application, nous utilisons le facteur d'échelle `scaleFactor` pour faciliter la conversion entre ticks et prix:
+Dans notre application, nous utilisons la fonction `tick_to_price` pour convertir un tick en prix brut:
 
 ```javascript
 const TICK_BASE = 1.0001;
 function tick_to_price(tick) {
   return TICK_BASE ** tick;
 }
-
-// Calcul du prix ajusté
-const current_price = tick_to_price(currentTick);
-const adjusted_current_price = current_price / 10 ** (token1Decimals - token0Decimals);
-
-// Le facteur d'échelle est simplement l'inverse de l'ajustement des décimales
-const scaleFactor = 1 / 10 ** (token1Decimals - token0Decimals);
 ```
 
-Pour la paire REG/USDC, avec REG à 18 décimales et USDC à 6 décimales, le `scaleFactor` est égal à 1.0, car la différence des décimales a déjà été prise en compte dans le calcul du prix ajusté.
+Ensuite, nous calculons le prix ajusté en tenant compte de la différence de décimales entre les tokens:
 
-## Utilisation dans GraphQL
+```javascript
+const current_price = tick_to_price(currentTick);
+const adjusted_current_price = current_price / 10 ** (decimals1 - decimals0);
+```
 
-Notre application récupère les données des positions via GraphQL, qui inclut:
+## Calcul des Prix Minimums et Maximums
 
-- `currentTick`: le tick actuel du pool
-- `tickLower`: le tick inférieur de la position
-- `tickUpper`: le tick supérieur de la position
+Pour une position de liquidité, nous calculons le prix minimum et maximum correspondant aux ticks inférieur et supérieur:
 
-Ces valeurs permettent de calculer les prix correspondants à l'aide des formules ci-dessus.
+```javascript
+minPrice: tick_to_price(tick_lower) / 10 ** (decimals1 - decimals0),
+maxPrice: tick_to_price(tick_upper) / 10 ** (decimals1 - decimals0),
+```
+
+## Exemple: REG/USDC
+
+Pour une position dans la paire REG/USDC comme celle dans notre exemple de données:
+
+- REG (token0) a 18 décimales
+- USDC (token1) a 6 décimales
+- La différence est donc (6 - 18) = -12
+
+Prenons un exemple concret d'une position de notre jeu de données:
+
+- `currentTick`: -283600
+- `tickLower`: -277200
+- `tickUpper`: -263200
+
+### Calcul du prix actuel
+
+```
+prixBrut = 1.0001^(-283600) ≈ 0.00000048308581099
+prixAjusté = 0.00000048308581099 / 10^(6-18) = 0.00000048308581099 * 10^12 ≈ 0.48308581099
+```
+
+Ce qui correspond bien à la valeur "currentPrice": "0.48308581099479686" dans nos données.
+
+### Calcul du prix minimum (tickLower)
+
+```
+prixBrut = 1.0001^(-277200) ≈ 0.00000091613368882
+prixAjusté = 0.00000091613368882 / 10^(6-18) = 0.00000091613368882 * 10^12 ≈ 0.91613368882
+```
+
+Ce qui correspond à la valeur "minPrice": 0.91613368882232 dans nos données.
+
+### Calcul du prix maximum (tickUpper)
+
+```
+prixBrut = 1.0001^(-263200) ≈ 0.0000037148452736
+prixAjusté = 0.0000037148452736 / 10^(6-18) = 0.0000037148452736 * 10^12 ≈ 3.7148452736
+```
+
+Ce qui correspond à la valeur "maxPrice": 3.7148452736021116 dans nos données.
+
+## Calcul des Montants de Tokens dans une Position
+
+Notre application calcule également les montants de chaque token dans une position en fonction du tick actuel:
+
+- Si le tick actuel est inférieur au tick minimum (`currentTick < tickLower`), la position est entièrement en token0
+- Si le tick actuel est supérieur au tick maximum (`currentTick > tickUpper`), la position est entièrement en token1
+- Si le tick actuel est entre les deux (`tickLower <= currentTick <= tickUpper`), la position contient les deux tokens
+
+La fonction `getPositionAmount` dans le code implémente ces calculs en utilisant les formules d'Uniswap V3 basées sur les racines carrées des prix.
 
 ## Vérification des Calculs
 
-Pour vérifier que les ticks correspondent bien aux prix, vous pouvez utiliser:
+Pour vérifier qu'un prix correspond bien à un tick, ou inversement:
 
 ```javascript
-// Vérifier que le prix correspond au tick
-const price = 1.0;
-const tick = Math.log(price) / Math.log(1.0001); // tick ≈ 0
+// Conversion de tick à prix
+const tick = -283600;
+const price = 1.0001 ** tick; // ≈ 0.00000048308581099
+const adjustedPrice = price * 10 ** 12; // ≈ 0.48308581099
 
-// Vérifier que le tick correspond au prix
-const tick = 0;
-const price = 1.0001 ** tick; // price = 1.0
+// Conversion de prix à tick
+const adjustedPrice = 0.48308581099;
+const price = adjustedPrice / 10 ** 12; // ≈ 0.00000048308581099
+const tick = Math.log(price) / Math.log(1.0001); // ≈ -283600
 ```

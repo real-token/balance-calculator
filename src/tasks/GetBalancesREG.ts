@@ -589,7 +589,7 @@ function updateDexBalance(
     minPrice?: number;
     maxPrice?: number;
     liquidityAmount?: string;
-    scaleFactor?: number; // Facteur d'échelle pour la conversion tick/prix
+    scaleFactor?: number; // Facteur d'échelle pour la conversion tick/prix //TODO: a vérifier si nous en avons besoin
     token0Decimals?: number; // Décimales du premier token (généralement REG)
     token1Decimals?: number; // Décimales du deuxième token (généralement USDC)
     feeTier?: number; // Niveau de frais (0.05%, 0.3%, 1%, etc.)

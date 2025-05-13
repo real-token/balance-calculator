@@ -135,5 +135,13 @@ export default {
   },
   modifiers: {
     infoApplyModifier: "Start of {{modifier}}",
+    warnNoOptions: "No options passed to the modifier {{modifier}}",
+    errorDataBalanceNotComplete: "The data balance is not complete for a v3 position: {{balanceID}}",
+    warnV3ConfigPartialCorrectConfig: "The v3 DEX configuration is partially correct",
+    errorV3Config: "The v3 DEX configuration is incorrect: {{config}}",
+  },
+  boostV3Pools: {
+    errorInvalidBoostParams: "The v3 boost parameters are incorrect for the mode >>{{modeName}}<<",
+    errorInvalidParams: "The v3 configuration parameter {{paramsName}} is incorrect: >>{{paramsValue}}<<",
   },
 };

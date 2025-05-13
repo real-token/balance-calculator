@@ -427,7 +427,9 @@ sushiswap: {
     // Paramètres communs aux deux modes
     activeBoost: 1.5,           // Multiplicateur de base pour positions actives
     inactiveBoost: 0.5,         // Multiplicateur pour positions inactives
-    rangeWidthFactor: 10000,    // Facteur largeur de plage (favorise plages étroites)
+    rangeWidthFactor: 10000,    // Facteur largeur de plage :
+    // valeur en tick, si positif favorise les plages large en fixant le nombre de tick minimum de la plage pour avoir le boost augmenter
+    // si négatif favorise les plages étroites en fixant le nombre de tick maximum de la plage pour avoir le boost max
 
     // Paramètres spécifiques au mode "centered"
     priceRangeMode: "exponential", // Type de formule pour le centrage

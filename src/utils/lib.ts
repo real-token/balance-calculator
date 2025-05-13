@@ -6,6 +6,7 @@ import Moralis from "moralis";
 import path from "path";
 import util from "util";
 import {
+  MODE_DEBUG,
   NETWORK,
   NETWORK_ID,
   Network,
@@ -342,4 +343,32 @@ export function extractBaseName(result: string): string {
 export function logInFile(filePath: string, data: string, append: boolean = false) {
   const mode = append ? "a" : "w";
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2), { mode });
+}
+
+/**
+ *  Fonction de log dans le terminal
+ */
+export function logInTerminal(type: "info" | "debug" | "error", data: any[]) {
+  const Reset = "\x1b[0m";
+  const Red = "\x1b[31m";
+  const Green = "\x1b[32m";
+  const Yellow = "\x1b[33m";
+  const Blue = "\x1b[34m";
+  const Purple = "\x1b[35m";
+  const Cyan = "\x1b[36m";
+  const Gray = "\x1b[37m";
+  const White = "\x1b[97m";
+  switch (type) {
+    case "info":
+      console.info(`${Green}[INFO]${Reset}`, data);
+      break;
+    case "debug":
+      if (MODE_DEBUG) {
+        console.debug(`${Purple}[DEBUG]${Reset}`, data);
+      }
+      break;
+    case "error":
+      console.error(`${Red}[ERROR]${Reset}`, data);
+      break;
+  }
 }

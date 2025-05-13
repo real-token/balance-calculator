@@ -137,5 +137,13 @@ export default {
   },
   modifiers: {
     infoApplyModifier: "Début de {{modifier}}",
+    warnNoOptions: "Aucune options passer au modifier {{modifier}}",
+    errorDataBalanceNotComplete: "Les données de la balance ne sont pas complètes pour une position v3: {{balanceID}}",
+    warnV3ConfigPartialCorrectConfig: "La configuration du DEX v3 est partiellement correcte",
+    errorV3Config: "La configuration du DEX est incorrecte: {{config}}",
+  },
+  boostV3Pools: {
+    errorInvalidBoostParams: "Les paramètres de boost pools v3 sont incorrects pour le mode >>{{modeName}}<<",
+    errorInvalidParams: "Le paramètre {{paramsName}} de la configuration v3 est incorrect: >>{{paramsValue}}<<",
   },
 };

@@ -42,7 +42,7 @@ const excludeAddressREG = [
  */
 export const optionsModifiers: NormalizeOptions = {
   excludeAddresses: excludeAddressREG,
-  boosBalancesDexs: {
+  boostBalancesDexs: {
     sushiswap: {
       default: {
         REG: 4, // Multiplicateur de base pour REG
@@ -50,28 +50,20 @@ export const optionsModifiers: NormalizeOptions = {
       },
       // Configuration spécifique pour les pools v3 - Mode centrage (comportement historique amélioré)
       v3: {
-        priceRangeMode: "linear",
-        // boostMode: "centered",
-        // activeBoost: 0,
-        // inactiveBoost: 0,
-        // centerBoost: 1,
-        // edgeBoost: 1,
-        // exponent: 1,
-        // rangeWidthFactor: 10000,
-        // Exemple d'une configuration avancée (en commentaire)
-        // activeBoost: 1.5,
-        // inactiveBoost: 0.5,
-        // priceRangeMode: "exponential",
-        // centerBoost: 3.0,
-        // edgeBoost: 0.8,
-        // exponent: 2,
-        // rangeWidthFactor: 10000,
-        // steps: [
-        //   [0.2, 1.0],
-        //   [0.5, 2.0],
-        //   [0.8, 3.0],
-        //   [1.0, 4.0],
-        // ],
+        sourceValue: "priceDecimals",
+        priceRangeMode: "step",
+        boostMode: "centered",
+        //activeBoost: 2,
+        inactiveBoost: 1,
+        centerBoost: 5,
+        edgeBoost: 1,
+        //exponent: 3,
+        steps: [
+          [0.2, 1.5], // Si centrage ≥ 20%, boost = 1.5
+          [0.5, 3.0], // Si centrage ≥ 50%, boost = 3.0
+          [0.8, 4.0], // Si centrage ≥ 80%, boost = 4.0
+          [1.0, 5.0], // Si centrage = 100%, boost = 5.0
+        ],
       },
     },
 
@@ -89,24 +81,10 @@ export const optionsModifiers: NormalizeOptions = {
         REG: 4,
         "*": 2,
       },
-      // Configuration spécifique pour les pools v3 - Mode proximité (nouveau)
+      // Configuration spécifique pour les pools v3
       v3: {
-        boostMode: "proximity", // Mode basé sur la proximité des liquidités avec le prix
-        activeBoost: 1.5, // Boost de base pour positions actives
-        inactiveBoost: 0.5, // Boost de base pour positions inactives
-        // Paramètres spécifiques au mode proximity
-        proximityMode: "exponential", // Type de décroissance
-        maxProximityBoost: 3.0, // Boost maximal au prix actuel
-        minProximityBoost: 0.8, // Boost minimal loin du prix
-        decayFactor: 0.3, // Vitesse de décroissance (0.1 = rapide, 1.0 = lente)
-        numSlices: 100, // Nombre de tranches pour la simulation
-        // Paramètres communs aux deux modes
-        rangeWidthFactor: 5000, // Favorise les plages étroites
-        // Paramètres pour la compatibilité avec le mode centered (non utilisés en mode proximity)
-        priceRangeMode: "exponential",
-        centerBoost: 4.0,
-        edgeBoost: 1.0,
-        exponent: 2,
+        sourceValue: "tick",
+        priceRangeMode: "none",
       },
     },
   },

@@ -18,7 +18,7 @@ export interface InputModelData {
  */
 export interface DexBoostConfig {
   // Configuration de base pour tous les types de DEX
-  default?: {
+  default: {
     [tokenSymbol: string]: number; // Multiplicateur pour chaque symbole de token
   };
 
@@ -34,7 +34,7 @@ export interface NormalizeOptions {
   excludeAddresses?: string[];
 
   // Nouvelle structure pour les boosts de DEX
-  boosBalancesDexs?: {
+  boostBalancesDexs?: {
     [key in DexValue]?: DexBoostConfig | [string[], number[]]; // Support pour l'ancien format pour compatibilité
   };
 

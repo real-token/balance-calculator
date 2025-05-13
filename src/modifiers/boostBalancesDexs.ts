@@ -3,7 +3,8 @@ import { DexValue, Network } from "../configs/constantes.js";
 import { i18n } from "../i18n/index.js";
 import { SourceBalancesREG } from "../types/REG.types.js";
 import { DexBoostConfig, NormalizeOptions } from "../types/inputModles.types.js";
-import { V3BoostParams, applyV3Boost } from "../utils/v3BoostCalculator.js";
+import { logInTerminal } from "../utils/lib.js";
+import { applyV3Boost } from "../utils/v3BoostCalculator.js";
 
 /**
  * Modifie les balances des DEX en fonction des options spécifiées
@@ -11,14 +12,15 @@ import { V3BoostParams, applyV3Boost } from "../utils/v3BoostCalculator.js";
  * @param options Options de boost des balances des DEX
  * @returns Données modifiées de type SourceBalancesREG[]
  */
-export function boosBalancesDexs(
+export function boostBalancesDexs(
   data: SourceBalancesREG[],
-  options: NormalizeOptions["boosBalancesDexs"]
+  options: NormalizeOptions["boostBalancesDexs"]
 ): SourceBalancesREG[] {
   console.info(i18n.t("modifiers.infoApplyModifier", { modifier: "boosBalancesDexs" }), options);
 
   // Si aucune option de boost n'est fournie, retourner les données inchangées
   if (!options || Object.keys(options).length === 0) {
+    console.warn(i18n.t("modifiers.warnNoOptions", { modifier: "boosBalancesDexs" }));
     return data;
   }
 
@@ -43,68 +45,65 @@ export function boosBalancesDexs(
           let newEquivalentREG = balance.equivalentREG;
 
           // Déterminer si c'est une position v3 (présence des champs spécifiques v3)
+          const isV3ConfigValide = isV3Config(dexOptions);
+
           const isV3Position =
             balance.isActive !== undefined &&
-            balance.tickLower !== undefined &&
-            balance.tickUpper !== undefined &&
-            balance.currentTick !== undefined;
+            isV3ConfigValide &&
+            ((balance.tickLower !== undefined &&
+              balance.tickUpper !== undefined &&
+              balance.currentTick !== undefined) ||
+              (balance.minPrice !== undefined && balance.maxPrice !== undefined && balance.currentPrice !== undefined));
 
           // Vérifier si les données de la balance sont complètes pour une position v3
-          if (
-            !(
-              balance.isActive === undefined &&
-              balance.tickLower === undefined &&
-              balance.tickUpper === undefined &&
-              balance.currentTick === undefined
-            )
-          ) {
-            console.error("Data balance is not complete for v3 position", balance);
+          if (!isV3Position && isV3ConfigValide) {
+            console.error(i18n.t("modifiers.errorDataBalanceNotComplete", { balanceID: balance.positionId }));
+            throw new Error(i18n.t("modifiers.errorDataBalanceNotComplete", { balanceID: balance.positionId }));
           }
 
           // Appliquer le boost selon le type de configuration et de position
-          if (isV3Position && isV3Config(dexOptions)) {
-            // Configuration v3 avancée
+          if (isV3Position && isV3ConfigValide) {
             const v3Config = dexOptions.v3;
-            if (v3Config) {
-              // Déterminer le boost de base selon le type de token
-              let baseBoost = v3Config.activeBoost;
-              let baseInactiveBoost = v3Config.inactiveBoost;
+            const baseBoostREG = dexOptions.default["REG"] ?? dexOptions.default["*"] ?? 1;
+            const baseBoost = dexOptions.default[balance.tokenSymbol] || dexOptions.default["*"] || 1;
 
-              // Si nous avons aussi une configuration default, utiliser le multiplicateur spécifique au token
-              if (dexOptions.default) {
-                const tokenMultiplier = dexOptions.default[balance.tokenSymbol] || dexOptions.default["*"] || 1;
+            const valueLower = v3Config.sourceValue === "tick" ? balance.tickLower : balance.minPrice;
+            const valueUpper = v3Config.sourceValue === "tick" ? balance.tickUpper : balance.maxPrice;
+            const currentValue =
+              v3Config.sourceValue === "tick" ? balance.currentTick : parseFloat(balance.currentPrice ?? "0");
 
-                // Ajuster les boosts selon le type de token si priceRangeMode est "none"
-                if (v3Config.priceRangeMode === "none") {
-                  baseBoost = tokenMultiplier;
-                  baseInactiveBoost = tokenMultiplier;
-                }
-              }
-
-              // Convertir la configuration en paramètres pour le calculateur de boost
-              const boostParams: V3BoostParams = {
-                activeBoost: baseBoost,
-                inactiveBoost: baseInactiveBoost,
-                priceRangeMode: v3Config.priceRangeMode,
-                centerBoost: v3Config.centerBoost,
-                edgeBoost: v3Config.edgeBoost,
-                exponent: v3Config.exponent,
-                rangeWidthFactor: v3Config.rangeWidthFactor,
-                steps: v3Config.steps,
-              };
-
-              // Appliquer le boost v3 avancé
+            if (
+              v3Config.priceRangeMode === "linear" ||
+              v3Config.priceRangeMode === "exponential" ||
+              v3Config.priceRangeMode === "step"
+            ) {
+              logInTerminal("debug", [
+                "DEBUG position",
+                balance.positionId,
+                balance.tokenSymbol,
+                "baseBoost",
+                baseBoost,
+                "baseBoostREG",
+                baseBoostREG,
+                "factorREGtoOtherToken",
+                baseBoost / baseBoostREG,
+              ]);
               newEquivalentREG = applyV3Boost(
+                baseBoost / baseBoostREG,
                 balance.equivalentREG,
                 balance.isActive || false,
-                balance.tickLower || 0,
-                balance.tickUpper || 0,
-                balance.currentTick || 0,
-                boostParams
+                valueLower || 0,
+                valueUpper || 0,
+                currentValue || 0,
+                v3Config
               );
+            } else {
+              // Appliquer le facteur de boost simple si priceRangeMode = "none" ou non défini
+              console.info(i18n.t("modifiers.infoApplyModifier", { modifier: "nonePriceRange" }));
+              newEquivalentREG = new BigNumber(balance.equivalentREG).multipliedBy(baseBoost).toString(10);
             }
           } else {
-            // Fallback sur l'ancien système pour les positions non-v3 ou avec config traditionnelle
+            // Fallback sur les positions non-v3
             // Déterminer quel multiplicateur appliquer
             let boostFactor = 1; // Valeur par défaut si aucun boost n'est applicable
 
@@ -128,6 +127,13 @@ export function boosBalancesDexs(
           }
 
           // Mettre à jour la balance avec la nouvelle valeur
+          logInTerminal("debug", [
+            "DEBUG FINALISED boost",
+            balance.positionId,
+            balance.tokenSymbol,
+            "newEquivalentREG",
+            newEquivalentREG,
+          ]);
           balance.equivalentREG = newEquivalentREG;
 
           // Mettre à jour les totaux
@@ -141,12 +147,27 @@ export function boosBalancesDexs(
 }
 
 /**
- * Vérifie si une configuration de DEX est au nouveau format avec options v3
+ * Vérifie si une configuration de DEX est un objet format avec options v3
  * @param config Configuration de DEX
- * @returns true si c'est une configuration au nouveau format
+ * @returns true si c'est une configuration au nouveau format avec les champs v3 et default définis
  */
-function isV3Config(config: DexBoostConfig | [string[], number[]]): config is DexBoostConfig {
-  return !Array.isArray(config);
+function isV3Config(config: DexBoostConfig | [string[], number[]]): config is DexBoostConfig & {
+  v3: NonNullable<DexBoostConfig["v3"]>;
+  default: NonNullable<DexBoostConfig["default"]>;
+} {
+  if (Array.isArray(config)) {
+    return false;
+  }
+  // Vérifie la présence et la validité des champs requis pour V3Config
+  if (config && typeof config === "object" && config.v3 && config.default) {
+    // Ici, vous pourriez ajouter des vérifications plus granulaires sur la structure de config.v3 et config.default si nécessaire
+    return true;
+  }
+  // Optionnel: logguer si la configuration est partiellement correcte mais ne passe pas la validation stricte
+  if (config && typeof config === "object" && (!config.v3 || !config.default)) {
+    console.warn(i18n.t("modifiers.warnV3ConfigPartialCorrectConfig"), config);
+  }
+  return false;
 }
 
 /**
