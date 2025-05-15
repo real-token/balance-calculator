@@ -145,5 +145,6 @@ export default {
   boostV3Pools: {
     errorInvalidBoostParams: "Les paramètres de boost pools v3 sont incorrects pour le mode >>{{modeName}}<<",
     errorInvalidParams: "Le paramètre {{paramsName}} de la configuration v3 est incorrect: >>{{paramsValue}}<<",
+    errorValue: "La valeur de la variable {{nameVariable}} avec la valeur {{value}} est incorrecte",
   },
 };

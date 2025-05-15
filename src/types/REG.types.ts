@@ -22,6 +22,7 @@ export type RetourREG = {
           tokenBalance: string;
           tokenSymbol: string;
           tokenDecimals: number;
+          tokenPosition?: number;
           tokenAddress: string;
           poolAddress: string;
           equivalentREG: string;

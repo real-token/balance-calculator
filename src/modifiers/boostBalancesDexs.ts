@@ -81,6 +81,10 @@ export function boostBalancesDexs(
                 "DEBUG position",
                 balance.positionId,
                 balance.tokenSymbol,
+                "isActive",
+                balance.isActive,
+                "balance equivalentREG",
+                balance.equivalentREG,
                 "baseBoost",
                 baseBoost,
                 "baseBoostREG",
@@ -88,12 +92,57 @@ export function boostBalancesDexs(
                 "factorREGtoOtherToken",
                 baseBoost / baseBoostREG,
               ]);
+
+              // Si mode proximity, passer null pour valueLower ou valueUpper selon tokenPosition
+              let effectiveValueLower: number | null = valueLower || 0;
+              let effectiveValueUpper: number | null = valueUpper || 0;
+
+              if (v3Config.boostMode === "proximity") {
+                // Si la position est active et tokenPosition est défini,
+                // ajuster les bornes pour la liquidité unilatérale.
+                // Pour les positions inactives, TOUJOURS utiliser valueLower et valueUpper de la position.
+                if (balance.isActive && balance.tokenPosition !== undefined) {
+                  if (balance.tokenPosition === 0) {
+                    // Token0: Liquidity from currentValue to valueUpper
+                    // Passer null pour valueLower
+                    effectiveValueLower = null;
+                  } else if (balance.tokenPosition === 1) {
+                    // Token1: Liquidity from valueLower to currentValue
+                    // Passer null pour valueUpper
+                    effectiveValueUpper = null;
+                  }
+                }
+                // Si la position est inactive, effectiveValueLower et effectiveValueUpper
+                // conserveront les valeurs de valueLower et valueUpper de la position.
+
+                // Cas d'une position active
+                const cv = currentValue || 0;
+                const vl = valueLower || 0;
+                const vu = valueUpper || 0;
+
+                logInTerminal("debug", [
+                  "DEBUG position v3 proximity START",
+                  "tokenPosition",
+                  balance.tokenPosition,
+                  "currentValue",
+                  cv,
+                  "valueLower",
+                  vl,
+                  "valueUpper",
+                  vu,
+                  "effectiveValueLower",
+                  effectiveValueLower,
+                  "effectiveValueUpper",
+                  effectiveValueUpper,
+                ]);
+              }
+
               newEquivalentREG = applyV3Boost(
                 baseBoost / baseBoostREG,
                 balance.equivalentREG,
                 balance.isActive || false,
-                valueLower || 0,
-                valueUpper || 0,
+                effectiveValueLower,
+                effectiveValueUpper,
                 currentValue || 0,
                 v3Config
               );

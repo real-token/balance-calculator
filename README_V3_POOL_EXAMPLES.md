@@ -33,11 +33,11 @@ La configuration des boosts pour les pools v3 est définie par un ensemble de pa
         // Boost de base pour les positions inactives (hors plage de prix)
         inactiveBoost?: number;
 
-        // Boost au centre de la plage (multiplicateur maximum pour mode centered)
-        centerBoost?: number;
+        // Boost maximum (au centre ou au prix actuel selon le mode)
+        maxBoost?: number;
 
-        // Boost aux extrémités de la plage (multiplicateur minimum pour mode centered)
-        edgeBoost?: number;
+        // Boost minimum (aux extrémités ou loin du prix selon le mode)
+        minBoost?: number;
 
         // Exposant pour la formule exponentielle
         exponent?: number;
@@ -49,11 +49,11 @@ La configuration des boosts pour les pools v3 est définie par un ensemble de pa
         steps?: Array<[number, number]>;
 
         // Paramètres spécifiques au mode "proximity"
-        proximityMode?: BoostFormulaType; // Type de décroissance ("linear", "exponential")
-        maxProximityBoost?: number; // Boost maximal au prix actuel
-        minProximityBoost?: number; // Boost minimal loin du prix
-        decayFactor?: number; // Contrôle la vitesse de décroissance (0.1 = rapide, 1.0 = lente)
-        numSlices?: number; // Nombre de tranches pour simuler la répartition de liquidité
+        sliceWidth?: number; // taille de chaque tranche (1 par défaut en mode tick, 0.1 en mode priceDecimals)
+        decaySlices?: number; // nombre de tranches pour atteindre minBoost depuis maxBoost
+        decaySlicesDown?: number; // nombre de tranches pour atteindre minBoost depuis maxBoost (vers le bas)
+        decaySlicesUp?: number; // nombre de tranches pour atteindre minBoost depuis maxBoost (vers le haut)
+        outOfRangeEnabled?: boolean; // définir si on calcule pour les positions hors range
       }
     }
   }
@@ -213,7 +213,7 @@ Les valeurs source utiliser pour le calcul peuvent etre soit `tick` soit `priceD
 
 ### Fonctionnement "boostMode: centered"
 
-Dans ce mode, le calcul applique le boost maximum (paramètre `centerBoost`) en fonction du centrage de la plage par rapport au prix actuel.
+Dans ce mode, le calcul applique le boost maximum (paramètre `maxBoost`) en fonction du centrage de la plage par rapport au prix actuel.
 Plus le prix est proche d'un coté ou de l'autre de la plage, plus le boost est faible (il y as de base pas de limitation sur la largeur de la plage).
 Le paramètre `rangeWidthFactor` permet de limiter la largeur maximum ou demander une largeur minimum de la plage(Voir les infos spécifique sur ce paramètre [rangeWidthFactor](#explication-du-parametre-rangewidthfactor-dans-le-calcul-du-boost)).
 
@@ -237,8 +237,8 @@ En utilisant les données des scénarios disponibles dans `balancesREG_mock_exam
         priceRangeMode: "linear",
         boostMode: "centered",
         inactiveBoost: 0,
-        centerBoost: 5,
-        edgeBoost: 1,
+        maxBoost: 5,
+        minBoost: 1,
     }
   }
 }
@@ -252,8 +252,8 @@ La configuration utilisée pour ces calculs est définie dans `optionsModifiers.
 - `priceRangeMode: "linear"` (variation linéaire du boost)
 - `boostMode: "centered"` (favorise les positions centrées)
 - `inactiveBoost: 0` (pas de boost pour les positions inactives)
-- `centerBoost: 5` (boost maximal au centre de la plage)
-- `edgeBoost: 1` (boost minimal aux extrémités de la plage)
+- `maxBoost: 5` (boost maximal au centre de la plage)
+- `minBoost: 1` (boost minimal aux extrémités de la plage)
 - `rangeWidthFactor: 10987` (favorise les plages larges, valeur correspondant à la largeur en ticks de la plage du scénario 1)
 
 #### Scénario 1 : 50% USDC / 50% REG, range 0.5$ à 1.5$
@@ -454,7 +454,7 @@ De même que pour le mode "linear", il peut fonctionner avec deux logiques de ca
 
 ### Fonctionnement "boostMode: centered"
 
-Dans ce mode, le calcul applique le boost maximum (paramètre `centerBoost`) au centre exact de la plage de prix, et un boost minimum (paramètre `edgeBoost`) aux extrémités de la plage.
+Dans ce mode, le calcul applique le boost maximum (paramètre `maxBoost`) au centre exact de la plage de prix, et un boost minimum (paramètre `minBoost`) aux extrémités de la plage.
 
 La principale différence avec le mode "linear" est que la variation entre ces deux valeurs suit une courbe exponentielle au lieu d'une ligne droite, ce qui accentue davantage l'avantage d'être proche du centre. Cette variation est contrôlée par le paramètre `exponent` :
 
@@ -479,8 +479,8 @@ En utilisant les données des scénarios disponibles dans `balancesREG_mock_exam
         priceRangeMode: "exponential",
         boostMode: "centered",
         inactiveBoost: 1,
-        centerBoost: 5,
-        edgeBoost: 1,
+        maxBoost: 5,
+        minBoost: 1,
         exponent: 3,
     }
   }
@@ -495,8 +495,8 @@ La configuration utilisée pour ces calculs est définie dans `optionsModifiers.
 - `priceRangeMode: "exponential"` (variation exponentielle du boost)
 - `boostMode: "centered"` (favorise les positions centrées)
 - `inactiveBoost: 1` (boost minimal pour les positions inactives)
-- `centerBoost: 5` (boost maximal au centre de la plage)
-- `edgeBoost: 1` (boost minimal aux extrémités de la plage)
+- `maxBoost: 5` (boost maximal au centre de la plage)
+- `minBoost: 1` (boost minimal aux extrémités de la plage)
 - `exponent: 3` (contrôle la courbure de la fonction exponentielle)
 
 #### Scénario 1 : 50% USDC / 50% REG, range 0.5$ à 1.5$
@@ -724,7 +724,7 @@ En utilisant les données des scénarios disponibles dans `balancesREG_mock_exam
         priceRangeMode: "step",
         boostMode: "centered",
         inactiveBoost: 1,
-        edgeBoost: 1, // Boost minimal par défaut
+        minBoost: 1, // Boost minimal par défaut
         steps: [
           [0.2, 1.5], // Si centrage ≥ 20%, boost = 1.5
           [0.5, 3.0], // Si centrage ≥ 50%, boost = 3.0
@@ -989,7 +989,9 @@ Dans `src/utils/v3BoostCalculator.ts`, ce paramètre est utilisé pour calculer 
 
 ```javascript
 const rangeWidthFactorBoost =
-  rangeWidthFactor > 0 ? Math.max(1, valueWidth / rangeWidthFactor) : Math.max(1, (rangeWidthFactor / valueWidth) * -1);
+  rangeWidthFactor >= 0
+    ? Math.max(1, valueWidth / rangeWidthFactor)
+    : Math.max(1, (rangeWidthFactor / valueWidth) * -1);
 ```
 
 ### Impact selon la valeur
