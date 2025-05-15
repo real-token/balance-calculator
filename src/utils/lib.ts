@@ -358,17 +358,36 @@ export function logInTerminal(type: "info" | "debug" | "error", data: any[]) {
   const Cyan = "\x1b[36m";
   const Gray = "\x1b[37m";
   const White = "\x1b[97m";
+
+  // Formatage des Datas en string avec mise en forme des valeurs en fonction du type
+  const formattedData = data
+    .map((item) => {
+      if (typeof item === "object") {
+        return `${Cyan}${JSON.stringify(item)}${Reset}`;
+      }
+
+      if (typeof item === "number") {
+        return `${Yellow}${item.toString()}${Reset}`;
+      }
+
+      if (typeof item === "boolean") {
+        return `${Blue}${item.toString()}${Reset}`;
+      }
+      return item;
+    })
+    .join(" ");
+
   switch (type) {
     case "info":
-      console.info(`${Green}[INFO]${Reset}`, data);
+      console.info(`${Green}[INFO]${Reset}`, formattedData);
       break;
     case "debug":
       if (MODE_DEBUG) {
-        console.debug(`${Purple}[DEBUG]${Reset}`, data);
+        console.debug(`${Purple}[DEBUG]${Reset}`, formattedData);
       }
       break;
     case "error":
-      console.error(`${Red}[ERROR]${Reset}`, data);
+      console.error(`${Red}[ERROR]${Reset}`, formattedData);
       break;
   }
 }

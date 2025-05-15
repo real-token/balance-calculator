@@ -51,17 +51,15 @@ export const optionsModifiers: NormalizeOptions = {
       // Configuration spécifique pour les pools v3 - Mode centrage (comportement historique amélioré)
       v3: {
         sourceValue: "priceDecimals",
-        priceRangeMode: "linear",
+        priceRangeMode: "step",
         boostMode: "proximity",
-        //activeBoost: 2,
-        // inactiveBoost: 1,
-        //exponent: 3,
-        // steps: [
-        //   [0.2, 1.5], // Si centrage ≥ 20%, boost = 1.5
-        //   [0.5, 3.0], // Si centrage ≥ 50%, boost = 3.0
-        //   [0.8, 4.0], // Si centrage ≥ 80%, boost = 4.0
-        //   [1.0, 5.0], // Si centrage = 100%, boost = 5.0
-        // ],
+        // exponent: 3,
+        steps: [
+          [0.1, 1.5],
+          [0.4, 3.0],
+          [0.7, 4.0],
+          [1.0, 5.0],
+        ],
         maxBoost: 5,
         minBoost: 1,
         sliceWidth: 0.1,

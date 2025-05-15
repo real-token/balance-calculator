@@ -49,7 +49,9 @@ export type SourceValue = (typeof SourceValueValues)[keyof typeof SourceValueVal
  * Paramètres pour le calcul du boost des positions v3
  */
 export interface V3BoostParams {
-  // Type de valeur source pour les calculs (tick ou priceDecimals)
+  /**
+   * commun à tous les modes
+   */
   sourceValue: SourceValue;
 
   // Type de formule à appliquer sur la plage de prix
@@ -57,12 +59,6 @@ export interface V3BoostParams {
 
   // Mode de calcul du boost
   boostMode?: BoostModeType;
-
-  // Boost de base pour les positions actives (dans la plage de prix)
-  activeBoost?: number;
-
-  // Boost de base pour les positions inactives (hors plage de prix)
-  inactiveBoost?: number;
 
   // Boost maximum (au centre ou au prix actuel selon le mode)
   maxBoost?: number;
@@ -73,13 +69,20 @@ export interface V3BoostParams {
   // Exposant pour la formule exponentielle
   exponent?: number;
 
-  // Facteur d'influence de la largeur de la plage (plus c'est grand, moins la largeur compte)
-  rangeWidthFactor?: number;
-
-  // Paliers pour le mode "step" (pourcentage de 0 à 1, boost)
+  // Paliers pour le mode "step" (pourcentage de 0 à 1, boost) exemple: [[0.5, 1], [0.75, 2]]
+  // en mode Centered, les paliers représentent le pourcentage de la plage de prix où le boost est appliqué
+  // en mode Proximity, les paliers représentent le nombre de tranches (ou "slices" distance du prix) où le boost est appliqué
   steps?: Array<[number, number]>;
 
-  // Paramètres spécifiques au mode "proximity"
+  /**
+   * Spécifique au mode "centered"
+   */
+  rangeWidthFactor?: number; // Facteur d'influence de la largeur de la plage (plus c'est grand, moins la largeur compte)
+  inactiveBoost?: number; // Boost de base pour les positions inactives (hors plage de prix) en mode centered
+
+  /**
+   * Spécifique au mode "proximity"
+   */
   sliceWidth?: number; // Optionnel: taille de chaque tranche (par defaut = 1 si sourceValue = tick, 0.1 si sourceValue = priceDecimals)
   decaySlices?: number; // Obligatoire: nombre de tranches pour atteindre minBoost depuis maxBoost (valeur par défaut si up/down non spécifiés)
   decaySlicesDown?: number; // Obligatoire: nombre de tranches pour atteindre minBoost depuis maxBoost (du prix vers le bas)
@@ -118,6 +121,12 @@ export function calculateV3Boost(
 
 /**
  * Calcule le boost selon l'approche de centrage (position bien centrée autour du prix)
+ * @param isActive Si la position est active (dans la plage de prix actuelle)
+ * @param valueLower Valeur inférieure de la position (null si token0)
+ * @param valueUpper Valeur supérieure de la position (null si token1)
+ * @param currentValue Valeur actuelle du prix
+ * @param params Paramètres de boost
+ * @returns Facteur de boost calculé
  */
 function calculateCenteredBoost(
   isActive: boolean,
@@ -126,13 +135,11 @@ function calculateCenteredBoost(
   currentValue: number,
   params: V3BoostParams
 ): number {
-  const inactiveBoost = params.inactiveBoost || DEFAULT_BOOST_FACTOR;
   // Si la position n'est pas active, on applique uniquement le boost inactif
   if (!isActive) {
-    return inactiveBoost;
+    return params.inactiveBoost || params.minBoost || DEFAULT_BOOST_FACTOR;
   }
 
-  const activeBoost = params.activeBoost!;
   const rangeWidthFactor = params.rangeWidthFactor ?? 1;
   const maxBoost = params.maxBoost!;
   const minBoost = params.minBoost!;
@@ -203,7 +210,7 @@ function calculateCenteredBoost(
       break;
 
     default:
-      boost = activeBoost;
+      boost = maxBoost;
   }
 
   // Application du modificateur de largeur de plage et du boost de base pour positions actives
@@ -234,8 +241,6 @@ function calculateProximityBoost(
   currentValue: number,
   params: V3BoostParams
 ): number {
-  //TODO il reste a vérifier si la part de liquidité outof range est calculée correctement a minBoost
-
   logInTerminal("debug", [
     "calculateProximityBoost",
     "isActive",
@@ -257,7 +262,7 @@ function calculateProximityBoost(
   // Gestion explicite du cas où la position est inactive (hors de la plage de prix)
   if (!isActive) {
     if (!outOfRangeEnabled) {
-      return params.inactiveBoost || minBoost; // Si outOfRangeEnabled est désactivé, retourner inactiveBoost ou minBoost
+      return params.inactiveBoost || minBoost || DEFAULT_BOOST_FACTOR; // Si outOfRangeEnabled est désactivé, retourner inactiveBoost ou minBoost
     }
 
     // Si la position est inactive mais qu'on veut calculer le boost quand même,
@@ -275,25 +280,8 @@ function calculateProximityBoost(
   const bnCurrentValue = new BigNumber(currentValue);
   const bnSliceWidth = new BigNumber(sliceWidth);
 
-  // Si valueLower est null, nous utilisons valueUpper (token0)
-  // Si valueUpper est null, nous utilisons valueLower (token1)
-  // const lowerValue = valueLower !== null ? valueLower : currentValue - currentValue * 0.5;
-  // const upperValue = valueUpper !== null ? valueUpper : currentValue + currentValue * 0.5;
-
-  // logInTerminal("debug", ["lowerValue", lowerValue, "upperValue", upperValue, "currentValue", currentValue]);
-
-  // const bnLowerValue = new BigNumber(lowerValue);
-  // const bnUpperValue = new BigNumber(upperValue);
   const bnLowerValue = new BigNumber(valueLower!);
   const bnUpperValue = new BigNumber(valueUpper!);
-
-  // Vérifier si le prix actuel est en dehors de la plage
-  // const isPriceOutOfRange = !isActive;
-
-  // Si le prix est hors plage et qu'on ne veut pas calculer pour les positions hors plage
-  // if (isPriceOutOfRange && !outOfRangeEnabled) {
-  //   return params.inactiveBoost || minBoost;
-  // }
 
   // Pour les prix hors plage, on utilisera la borne la plus proche comme point de référence
   let bnEffectiveReferencePoint: BigNumber;
@@ -339,7 +327,7 @@ function calculateProximityBoost(
   // if (totalSlicesInLiquidity <= 0) return minBoost;
 
   logInTerminal("debug", ["Total Slices in Liquidity Range", totalSlicesInLiquidity]);
-
+  logInTerminal("debug", ["Mode de décroissance", params.priceRangeMode]);
   let bnTotalBoostAccumulated = new BigNumber(0);
   const bnDecaySlices = direction === 1 ? new BigNumber(decaySlicesUp) : new BigNumber(decaySlicesDown);
 
@@ -393,16 +381,10 @@ function calculateProximityBoost(
     // Si actualSlicePortion est <= 0, on arrête
     if (actualSlicePortion.isLessThanOrEqualTo(0)) break;
 
-    // Le "centre" est toujours calculé par rapport à une tranche théorique complète partant de bnIterationSliceStart
-    const bnTheoreticalSliceCenter = bnIterationSliceStart.plus(
-      new BigNumber(direction * 0.5).multipliedBy(bnSliceWidth)
-    );
-
-    const bnDistanceToCurrent = bnTheoreticalSliceCenter.minus(bnCurrentValue).abs();
-
     // slicesAway est maintenant simplement 'i' car on part de currentValue
     const slicesAway = i;
 
+    const decayFormula = params.priceRangeMode;
     // Pour les positions hors plage, on ajuste le boost de manière à ce qu'il décroisse plus rapidement
     let sliceBoostNum: number;
     if (!isActive) {
@@ -411,19 +393,107 @@ function calculateProximityBoost(
         sliceBoostNum = minBoost;
       } else {
         const decayProgress = new BigNumber(slicesAway).multipliedBy(2).dividedBy(bnDecaySlices);
-        sliceBoostNum = new BigNumber(maxBoost)
-          .minus(new BigNumber(maxBoost).minus(minBoost).multipliedBy(decayProgress))
-          .toNumber();
+
+        switch (decayFormula) {
+          case BoostFormulaValues.EXPONENTIAL:
+            // Formule exponentielle: minBoost + (maxBoost - minBoost) * (1 - progress)^exponent
+            sliceBoostNum = new BigNumber(minBoost)
+              .plus(
+                new BigNumber(maxBoost)
+                  .minus(minBoost)
+                  .multipliedBy(new BigNumber(1).minus(decayProgress).pow(params.exponent!))
+              )
+              .toNumber();
+
+            break;
+
+          case BoostFormulaValues.STEP:
+            // Par défaut : minBoost si aucun palier ne correspond
+            sliceBoostNum = minBoost;
+
+            // Trier les paliers du plus grand seuil au plus petit
+            const sortedSteps = [...params.steps!].sort((a, b) => b[0] - a[0]);
+
+            logInTerminal("debug", [
+              "proximity step mode",
+              "decayProgress",
+              decayProgress.toNumber(),
+              "sortedSteps",
+              sortedSteps,
+            ]);
+
+            // Trouver le premier palier dont le seuil est inférieur ou égal au decayProgress
+            for (const [threshold, boostValue] of sortedSteps) {
+              if (decayProgress.isLessThanOrEqualTo(threshold)) {
+                sliceBoostNum = boostValue;
+                logInTerminal("debug", ["proximity step applied", "threshold", threshold, "boostValue", boostValue]);
+                break;
+              }
+            }
+
+            break;
+
+          case BoostFormulaValues.LINEAR:
+          default:
+            // Par défaut, formule linéaire
+            sliceBoostNum = new BigNumber(maxBoost)
+              .minus(new BigNumber(maxBoost).minus(minBoost).multipliedBy(decayProgress))
+              .toNumber();
+            break;
+        }
       }
     } else {
-      // Calcul normal pour les positions dans la plage
+      // Calcul normal pour les positions dans la plage active
       if (new BigNumber(slicesAway).isGreaterThanOrEqualTo(bnDecaySlices)) {
         sliceBoostNum = minBoost;
       } else {
         const decayProgress = new BigNumber(slicesAway).dividedBy(bnDecaySlices);
-        sliceBoostNum = new BigNumber(maxBoost)
-          .minus(new BigNumber(maxBoost).minus(minBoost).multipliedBy(decayProgress))
-          .toNumber();
+
+        switch (decayFormula) {
+          case BoostFormulaValues.EXPONENTIAL:
+            // Formule exponentielle: minBoost + (maxBoost - minBoost) * (1 - progress)^exponent
+            sliceBoostNum = new BigNumber(minBoost)
+              .plus(
+                new BigNumber(maxBoost)
+                  .minus(minBoost)
+                  .multipliedBy(new BigNumber(1).minus(decayProgress).pow(params.exponent!))
+              )
+              .toNumber();
+            logInTerminal("debug", [
+              "exponential mode",
+              "decayProgress",
+              decayProgress.toNumber(),
+              "sliceBoostNum",
+              sliceBoostNum,
+            ]);
+            break;
+
+          case BoostFormulaValues.STEP:
+            // Par défaut : minBoost si aucun palier ne correspond
+            sliceBoostNum = minBoost;
+
+            // Trier les paliers du plus grand seuil au plus petit
+            const sortedSteps = [...params.steps!].sort((a, b) => b[0] - a[0]);
+
+            // Trouver le premier palier dont le seuil est inférieur ou égal au decayProgress
+            for (const [threshold, boostValue] of sortedSteps) {
+              if (decayProgress.isLessThanOrEqualTo(threshold)) {
+                sliceBoostNum = boostValue;
+                logInTerminal("debug", ["proximity step applied", "threshold", threshold, "boostValue", boostValue]);
+                break;
+              }
+            }
+
+            break;
+
+          case BoostFormulaValues.LINEAR:
+          default:
+            // Par défaut, formule linéaire
+            sliceBoostNum = new BigNumber(maxBoost)
+              .minus(new BigNumber(maxBoost).minus(minBoost).multipliedBy(decayProgress))
+              .toNumber();
+            break;
+        }
       }
     }
 
@@ -475,6 +545,13 @@ export function applyV3Boost(
   return balance.multipliedBy(boostFactor).toString(10);
 }
 
+/**
+ * Vérifie si les paramètres de boost sont valides pour le mode sélectionné
+ * @param params Paramètres de boost
+ * @param valueLower Valeur inférieure
+ * @param valueUpper Valeur supérieure
+ * @param isActive Si la position est active
+ */
 function validateV3BoostParamsForBoostFormula(
   params: V3BoostParams,
   valueLower: number | null,
@@ -491,6 +568,10 @@ function validateV3BoostParamsForBoostFormula(
     !params.boostMode,
     !Object.values(BoostModeValues).includes(params.boostMode as BoostModeType),
   ]);
+
+  /***************************
+   * Vérifications des modes *
+   ***************************/
 
   // Vérifier si la valeur source est valide
   if (!params.sourceValue || !Object.values(SourceValueValues).includes(params.sourceValue as SourceValue)) {
@@ -514,8 +595,27 @@ function validateV3BoostParamsForBoostFormula(
     return false;
   }
 
+  // Vérifier les paramètres supplémentaires si priceRangeMode est défini
+  if (params.priceRangeMode) {
+    // Vérifier si la formule de décroissance est valide
+    if (!Object.values(BoostFormulaValues).includes(params.priceRangeMode as BoostFormulaType)) {
+      console.error(
+        i18n.t("boostV3Pools.errorInvalidParams", {
+          paramsName: "priceRangeMode",
+          paramsValue: params.priceRangeMode,
+        })
+      );
+      return false;
+    }
+  }
+
+  /*******************************************
+   * Vérifications spécifiques au boost mode *
+   *******************************************/
+
   // Vérification des paramètres communs pour le mode "centered"
-  if (params.boostMode === "centered") {
+  if (params.boostMode === BoostModeValues.CENTERED) {
+    // Vérifier si les valeurs de valueLower et valueUpper sont null, seulement un des deux peut être null
     if (valueLower === null || valueUpper === null) {
       if (valueLower === null) {
         console.error(
@@ -525,6 +625,7 @@ function validateV3BoostParamsForBoostFormula(
           })
         );
       }
+
       if (valueUpper === null) {
         console.error(
           i18n.t("boostV3Pools.errorValue", {
@@ -538,7 +639,7 @@ function validateV3BoostParamsForBoostFormula(
   }
 
   // Vérification des paramètres communs pour le mode "proximity"
-  if (params.boostMode === "proximity") {
+  if (params.boostMode === BoostModeValues.PROXIMITY) {
     // Vérifier si les valeurs de valueLower et valueUpper sont null, seulement un des deux peut être null
     const lowerNull = valueLower === null;
     const upperNull = valueUpper === null;
@@ -555,67 +656,75 @@ function validateV3BoostParamsForBoostFormula(
     }
 
     // Vérifier si les valeurs decaySlicesDown, decaySlicesUp et decaySlices sont valides
-    const decaySlicesValue = params.decaySlices;
-    if ((!decaySlicesValue || decaySlicesValue <= 0) && (!params.decaySlicesDown || !params.decaySlicesUp)) {
-      console.error(
-        i18n.t("boostV3Pools.errorInvalidParams", {
-          paramsName: "decaySlices",
-          paramsValue: decaySlicesValue ?? "undefined or <=0",
-        })
-      );
-      return false;
-    }
+    if (
+      params.priceRangeMode === BoostFormulaValues.LINEAR ||
+      params.priceRangeMode === BoostFormulaValues.EXPONENTIAL
+    ) {
+      const decaySlicesValue = params.decaySlices;
+      if ((!decaySlicesValue || decaySlicesValue <= 0) && (!params.decaySlicesDown || !params.decaySlicesUp)) {
+        console.error(
+          i18n.t("boostV3Pools.errorInvalidParams", {
+            paramsName: "decaySlices",
+            paramsValue: decaySlicesValue ?? "undefined or <=0",
+          })
+        );
+        return false;
+      }
 
-    const decaySlicesDownValue = params.decaySlicesDown ?? decaySlicesValue;
-    const decaySlicesUpValue = params.decaySlicesUp ?? decaySlicesValue;
-    if (!decaySlicesDownValue || decaySlicesDownValue <= 0) {
-      console.error(
-        i18n.t("boostV3Pools.errorInvalidParams", {
-          paramsName: "decaySlicesDown",
-          paramsValue: decaySlicesDownValue ?? "undefined or <=0",
-        })
-      );
-      return false;
+      const decaySlicesDownValue = params.decaySlicesDown ?? decaySlicesValue;
+      const decaySlicesUpValue = params.decaySlicesUp ?? decaySlicesValue;
+      if (!decaySlicesDownValue || decaySlicesDownValue <= 0) {
+        console.error(
+          i18n.t("boostV3Pools.errorInvalidParams", {
+            paramsName: "decaySlicesDown",
+            paramsValue: decaySlicesDownValue ?? "undefined or <=0",
+          })
+        );
+        return false;
+      }
+      if (!decaySlicesUpValue || decaySlicesUpValue <= 0) {
+        console.error(
+          i18n.t("boostV3Pools.errorInvalidParams", {
+            paramsName: "decaySlicesUp",
+            paramsValue: decaySlicesUpValue ?? "undefined or <=0",
+          })
+        );
+        return false;
+      }
     }
-    if (!decaySlicesUpValue || decaySlicesUpValue <= 0) {
-      console.error(
-        i18n.t("boostV3Pools.errorInvalidParams", {
-          paramsName: "decaySlicesUp",
-          paramsValue: decaySlicesUpValue ?? "undefined or <=0",
-        })
-      );
-      return false;
-    }
-
-    return true;
   }
 
-  if (params.priceRangeMode === "linear") {
-    if (params.boostMode === "centered") {
-      // maxBoost est obligatoire et doit être supérieur à 0
-      const maxBoostValue = params.maxBoost;
-      if (!maxBoostValue || maxBoostValue <= 0) {
-        console.error(
-          i18n.t("boostV3Pools.errorInvalidParams", {
-            paramsName: "maxBoost",
-            paramsValue: maxBoostValue ?? "undefined or <=0",
-          })
-        );
-        return false;
-      }
+  /*************************************************
+   *  Vérifications spécifiques au priceRangeMode  *
+   *************************************************/
 
-      // minBoost est obligatoire et doit être supérieur à 0
-      const minBoostValue = params.minBoost;
-      if (!minBoostValue || minBoostValue <= 0) {
-        console.error(
-          i18n.t("boostV3Pools.errorInvalidParams", {
-            paramsName: "minBoost",
-            paramsValue: minBoostValue ?? "undefined or <=0",
-          })
-        );
-        return false;
-      }
+  // Vérification des paramètres communs pour le mode "linear"
+  if (params.priceRangeMode === BoostFormulaValues.LINEAR) {
+    // maxBoost est obligatoire et doit être supérieur à 0
+    const maxBoostValue = params.maxBoost;
+    if (!maxBoostValue || maxBoostValue <= 0) {
+      console.error(
+        i18n.t("boostV3Pools.errorInvalidParams", {
+          paramsName: "maxBoost",
+          paramsValue: maxBoostValue ?? "undefined or <=0",
+        })
+      );
+      return false;
+    }
 
+    // minBoost est obligatoire et doit être supérieur à 0
+    const minBoostValue = params.minBoost;
+    if (!minBoostValue || minBoostValue <= 0) {
+      console.error(
+        i18n.t("boostV3Pools.errorInvalidParams", {
+          paramsName: "minBoost",
+          paramsValue: minBoostValue ?? "undefined or <=0",
+        })
+      );
+      return false;
+    }
+
+    if (params.boostMode === BoostModeValues.CENTERED) {
       // rangeWidthFactor est facultatif, si utiliser il doit être supérieur ou inférieur à 0
       if (params.rangeWidthFactor === 0) {
         console.error(
@@ -626,40 +735,46 @@ function validateV3BoostParamsForBoostFormula(
         );
         return false;
       }
-      // Si les paramètres obligatoires sont valides, on retourne true
-      return true;
-    }
-    if (params.boostMode === "proximity") {
-      return true;
     }
   }
 
-  if (params.priceRangeMode === "exponential") {
-    if (params.boostMode === "centered") {
-      // maxBoost est obligatoire et doit être supérieur à 0
-      const maxBoostValue = params.maxBoost;
-      if (!maxBoostValue || maxBoostValue <= 0) {
-        console.error(
-          i18n.t("boostV3Pools.errorInvalidParams", {
-            paramsName: "maxBoost",
-            paramsValue: maxBoostValue ?? "undefined or <=0",
-          })
-        );
-        return false;
-      }
+  // Vérification des paramètres communs pour le mode "exponential"
+  if (params.priceRangeMode === BoostFormulaValues.EXPONENTIAL) {
+    // maxBoost est obligatoire et doit être supérieur à 0
+    const maxBoostValue = params.maxBoost;
+    if (!maxBoostValue || maxBoostValue <= 0) {
+      console.error(
+        i18n.t("boostV3Pools.errorInvalidParams", {
+          paramsName: "maxBoost",
+          paramsValue: maxBoostValue ?? "undefined or <=0",
+        })
+      );
+      return false;
+    }
 
-      // minBoost est obligatoire et doit être supérieur à 0
-      const minBoostValue = params.minBoost;
-      if (!minBoostValue || minBoostValue <= 0) {
-        console.error(
-          i18n.t("boostV3Pools.errorInvalidParams", {
-            paramsName: "minBoost",
-            paramsValue: minBoostValue ?? "undefined or <=0",
-          })
-        );
-        return false;
-      }
+    // minBoost est obligatoire et doit être supérieur à 0
+    const minBoostValue = params.minBoost;
+    if (!minBoostValue || minBoostValue <= 0) {
+      console.error(
+        i18n.t("boostV3Pools.errorInvalidParams", {
+          paramsName: "minBoost",
+          paramsValue: minBoostValue ?? "undefined or <=0",
+        })
+      );
+      return false;
+    }
 
+    if (!params.exponent || params.exponent <= 0) {
+      console.error(
+        i18n.t("boostV3Pools.errorInvalidParams", {
+          paramsName: "exponent",
+          paramsValue: params.exponent ?? "undefined or <=0",
+        })
+      );
+      return false;
+    }
+
+    if (params.boostMode === BoostModeValues.CENTERED) {
       // rangeWidthFactor est facultatif, si utiliser il doit être supérieur ou inférieur à 0
       if (params.rangeWidthFactor === 0) {
         console.error(
@@ -670,23 +785,11 @@ function validateV3BoostParamsForBoostFormula(
         );
         return false;
       }
-
-      if (!params.exponent || params.exponent <= 0) {
-        console.error(
-          i18n.t("boostV3Pools.errorInvalidParams", {
-            paramsName: "exponent",
-            paramsValue: params.exponent ?? "undefined or <=0",
-          })
-        );
-        return false;
-      }
-
-      // Si les paramètres obligatoires sont valides, on retourne true
-      return true;
     }
   }
 
-  if (params.priceRangeMode === "step") {
+  // Vérification des paramètres communs pour le mode "step"
+  if (params.priceRangeMode === BoostFormulaValues.STEP) {
     // Vérifier si le paramètre steps est valide
     if (
       !params.steps ||
@@ -721,8 +824,7 @@ function validateV3BoostParamsForBoostFormula(
       );
       return false;
     }
-    return true;
   }
 
-  return false;
+  return true;
 }
