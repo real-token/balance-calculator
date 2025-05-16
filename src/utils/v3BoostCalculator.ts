@@ -473,13 +473,21 @@ function calculateProximityBoost(
             sliceBoostNum = minBoost;
 
             // Trier les paliers du plus grand seuil au plus petit
-            const sortedSteps = [...params.steps!].sort((a, b) => b[0] - a[0]);
+            const sortedSteps = [...params.steps!].sort((a, b) => a[0] - b[0]);
 
             // Trouver le premier palier dont le seuil est inférieur ou égal au decayProgress
             for (const [threshold, boostValue] of sortedSteps) {
               if (decayProgress.isLessThanOrEqualTo(threshold)) {
                 sliceBoostNum = boostValue;
-                logInTerminal("debug", ["proximity step applied", "threshold", threshold, "boostValue", boostValue]);
+                logInTerminal("debug", [
+                  "proximity step applied",
+                  "threshold",
+                  threshold,
+                  "decayProgress",
+                  decayProgress.toNumber(),
+                  "boostValue",
+                  boostValue,
+                ]);
                 break;
               }
             }

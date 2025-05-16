@@ -9,6 +9,10 @@ debug*
 # dossiers
 node_modules
 dist
-outDatas
+outDatas/*
+script
 python/*
+
+# fichiers a ne pas ignorer pour le commit
+!outDatas/*_mock_*
 

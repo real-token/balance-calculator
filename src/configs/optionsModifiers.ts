@@ -55,10 +55,10 @@ export const optionsModifiers: NormalizeOptions = {
         boostMode: "proximity",
         // exponent: 3,
         steps: [
-          [0.1, 1.5],
-          [0.4, 3.0],
-          [0.7, 4.0],
-          [1.0, 5.0],
+          [0.2, 5], // De 0 à 2 tranches (20% de decaySlices) → boost de 5
+          [0.5, 3], // De 3è$p0è  à 5 tranches (30% de decaySlices) → boost de 3
+          [0.7, 2], // De 6 à 7 tranches (70% de decaySlices) → boost de 2
+          [1.0, 1], // De 8 à 10 tranches (100% de decaySlices) → boost de 1
         ],
         maxBoost: 5,
         minBoost: 1,

@@ -1,0 +1,494 @@
+{
+  "result": {
+    "balances": [
+      {
+        "walletAddress": "0x1111111111111111111111111111111111111111",
+        "type": "wallet",
+        "totalBalanceRegGnosis": "500",
+        "totalBalanceRegEthereum": "0",
+        "totalBalanceRegPolygon": "0",
+        "totalBalanceEquivalentRegGnosis": "500",
+        "totalBalanceEquivalentRegEthereum": "0",
+        "totalBalanceEquivalentRegPolygon": "0",
+        "totalBalanceEquivalentREG": "500",
+        "totalBalanceREG": "500",
+        "totalBalance": "1000",
+        "sourceBalance": {
+          "gnosis": {
+            "walletBalance": "0",
+            "vaultIncentiveV1": "0",
+            "dexs": {
+              "sushiswap": [
+                {
+                  "comment": "SCÉNARIO 1: 50% USDC / 50% REG, range 0.5$ à 1.5$",
+                  "tokenBalance": "500",
+                  "tokenSymbol": "REG",
+                  "tokenDecimals": "18",
+                  "tokenPosition": 0,
+                  "tokenAddress": "0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce",
+                  "poolAddress": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8",
+                  "equivalentREG": "500",
+                  "positionId": 1001,
+                  "isActive": true,
+                  "tickLower": -283256,
+                  "tickUpper": -272269,
+                  "currentTick": -276324,
+                  "currentPrice": "1.0",
+                  "minPrice": 0.5,
+                  "maxPrice": 1.5,
+                  "feeTier": 10000
+                },
+                {
+                  "tokenBalance": "500",
+                  "tokenSymbol": "USDC",
+                  "tokenDecimals": "6",
+                  "tokenPosition": 1,
+                  "tokenAddress": "0xddafbb505ad214d7b80b1f830fccc89b60fb7a83",
+                  "poolAddress": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8",
+                  "equivalentREG": "500",
+                  "positionId": 1001,
+                  "isActive": true,
+                  "tickLower": -283256,
+                  "tickUpper": -272269,
+                  "currentTick": -276324,
+                  "currentPrice": "1.0",
+                  "minPrice": 0.5,
+                  "maxPrice": 1.5,
+                  "feeTier": 10000
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "walletAddress": "0x2222222222222222222222222222222222222222",
+        "type": "wallet",
+        "totalBalanceRegGnosis": "655.22",
+        "totalBalanceRegEthereum": "0",
+        "totalBalanceRegPolygon": "0",
+        "totalBalanceEquivalentRegGnosis": "344.78",
+        "totalBalanceEquivalentRegEthereum": "0",
+        "totalBalanceEquivalentRegPolygon": "0",
+        "totalBalanceEquivalentREG": "344.78",
+        "totalBalanceREG": "655.22",
+        "totalBalance": "1000",
+        "sourceBalance": {
+          "gnosis": {
+            "walletBalance": "0",
+            "vaultIncentiveV1": "0",
+            "dexs": {
+              "sushiswap": [
+                {
+                  "comment": "SCÉNARIO 2: 25% USDC / 75% REG, range 0.5$ à 1.5$",
+                  "tokenBalance": "655.22",
+                  "tokenSymbol": "REG",
+                  "tokenDecimals": "18",
+                  "tokenPosition": 0,
+                  "tokenAddress": "0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce",
+                  "poolAddress": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8",
+                  "equivalentREG": "655.22",
+                  "positionId": 1002,
+                  "isActive": true,
+                  "tickLower": -283256,
+                  "tickUpper": -272269,
+                  "currentTick": -281520,
+                  "currentPrice": "0.63",
+                  "minPrice": 0.5,
+                  "maxPrice": 1.5,
+                  "feeTier": 10000
+                },
+                {
+                  "tokenBalance": "217.18",
+                  "tokenSymbol": "USDC",
+                  "tokenDecimals": "6",
+                  "tokenPosition": 1,
+                  "tokenAddress": "0xddafbb505ad214d7b80b1f830fccc89b60fb7a83",
+                  "poolAddress": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8",
+                  "equivalentREG": "344.78",
+                  "positionId": 1002,
+                  "isActive": true,
+                  "tickLower": -283256,
+                  "tickUpper": -272269,
+                  "currentTick": -281520,
+                  "currentPrice": "0.63",
+                  "minPrice": 0.5,
+                  "maxPrice": 1.5,
+                  "feeTier": 10000
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "walletAddress": "0x3333333333333333333333333333333333333333",
+        "type": "wallet",
+        "totalBalanceRegGnosis": "289.32",
+        "totalBalanceRegEthereum": "0",
+        "totalBalanceRegPolygon": "0",
+        "totalBalanceEquivalentRegGnosis": "710.68",
+        "totalBalanceEquivalentRegEthereum": "0",
+        "totalBalanceEquivalentRegPolygon": "0",
+        "totalBalanceEquivalentREG": "710.68",
+        "totalBalanceREG": "289.32",
+        "totalBalance": "1000",
+        "sourceBalance": {
+          "gnosis": {
+            "walletBalance": "0",
+            "vaultIncentiveV1": "0",
+            "dexs": {
+              "sushiswap": [
+                {
+                  "comment": "SCÉNARIO 3: 75% USDC / 25% REG, range 0.5$ à 1.5$",
+                  "tokenBalance": "289.32",
+                  "tokenSymbol": "REG",
+                  "tokenDecimals": "18",
+                  "tokenPosition": 0,
+                  "tokenAddress": "0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce",
+                  "poolAddress": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8",
+                  "equivalentREG": "289.32",
+                  "positionId": 1003,
+                  "isActive": true,
+                  "tickLower": -283256,
+                  "tickUpper": -272269,
+                  "currentTick": -274067,
+                  "currentPrice": "1.22",
+                  "minPrice": 0.5,
+                  "maxPrice": 1.5,
+                  "feeTier": 10000
+                },
+                {
+                  "tokenBalance": "867.44",
+                  "tokenSymbol": "USDC",
+                  "tokenDecimals": "6",
+                  "tokenPosition": 1,
+                  "tokenAddress": "0xddafbb505ad214d7b80b1f830fccc89b60fb7a83",
+                  "poolAddress": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8",
+                  "equivalentREG": "710.68",
+                  "positionId": 1003,
+                  "isActive": true,
+                  "tickLower": -283256,
+                  "tickUpper": -272269,
+                  "currentTick": -274067,
+                  "currentPrice": "1.22",
+                  "minPrice": 0.5,
+                  "maxPrice": 1.5,
+                  "feeTier": 10000
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "walletAddress": "0x4444444444444444444444444444444444444444",
+        "type": "wallet",
+        "totalBalanceRegGnosis": "0",
+        "totalBalanceRegEthereum": "0",
+        "totalBalanceRegPolygon": "0",
+        "totalBalanceEquivalentRegGnosis": "1000",
+        "totalBalanceEquivalentRegEthereum": "0",
+        "totalBalanceEquivalentRegPolygon": "0",
+        "totalBalanceEquivalentREG": "1000",
+        "totalBalanceREG": "0",
+        "totalBalance": "1000",
+        "sourceBalance": {
+          "gnosis": {
+            "walletBalance": "0",
+            "vaultIncentiveV1": "0",
+            "dexs": {
+              "sushiswap": [
+                {
+                  "comment": "SCÉNARIO 4: 100% USDC, range 0.5$ à 0.99$",
+                  "tokenBalance": "0",
+                  "tokenSymbol": "REG",
+                  "tokenDecimals": "18",
+                  "tokenPosition": 0,
+                  "tokenAddress": "0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce",
+                  "poolAddress": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8",
+                  "equivalentREG": "0",
+                  "positionId": 1004,
+                  "isActive": false,
+                  "tickLower": -283256,
+                  "tickUpper": -276425,
+                  "currentTick": -276324,
+                  "currentPrice": "1.0",
+                  "minPrice": 0.5,
+                  "maxPrice": 0.99,
+                  "feeTier": 10000
+                },
+                {
+                  "tokenBalance": "1000",
+                  "tokenSymbol": "USDC",
+                  "tokenDecimals": "6",
+                  "tokenPosition": 1,
+                  "tokenAddress": "0xddafbb505ad214d7b80b1f830fccc89b60fb7a83",
+                  "poolAddress": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8",
+                  "equivalentREG": "1000",
+                  "positionId": 1004,
+                  "isActive": false,
+                  "tickLower": -283256,
+                  "tickUpper": -276425,
+                  "currentTick": -276324,
+                  "currentPrice": "1.0",
+                  "minPrice": 0.5,
+                  "maxPrice": 0.99,
+                  "feeTier": 10000
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "walletAddress": "0x5555555555555555555555555555555555555555",
+        "type": "wallet",
+        "totalBalanceRegGnosis": "1000",
+        "totalBalanceRegEthereum": "0",
+        "totalBalanceRegPolygon": "0",
+        "totalBalanceEquivalentRegGnosis": "0",
+        "totalBalanceEquivalentRegEthereum": "0",
+        "totalBalanceEquivalentRegPolygon": "0",
+        "totalBalanceEquivalentREG": "0",
+        "totalBalanceREG": "1000",
+        "totalBalance": "1000",
+        "sourceBalance": {
+          "gnosis": {
+            "walletBalance": "0",
+            "vaultIncentiveV1": "0",
+            "dexs": {
+              "sushiswap": [
+                {
+                  "comment": "SCÉNARIO 5: 100% REG, range 1.01$ à 1.5$",
+                  "tokenBalance": "1000",
+                  "tokenSymbol": "REG",
+                  "tokenDecimals": "18",
+                  "tokenPosition": 0,
+                  "tokenAddress": "0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce",
+                  "poolAddress": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8",
+                  "equivalentREG": "1000",
+                  "positionId": 1005,
+                  "isActive": false,
+                  "tickLower": -276225,
+                  "tickUpper": -272269,
+                  "currentTick": -276324,
+                  "currentPrice": "1.0",
+                  "minPrice": 1.01,
+                  "maxPrice": 1.5,
+                  "feeTier": 10000
+                },
+                {
+                  "tokenBalance": "0",
+                  "tokenSymbol": "USDC",
+                  "tokenDecimals": "6",
+                  "tokenPosition": 1,
+                  "tokenAddress": "0xddafbb505ad214d7b80b1f830fccc89b60fb7a83",
+                  "poolAddress": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8",
+                  "equivalentREG": "0",
+                  "positionId": 1005,
+                  "isActive": false,
+                  "tickLower": -276225,
+                  "tickUpper": -272269,
+                  "currentTick": -276324,
+                  "currentPrice": "1.0",
+                  "minPrice": 1.01,
+                  "maxPrice": 1.5,
+                  "feeTier": 10000
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "walletAddress": "0x6666666666666666666666666666666666666666",
+        "type": "wallet",
+        "totalBalanceRegGnosis": "0",
+        "totalBalanceRegEthereum": "0",
+        "totalBalanceRegPolygon": "0",
+        "totalBalanceEquivalentRegGnosis": "1000",
+        "totalBalanceEquivalentRegEthereum": "0",
+        "totalBalanceEquivalentRegPolygon": "0",
+        "totalBalanceEquivalentREG": "1000",
+        "totalBalanceREG": "0",
+        "totalBalance": "1000",
+        "sourceBalance": {
+          "gnosis": {
+            "walletBalance": "0",
+            "vaultIncentiveV1": "0",
+            "dexs": {
+              "sushiswap": [
+                {
+                  "comment": "SCÉNARIO 6: 100% USDC, range 0.01$ à 0.1$",
+                  "tokenBalance": "0",
+                  "tokenSymbol": "REG",
+                  "tokenDecimals": "18",
+                  "tokenPosition": 0,
+                  "tokenAddress": "0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce",
+                  "poolAddress": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8",
+                  "equivalentREG": "0",
+                  "positionId": 1006,
+                  "isActive": false,
+                  "tickLower": -322378,
+                  "tickUpper": -299351,
+                  "currentTick": -276324,
+                  "currentPrice": "1.0",
+                  "minPrice": 0.01,
+                  "maxPrice": 0.1,
+                  "feeTier": 10000
+                },
+                {
+                  "tokenBalance": "1000",
+                  "tokenSymbol": "USDC",
+                  "tokenDecimals": "6",
+                  "tokenPosition": 1,
+                  "tokenAddress": "0xddafbb505ad214d7b80b1f830fccc89b60fb7a83",
+                  "poolAddress": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8",
+                  "equivalentREG": "1000",
+                  "positionId": 1006,
+                  "isActive": false,
+                  "tickLower": -322378,
+                  "tickUpper": -299351,
+                  "currentTick": -276324,
+                  "currentPrice": "1.0",
+                  "minPrice": 0.01,
+                  "maxPrice": 0.1,
+                  "feeTier": 10000
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "walletAddress": "0x7777777777777777777777777777777777777777",
+        "type": "wallet",
+        "totalBalanceRegGnosis": "1000",
+        "totalBalanceRegEthereum": "0",
+        "totalBalanceRegPolygon": "0",
+        "totalBalanceEquivalentRegGnosis": "0",
+        "totalBalanceEquivalentRegEthereum": "0",
+        "totalBalanceEquivalentRegPolygon": "0",
+        "totalBalanceEquivalentREG": "0",
+        "totalBalanceREG": "1000",
+        "totalBalance": "1000",
+        "sourceBalance": {
+          "gnosis": {
+            "walletBalance": "0",
+            "vaultIncentiveV1": "0",
+            "dexs": {
+              "sushiswap": [
+                {
+                  "comment": "SCÉNARIO 7: 100% REG, range 100$ à 110$",
+                  "tokenBalance": "1000",
+                  "tokenSymbol": "REG",
+                  "tokenDecimals": "18",
+                  "tokenPosition": 0,
+                  "tokenAddress": "0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce",
+                  "poolAddress": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8",
+                  "equivalentREG": "1000",
+                  "positionId": 1007,
+                  "isActive": false,
+                  "tickLower": -230270,
+                  "tickUpper": -229317,
+                  "currentTick": -276324,
+                  "currentPrice": "1.0",
+                  "minPrice": 100,
+                  "maxPrice": 110,
+                  "feeTier": 10000
+                },
+                {
+                  "tokenBalance": "0",
+                  "tokenSymbol": "USDC",
+                  "tokenDecimals": "6",
+                  "tokenPosition": 1,
+                  "tokenAddress": "0xddafbb505ad214d7b80b1f830fccc89b60fb7a83",
+                  "poolAddress": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8",
+                  "equivalentREG": "0",
+                  "positionId": 1007,
+                  "isActive": false,
+                  "tickLower": -230270,
+                  "tickUpper": -229317,
+                  "currentTick": -276324,
+                  "currentPrice": "1.0",
+                  "minPrice": 100,
+                  "maxPrice": 110,
+                  "feeTier": 10000
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "walletAddress": "0x8888888888888888888888888888888888888888",
+        "type": "wallet",
+        "totalBalanceRegGnosis": "8.772",
+        "totalBalanceRegEthereum": "0",
+        "totalBalanceRegPolygon": "0",
+        "totalBalanceEquivalentRegGnosis": "361.585",
+        "totalBalanceEquivalentRegEthereum": "0",
+        "totalBalanceEquivalentRegPolygon": "0",
+        "totalBalanceEquivalentREG": "361.585",
+        "totalBalanceREG": "8.772",
+        "totalBalance": "1000",
+        "sourceBalance": {
+          "gnosis": {
+            "walletBalance": "0",
+            "vaultIncentiveV1": "0",
+            "dexs": {
+              "sushiswap": [
+                {
+                  "comment": "SCÉNARIO 8: Position ~2.4% REG / ~97.6% USDC. currentPrice=2.7, range [1.05-2.75]. Teste proximity boost avec liquidité dépassant decaySlices (descendant) et liquidité au-dessus du prix.",
+                  "tokenBalance": "8.772",
+                  "tokenSymbol": "REG",
+                  "tokenDecimals": "18",
+                  "tokenPosition": 0,
+                  "tokenAddress": "0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce",
+                  "poolAddress": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8",
+                  "equivalentREG": "8.772",
+                  "positionId": 1008,
+                  "isActive": true,
+                  "tickLower": -275888,
+                  "tickUpper": -266212,
+                  "currentTick": -266393,
+                  "currentPrice": "2.7",
+                  "minPrice": 1.05,
+                  "maxPrice": 2.75,
+                  "feeTier": 10000
+                },
+                {
+                  "tokenBalance": "976.28",
+                  "tokenSymbol": "USDC",
+                  "tokenDecimals": "6",
+                  "tokenPosition": 1,
+                  "tokenAddress": "0xddafbb505ad214d7b80b1f830fccc89b60fb7a83",
+                  "poolAddress": "0xd7bb3dff2a5a7ac5d2150f161514d866b6c960e8",
+                  "equivalentREG": "361.585",
+                  "positionId": 1008,
+                  "isActive": true,
+                  "tickLower": -275888,
+                  "tickUpper": -266212,
+                  "currentTick": -266393,
+                  "currentPrice": "2.7",
+                  "minPrice": 1.05,
+                  "maxPrice": 2.75,
+                  "feeTier": 10000
+                }
+              ]
+            }
+          }
+        }
+      }
+    ]
+  },
+  "params": {
+    "currantTimestemp": 1746824400,
+    "dateCurrant": "2025-05-09T21:00:00.000Z",
+    "dateStart": "2025-05-09",
+    "dateEnd": "2025-05-09",
+    "snapshotTime": "21:00",
+    "typeSumm": "onDay"
+  }
+}
