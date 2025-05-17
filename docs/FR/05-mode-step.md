@@ -100,8 +100,8 @@ La configuration utilisée pour ces calculs est définie dans `optionsModifiers.
 #### Pouvoir de vote :
 
 - REG: 655.22 × 1.5 (boost) × (4/4) = 982.83
-- USDC: 217.18 × 1.5 (boost) × (2/4) = 162.89
-- **Total : 1145.72** (arrondi à 1146)
+- USDC: 344.78 × 1.5 (boost) × (2/4) = 258.59
+- **Total : 1241.42** (arrondi à 1241)
 
 ### Scénario 3 : 25% REG / 75% USDC, range 0.5$ à 1.5$
 
@@ -127,8 +127,8 @@ La configuration utilisée pour ces calculs est définie dans `optionsModifiers.
 #### Pouvoir de vote :
 
 - REG: 289.32 × 3.0 (boost) × (4/4) = 867.96
-- USDC: 867.44 × 3.0 (boost) × (2/4) = 1301.16
-- **Total : 2169.12** (arrondi à 2169)
+- USDC: 710.68 × 3.0 (boost) × (2/4) = 1066.02
+- **Total : 1933.98**
 
 ### Scénario 4 : 100% USDC, range 0.5$ à 0.99$
 
@@ -235,15 +235,15 @@ La configuration utilisée pour ces calculs est définie dans `optionsModifiers.
 
 - REG: 8.772 × 1.0 (boost) × (4/4) = 8.77
 - USDC: 361.585 × 1.0 (boost) × (2/4) = 180.79
-- **Total : 189.56** (arrondi à 190)
+- **Total : 189.56**
 
 ### Résumé des résultats
 
 | Scénario | Description                          | État    | Prix  | Centrage | Palier | Boost REG | Boost USDC | Pouvoir de vote |
 | -------- | ------------------------------------ | ------- | ----- | -------- | ------ | --------- | ---------- | --------------- |
 | 1        | 50% USDC / 50% REG, 0.5$ à 1.5$      | Actif   | 1.00$ | 1.00     | 1.0    | 5.00      | 2.50       | 3750            |
-| 2        | 75% REG / 25% USDC, 0.5$ à 1.5$      | Actif   | 0.63$ | 0.26     | 0.2    | 1.50      | 0.75       | 1146            |
-| 3        | 25% REG / 75% USDC, 0.5$ à 1.5$      | Actif   | 1.22$ | 0.56     | 0.5    | 3.00      | 1.50       | 2169            |
+| 2        | 75% REG / 25% USDC, 0.5$ à 1.5$      | Actif   | 0.63$ | 0.26     | 0.2    | 1.50      | 0.75       | 1241            |
+| 3        | 25% REG / 75% USDC, 0.5$ à 1.5$      | Actif   | 1.22$ | 0.56     | 0.5    | 3.00      | 1.50       | 1934            |
 | 4        | 100% USDC, 0.5$ à 0.99$              | Inactif | 1.00$ | -        | -      | 1.00      | 0.50       | 500             |
 | 5        | 100% REG, 1.01$ à 1.5$               | Inactif | 1.00$ | -        | -      | 1.00      | 0.50       | 1000            |
 | 6        | 100% USDC, 0.01$ à 0.1$              | Inactif | 1.00$ | -        | -      | 1.00      | 0.50       | 500             |
@@ -423,8 +423,8 @@ Reprenons le **Scénario 8** de `balancesREG_mock_examples.json` avec la configu
 | -------- | ------------------------------------ | ----- | ------------------ | ------- | ------------------- | ------- |
 |          |                                      |       | Boost REG          | Pouvoir | Boost REG           | Pouvoir |
 | 1        | 50% USDC / 50% REG, 0.5$ à 1.5$      | 1.00$ | 5.00               | 3750    | 5.00                | 3750    |
-| 2        | 75% REG / 25% USDC, 0.5$ à 1.5$      | 0.63$ | 1.50               | 1146    | 3.60                | 2480    |
-| 3        | 25% REG / 75% USDC, 0.5$ à 1.5$      | 1.22$ | 3.00               | 2169    | 3.90                | 2750    |
+| 2        | 75% REG / 25% USDC, 0.5$ à 1.5$      | 0.63$ | 1.50               | 1241    | 3.60                | 2480    |
+| 3        | 25% REG / 75% USDC, 0.5$ à 1.5$      | 1.22$ | 3.00               | 1934    | 3.90                | 2750    |
 | 8        | 2.4% REG / 97.6% USDC, 1.05$ à 2.75$ | 2.70$ | 1.00               | 190     | 5.00                | 416     |
 
 Cette comparaison montre clairement que pour des positions ayant une liquidité proche du prix actuel, comme le scénario 8, le mode "proximity" offre un avantage considérable par rapport au mode "centered", particulièrement avec l'approche par paliers (step).

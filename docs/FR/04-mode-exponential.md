@@ -107,8 +107,8 @@ La configuration utilisée pour ces calculs est définie dans `optionsModifiers.
 #### Pouvoir de vote :
 
 - REG: 655.22 × 1.07 (boost) × (4/4) = 701.09
-- USDC: 217.18 × 1.07 (boost) × (2/4) = 116.19
-- **Total : 817.28** (arrondi à 817)
+- USDC: 344.78 × 1.070304 (boost précis) × (2/4) = 184.58
+- **Total : 885.67**
 
 ### Scénario 3 : 25% REG / 75% USDC, range 0.5$ à 1.5$
 
@@ -134,9 +134,9 @@ La configuration utilisée pour ces calculs est définie dans `optionsModifiers.
 
 #### Pouvoir de vote :
 
-- REG: 289.32 × 1.70 (boost) × (4/4) = 491.84
-- USDC: 867.44 × 1.70 (boost) × (2/4) = 737.32
-- **Total : 1229.16** (arrondi à 1229)
+- REG: 289.32 × 1.702464 (boost précis) × (4/4) = 492.55
+- USDC: 710.68 × 1.702464 (boost précis) × (2/4) = 604.96
+- **Total : 1097.51**
 
 ### Scénario 4 : 100% USDC, range 0.5$ à 0.99$
 
@@ -244,15 +244,15 @@ La configuration utilisée pour ces calculs est définie dans `optionsModifiers.
 
 - REG: 8.772 × 1.001 (boost) × (4/4) = 8.78
 - USDC: 361.585 × 1.001 (boost) × (2/4) = 180.97
-- **Total : 189.75** (arrondi à 190)
+- **Total : 189.75**
 
 ### Résumé des résultats
 
 | Scénario | Description                          | État    | Prix  | Centrage | Boost REG | Boost USDC | Pouvoir de vote |
 | -------- | ------------------------------------ | ------- | ----- | -------- | --------- | ---------- | --------------- |
 | 1        | 50% USDC / 50% REG, 0.5$ à 1.5$      | Actif   | 1.00$ | 1.00     | 5.00      | 2.50       | 3750            |
-| 2        | 75% REG / 25% USDC, 0.5$ à 1.5$      | Actif   | 0.63$ | 0.26     | 1.07      | 0.54       | 817             |
-| 3        | 25% REG / 75% USDC, 0.5$ à 1.5$      | Actif   | 1.22$ | 0.56     | 1.70      | 0.85       | 1229            |
+| 2        | 75% REG / 25% USDC, 0.5$ à 1.5$      | Actif   | 0.63$ | 0.26     | 1.07      | 0.54       | 886             |
+| 3        | 25% REG / 75% USDC, 0.5$ à 1.5$      | Actif   | 1.22$ | 0.56     | 1.70      | 0.85       | 1098            |
 | 4        | 100% USDC, 0.5$ à 0.99$              | Inactif | 1.00$ | -        | 1         | 0.50       | 500             |
 | 5        | 100% REG, 1.01$ à 1.5$               | Inactif | 1.00$ | -        | 1         | 0.50       | 1000            |
 | 6        | 100% USDC, 0.01$ à 0.1$              | Inactif | 1.00$ | -        | 1         | 0.50       | 500             |

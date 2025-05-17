@@ -50,7 +50,7 @@ La configuration utilisée pour ces calculs est définie dans `optionsModifiers.
 - `inactiveBoost: 0` (pas de boost pour les positions inactives)
 - `maxBoost: 5` (boost maximal au centre de la plage)
 - `minBoost: 1` (boost minimal aux extrémités de la plage)
-- `rangeWidthFactor: 10987` (favorise les plages larges, valeur correspondant à la largeur en ticks de la plage du scénario 1)
+- `rangeWidthFactor: non spécifié dans cette configuration d'exemple (par défaut, son influence est neutre, résultant en un facteur de boost de largeur de 1).`
 
 ### Scénario 1 : 50% USDC / 50% REG, range 0.5$ à 1.5$
 
@@ -70,7 +70,7 @@ La configuration utilisée pour ces calculs est définie dans `optionsModifiers.
 1. **Largeur de la plage (valueWidth)** = 1.5 - 0.5 = 1.0
 2. **Position relative du prix** = (1.0 - 0.5) / 1.0 = 0.5
 3. **Centrage (centeredness)** = 1 - |0.5 - 0.5| × 2 = 1.0 (position parfaitement centrée)
-4. **Facteur de largeur (rangeWidthFactorBoost)** = max(1, 1.0 / 10987 × 10000) = 1.0
+4. **Facteur de largeur (rangeWidthFactorBoost)** = 1.0 (le paramètre `rangeWidthFactor` n'étant pas spécifié dans la configuration de cet exemple, son impact est neutre ici, résultant en un facteur de 1)
 5. **Boost linéaire** = 1 + 1.0 × (5 - 1) = 5.0
 6. **Boost final** = 5.0 × 1.0 = 5.0
 
@@ -98,15 +98,14 @@ La configuration utilisée pour ces calculs est définie dans `optionsModifiers.
 1. **Largeur de la plage (valueWidth)** = 1.5 - 0.5 = 1.0
 2. **Position relative du prix** = (0.63 - 0.5) / 1.0 = 0.13
 3. **Centrage (centeredness)** = 1 - |0.13 - 0.5| × 2 = 1 - 0.74 = 0.26 (plus proche de l'extrémité)
-4. **Facteur de largeur (rangeWidthFactorBoost)** = max(1, 1.0 / 10987 × 10000) = 1.0
-5. **Boost linéaire** = 1 + 0.26 × (5 - 1) = 1 + 0.26 × 4 = 1 + 1.04 = 2.04
-6. **Boost final** = 2.04 × 1.0 = 2.04
+4. **Boost linéaire** = 1 + 0.26 × (5 - 1) = 1 + 0.26 × 4 = 1 + 1.04 = 2.04
+5. **Boost final** = 2.04 × 1.0 (facteur de largeur implicite) = 2.04
 
 #### Pouvoir de vote :
 
 - REG: 655.22 × 2.04 (boost) × (4/4) = 1336.65
-- USDC: 217.18 × 2.04 (boost) × (2/4) = 221.52
-- **Total : 1558.17** (arrondi à 1558)
+- USDC: 344.78 × 2.04 (boost) × (2/4) = 351.68
+- **Total : 1688.33**
 
 ### Scénario 3 : 25% REG / 75% USDC, range 0.5$ à 1.5$
 
@@ -126,15 +125,14 @@ La configuration utilisée pour ces calculs est définie dans `optionsModifiers.
 1. **Largeur de la plage (valueWidth)** = 1.5 - 0.5 = 1.0
 2. **Position relative du prix** = (1.22 - 0.5) / 1.0 = 0.72
 3. **Centrage (centeredness)** = 1 - |0.72 - 0.5| × 2 = 1 - 0.44 = 0.56 (moyennement centré)
-4. **Facteur de largeur (rangeWidthFactorBoost)** = max(1, 1.0 / 10987 × 10000) = 1.0
-5. **Boost linéaire** = 1 + 0.56 × (5 - 1) = 1 + 0.56 × 4 = 1 + 2.24 = 3.24
-6. **Boost final** = 3.24 × 1.0 = 3.24
+4. **Boost linéaire** = 1 + 0.56 × (5 - 1) = 1 + 0.56 × 4 = 1 + 2.24 = 3.24
+5. **Boost final** = 3.24 × 1.0 (facteur de largeur implicite) = 3.24
 
 #### Pouvoir de vote :
 
 - REG: 289.32 × 3.24 (boost) × (4/4) = 937.40
-- USDC: 867.44 × 3.24 (boost) × (2/4) = 1405.25
-- **Total : 2342.65** (arrondi à 2343)
+- USDC: 710.68 × 3.24 (boost) × (2/4) = 1151.85
+- **Total : 2089.25**
 
 ### Scénario 4 : 100% USDC, range 0.5$ à 0.99$
 
@@ -234,9 +232,8 @@ La configuration utilisée pour ces calculs est définie dans `optionsModifiers.
 1. **Largeur de la plage (valueWidth)** = 2.75 - 1.05 = 1.7
 2. **Position relative du prix** = (2.7 - 1.05) / 1.7 = 0.97 (très proche de la borne supérieure)
 3. **Centrage (centeredness)** = 1 - |0.97 - 0.5| × 2 = 1 - 0.94 = 0.06 (très décentré)
-4. **Facteur de largeur (rangeWidthFactorBoost)** = max(1, 1.7 / 10987 × 10000) = 1.0
-5. **Boost linéaire** = 1 + 0.06 × (5 - 1) = 1 + 0.06 × 4 = 1 + 0.24 = 1.24
-6. **Boost final** = 1.24 × 1.0 = 1.24
+4. **Boost linéaire** = 1 + 0.06 × (5 - 1) = 1 + 0.06 × 4 = 1 + 0.24 = 1.24
+5. **Boost final** = 1.24 × 1.0 (facteur de largeur implicite) = 1.24
 
 #### Pouvoir de vote :
 
@@ -249,8 +246,8 @@ La configuration utilisée pour ces calculs est définie dans `optionsModifiers.
 | Scénario | Description                          | État    | Prix  | Centrage | Boost REG | Boost USDC | Pouvoir de vote |
 | -------- | ------------------------------------ | ------- | ----- | -------- | --------- | ---------- | --------------- |
 | 1        | 50% USDC / 50% REG, 0.5$ à 1.5$      | Actif   | 1.00$ | 1.00     | 5.00      | 2.50       | 3750            |
-| 2        | 75% REG / 25% USDC, 0.5$ à 1.5$      | Actif   | 0.63$ | 0.26     | 2.04      | 1.02       | 1558            |
-| 3        | 25% REG / 75% USDC, 0.5$ à 1.5$      | Actif   | 1.22$ | 0.56     | 3.24      | 1.62       | 2343            |
+| 2        | 75% REG / 25% USDC, 0.5$ à 1.5$      | Actif   | 0.63$ | 0.26     | 2.04      | 1.02       | 1688            |
+| 3        | 25% REG / 75% USDC, 0.5$ à 1.5$      | Actif   | 1.22$ | 0.56     | 3.24      | 1.62       | 2089            |
 | 4        | 100% USDC, 0.5$ à 0.99$              | Inactif | 1.00$ | -        | 0         | 0          | 0               |
 | 5        | 100% REG, 1.01$ à 1.5$               | Inactif | 1.00$ | -        | 0         | 0          | 0               |
 | 6        | 100% USDC, 0.01$ à 0.1$              | Inactif | 1.00$ | -        | 0         | 0          | 0               |
@@ -427,6 +424,8 @@ Une caractéristique importante du mode "proximity" est la possibilité de prend
 | 8        | 2.4% REG / 97.6% USDC, 1.05$ à 2.75$ | Actif   | 2.70$ | Dans la plage    | -             | 345             |
 
 **Avantages d'inclure les positions inactives proches du prix actuel:**
+
+_Note sur le calcul du "Boost inactif" pour les scénarios 4 et 5 :_ La distance au prix pour ces scénarios est de 0.01$. Avec un `sliceWidth` de 0.05$ et `decaySlices` de 10, cette distance, bien qu inférieure à un `sliceWidth` complet, est traitée comme la première "tranche" d'éloignement effectif par rapport au bord de la position. Ainsi, le `decayProgress` est calculé comme `1 / decaySlices` (soit `1/10 = 0.1`). Le boost est alors `minBoost + (maxBoost - minBoost) * (1 - decayProgress)` soit `1 + (5-1) * (1 - 0.1) = 1 + 4 * 0.9 = 4.6`. Pour une décroissance de type `maxBoost - (maxBoost - minBoost) * decayProgress`, cela donnerait `5 - 4 * 0.1 = 4.6`.
 
 1. **Récompense la liquidité potentiellement utilisable**: Les positions juste à la frontière du prix actuel (comme les scénarios 4 et 5) peuvent devenir actives avec une très légère fluctuation du prix. Cette liquidité est donc pratiquement utilisable et mérite d'être valorisée.
 
