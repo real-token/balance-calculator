@@ -288,11 +288,12 @@ function calculateProximityBoost(
   let direction: number;
 
   if (!isActive) {
-    // Si le prix est inférieur ou supérieur à la plage de prix
-    if (bnCurrentValue.isGreaterThan(bnLowerValue)) {
-      const isOutOfRange = bnCurrentValue.isGreaterThan(
-        bnCurrentValue.minus(bnSliceWidth.multipliedBy(decaySlicesDown))
-      );
+    // Cas du prix supérieur à la borne haute
+    if (bnCurrentValue.isGreaterThan(bnUpperValue)) {
+      // Calcul du seuil haut : borne haute + (nombre de slices * largeur slice)
+      const seuilHaut = bnUpperValue.plus(bnSliceWidth.multipliedBy(decaySlicesUp));
+      // isOutOfRange = true (trop éloigné du prix) si le prix est plus grand que le seuil haut
+      const isOutOfRange = bnCurrentValue.isGreaterThan(seuilHaut);
       logInTerminal("debug", ["isOutOfRange lower", isOutOfRange]);
       if (isOutOfRange) {
         return minBoost;
@@ -300,8 +301,11 @@ function calculateProximityBoost(
       bnEffectiveReferencePoint = bnLowerValue;
       direction = -1; // Direction de prix vers la borne inférieure
     } else {
-      const isOutOfRange = bnCurrentValue.isLessThan(bnCurrentValue.plus(bnSliceWidth.multipliedBy(decaySlicesUp)));
-      logInTerminal("debug", ["isOutOfRange upper", isOutOfRange]);
+     // Sinon, cas du prix inférieur à la borne basse
+      // Calcul du seuil bas : borne basse - (nombre de slices * largeur slice)
+      const seuilBas = bnLowerValue.minus(bnSliceWidth.multipliedBy(decaySlicesDown));
+      // isOutOfRange = true (trop éloigné du prix) si le prix est plus petit que le seuil bas
+      const isOutOfRange = bnCurrentValue.isLessThan(seuilBas);
       if (isOutOfRange) {
         return minBoost;
       }
@@ -356,19 +360,20 @@ function calculateProximityBoost(
           bnIterationSliceEnd.isGreaterThan(bnLowerValue),
         ]);
         // Vérifier si la tranche actuelle chevauche la plage de la position
+          // cas où le prix est inférieur à la borne basse et la borne basse est dans la tranche
         if (bnCurrentValue.isLessThan(bnLowerValue) && bnIterationSliceEnd.isGreaterThan(bnLowerValue)) {
-          // La borne inférieure est dans cette tranche - ajuster la portion depuis la borne
+          // La borne basse est dans la tranche - ajuster la portion depuis la borne basse
           actualSlicePortion = bnIterationSliceEnd.minus(bnLowerValue).dividedBy(bnSliceWidth);
         }
       } else {
         // direction === -1
-        if (bnCurrentValue.isGreaterThan(bnLowerValue) && bnIterationSliceEnd.isGreaterThan(bnLowerValue)) {
-          // La borne supérieure est dans cette tranche - ajuster la portion depuis la borne
+          // Cas où le prix est suppérieur à la borne haute et la borne haute est dans la tranche
+        if (bnCurrentValue.isGreaterThan(bnUpperValue) && bnIterationSliceEnd.isLessThan(bnUpperValue)) {
+          // La borne haute est dans la tranche - ajuster la portion depuis la borne haute
           actualSlicePortion = bnUpperValue.minus(bnIterationSliceEnd).dividedBy(bnSliceWidth);
         }
       }
-    }
-
+    } else {
     // Ajuster la fin de la dernière tranche pour ne pas dépasser effectiveReferencePoint
     if (direction === 1 && bnIterationSliceEnd.isGreaterThan(bnEffectiveReferencePoint)) {
       actualSlicePortion = bnEffectiveReferencePoint.minus(bnIterationSliceStart).dividedBy(bnSliceWidth);
@@ -376,6 +381,7 @@ function calculateProximityBoost(
     } else if (direction === -1 && bnIterationSliceEnd.isLessThan(bnEffectiveReferencePoint)) {
       actualSlicePortion = bnIterationSliceStart.minus(bnEffectiveReferencePoint).dividedBy(bnSliceWidth);
       bnIterationSliceEnd = bnEffectiveReferencePoint;
+    }
     }
 
     // Si actualSlicePortion est <= 0, on arrête
