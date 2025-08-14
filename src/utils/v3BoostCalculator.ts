@@ -342,51 +342,33 @@ function calculateProximityBoost(
     const bnIterationSliceStart = bnCurrentValue.plus(new BigNumber(i * direction).multipliedBy(bnSliceWidth));
     let bnIterationSliceEnd = bnIterationSliceStart.plus(new BigNumber(direction).multipliedBy(bnSliceWidth));
 
-    // Ajuster la portion de la première tranche (i=0) si elle est partiellement inactive
-    if (i === 0 && !isActive) {
-      // Si nous sommes au début et que la position est inactive, calculer la portion active de la tranche
-      if (direction === 1) {
-        logInTerminal("debug", [
-          "direction === 1",
-          "bnLowerValue",
-          bnLowerValue,
-          "bnCurrentValue",
-          bnCurrentValue,
-          "bnIterationSliceEnd",
-          bnIterationSliceEnd,
-          "bnCurrentValue.isLessThan(bnLowerValue)",
-          bnCurrentValue.isLessThan(bnLowerValue),
-          "bnIterationSliceEnd.isGreaterThan(bnLowerValue)",
-          bnIterationSliceEnd.isGreaterThan(bnLowerValue),
-        ]);
-        // Vérifier si la tranche actuelle chevauche la plage de la position
-          // cas où le prix est inférieur à la borne basse et la borne basse est dans la tranche
-        if (bnCurrentValue.isLessThan(bnLowerValue) && bnIterationSliceEnd.isGreaterThan(bnLowerValue)) {
-          // La borne basse est dans la tranche - ajuster la portion depuis la borne basse
-          actualSlicePortion = bnIterationSliceEnd.minus(bnLowerValue).dividedBy(bnSliceWidth);
+    // Ajuster la portion de la première tranche si elle est partiellement inactive
+    if (!isActive) {
+      // logInTerminal("debug", ["direction === 1","bnLowerValue", bnLowerValue, "bnCurrentValue", bnCurrentValue, "bnIterationSliceEnd", bnIterationSliceEnd, "bnCurrentValue.isLessThan(bnLowerValue)", bnCurrentValue.isLessThan(bnLowerValue),"bnIterationSliceEnd.isGreaterThan(bnLowerValue)", bnIterationSliceEnd.isGreaterThan(bnLowerValue), ]);
+      // Pondération générique par chevauchement quand le range est inactif
+          const bnSliceMin = BigNumber.min(bnIterationSliceStart, bnIterationSliceEnd);
+          const bnSliceMax = BigNumber.max(bnIterationSliceStart, bnIterationSliceEnd);
+          const bnRangeMin = BigNumber.min(bnLowerValue, bnUpperValue);
+          const bnRangeMax = BigNumber.max(bnLowerValue, bnUpperValue);
+    
+          const bnOverlapStart = BigNumber.max(bnSliceMin, bnRangeMin);
+          const bnOverlapEnd = BigNumber.min(bnSliceMax, bnRangeMax);
+          const bnOverlapLen = BigNumber.max(new BigNumber(0), bnOverlapEnd.minus(bnOverlapStart));
+    
+          actualSlicePortion = bnOverlapLen.dividedBy(bnSliceWidth);
+        } 
+        else {
+        // Ajuster la fin de la dernière tranche pour ne pas dépasser effectiveReferencePoint
+        if (direction === 1 && bnIterationSliceEnd.isGreaterThan(bnEffectiveReferencePoint)) {
+          actualSlicePortion = bnEffectiveReferencePoint.minus(bnIterationSliceStart).dividedBy(bnSliceWidth);
+          bnIterationSliceEnd = bnEffectiveReferencePoint;
+        } else if (direction === -1 && bnIterationSliceEnd.isLessThan(bnEffectiveReferencePoint)) {
+          actualSlicePortion = bnIterationSliceStart.minus(bnEffectiveReferencePoint).dividedBy(bnSliceWidth);
+          bnIterationSliceEnd = bnEffectiveReferencePoint;
         }
-      } else {
-        // direction === -1
-          // Cas où le prix est suppérieur à la borne haute et la borne haute est dans la tranche
-        if (bnCurrentValue.isGreaterThan(bnUpperValue) && bnIterationSliceEnd.isLessThan(bnUpperValue)) {
-          // La borne haute est dans la tranche - ajuster la portion depuis la borne haute
-          actualSlicePortion = bnUpperValue.minus(bnIterationSliceEnd).dividedBy(bnSliceWidth);
         }
-      }
-    } else {
-    // Ajuster la fin de la dernière tranche pour ne pas dépasser effectiveReferencePoint
-    if (direction === 1 && bnIterationSliceEnd.isGreaterThan(bnEffectiveReferencePoint)) {
-      actualSlicePortion = bnEffectiveReferencePoint.minus(bnIterationSliceStart).dividedBy(bnSliceWidth);
-      bnIterationSliceEnd = bnEffectiveReferencePoint;
-    } else if (direction === -1 && bnIterationSliceEnd.isLessThan(bnEffectiveReferencePoint)) {
-      actualSlicePortion = bnIterationSliceStart.minus(bnEffectiveReferencePoint).dividedBy(bnSliceWidth);
-      bnIterationSliceEnd = bnEffectiveReferencePoint;
-    }
-    }
-
-    // Si actualSlicePortion est <= 0, on arrête
-    if (actualSlicePortion.isLessThanOrEqualTo(0)) break;
-
+      // Si actualSlicePortion est < 0, on arrête
+        if (actualSlicePortion.isLessThan(0)) break;
     // slicesAway est maintenant simplement 'i' car on part de currentValue
     const slicesAway = i;
 
