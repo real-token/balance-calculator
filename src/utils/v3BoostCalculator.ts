@@ -137,6 +137,7 @@ function calculateCenteredBoost(
 ): number {
   // Si la position n'est pas active, on applique uniquement le boost inactif
   if (!isActive) {
+    logInTerminal("debug", ["Centered isActive", isActive]);
     return params.inactiveBoost || params.minBoost || DEFAULT_BOOST_FACTOR;
   }
 
@@ -157,12 +158,24 @@ function calculateCenteredBoost(
   const centeredness = 1 - Math.abs(relativePosition - 0.5) * 2;
   logInTerminal("debug", ["centeredness", centeredness]);
   // Calcul du modificateur de largeur de plage
-  const rangeWidthFactorBoost =
-    rangeWidthFactor >= 0
-      ? Math.max(1, valueWidth / rangeWidthFactor)
-      : Math.max(1, (rangeWidthFactor / valueWidth) * -1);
+  const clampedRangeWidthFactor = Math.min(1.5, Math.max(0.5, rangeWidthFactor));
+  let rangeWidthFactorBoost: number;
 
-  logInTerminal("debug", ["rangeWidthFactorBoost", rangeWidthFactorBoost]);
+  if (clampedRangeWidthFactor <= 1) {
+    if (valueWidth <= 1) {
+      rangeWidthFactorBoost = 1.5 - 0.5 * Math.pow(valueWidth, 1 - clampedRangeWidthFactor);
+    } else {
+      rangeWidthFactorBoost = 0.5 + 0.5 / Math.pow(valueWidth, 1 - clampedRangeWidthFactor);
+    }
+  } else {
+    if (valueWidth > 1) {
+      rangeWidthFactorBoost = 1.5 - 0.5 / Math.pow(valueWidth, clampedRangeWidthFactor - 1);
+    } else {
+      rangeWidthFactorBoost = 0.5 + 0.5 * Math.pow(valueWidth, clampedRangeWidthFactor - 1);
+    }
+  }
+      
+  logInTerminal("debug", ["rangeWidthFactor", rangeWidthFactor, "rangeClamped", clampedRangeWidthFactor, "rangeWidthValue", valueWidth, "rangeWidthFactorBoost", rangeWidthFactorBoost]);
 
   // Calcul du boost en fonction du mode sélectionné
   let boost: number;
@@ -210,7 +223,7 @@ function calculateCenteredBoost(
       break;
 
     default:
-      boost = maxBoost;
+      boost = minBoost;
   }
 
   // Application du modificateur de largeur de plage et du boost de base pour positions actives
@@ -222,7 +235,7 @@ function calculateCenteredBoost(
     "finalBoost function calculateCenteredBoost:",
     boost * rangeWidthFactorBoost,
   ]);
-  return boost * rangeWidthFactorBoost;
+  return Math.max(minBoost, boost * rangeWidthFactorBoost);
 }
 
 /**
@@ -262,6 +275,7 @@ function calculateProximityBoost(
   // Gestion explicite du cas où la position est inactive (hors de la plage de prix)
   if (!isActive) {
     if (!outOfRangeEnabled) {
+      logInTerminal("debug", ["Proximity isOutOfRangeEnabled", outOfRangeEnabled]);
       return params.inactiveBoost || minBoost || DEFAULT_BOOST_FACTOR; // Si outOfRangeEnabled est désactivé, retourner inactiveBoost ou minBoost
     }
 
@@ -306,6 +320,7 @@ function calculateProximityBoost(
       const seuilBas = bnLowerValue.minus(bnSliceWidth.multipliedBy(decaySlicesDown));
       // isOutOfRange = true (trop éloigné du prix) si le prix est plus petit que le seuil bas
       const isOutOfRange = bnCurrentValue.isLessThan(seuilBas);
+      logInTerminal("debug", ["isOutOfRange upper", isOutOfRange]);
       if (isOutOfRange) {
         return minBoost;
       }
@@ -333,11 +348,12 @@ function calculateProximityBoost(
   logInTerminal("debug", ["Total Slices in Liquidity Range", totalSlicesInLiquidity]);
   logInTerminal("debug", ["Mode de décroissance", params.priceRangeMode]);
   let bnTotalBoostAccumulated = new BigNumber(0);
+  
   const bnDecaySlices = direction === 1 ? new BigNumber(decaySlicesUp) : new BigNumber(decaySlicesDown);
 
   for (let i = 0; i < totalSlicesInLiquidity; i++) {
     let actualSlicePortion = new BigNumber(1); // Par défaut, la tranche est complète
-
+    let bnTotalPortionAccumulated = new BigNumber(0);
     // Déterminer les bornes de la tranche actuelle
     const bnIterationSliceStart = bnCurrentValue.plus(new BigNumber(i * direction).multipliedBy(bnSliceWidth));
     let bnIterationSliceEnd = bnIterationSliceStart.plus(new BigNumber(direction).multipliedBy(bnSliceWidth));
@@ -369,6 +385,7 @@ function calculateProximityBoost(
         }
       // Si actualSlicePortion est < 0, on arrête
         if (actualSlicePortion.isLessThan(0)) break;
+    
     // slicesAway est maintenant simplement 'i' car on part de currentValue
     const slicesAway = i;
 
@@ -392,7 +409,8 @@ function calculateProximityBoost(
                   .multipliedBy(new BigNumber(1).minus(decayProgress).pow(params.exponent!))
               )
               .toNumber();
-
+              logInTerminal("debug", ["Proximity exponential inactif", "decayProgress", decayProgress.toNumber(),
+                "sliceBoostNum", sliceBoostNum  ])
             break;
 
           case BoostFormulaValues.STEP:
@@ -400,15 +418,10 @@ function calculateProximityBoost(
             sliceBoostNum = minBoost;
 
             // Trier les paliers du plus grand seuil au plus petit
-            const sortedSteps = [...params.steps!].sort((a, b) => b[0] - a[0]);
+            const sortedSteps = [...params.steps!].sort((a, b) => a[0] - b[0]);
 
-            logInTerminal("debug", [
-              "proximity step mode",
-              "decayProgress",
-              decayProgress.toNumber(),
-              "sortedSteps",
-              sortedSteps,
-            ]);
+            logInTerminal("debug", [ "Proximity step inactif", "decayProgress", decayProgress.toNumber(),
+              "sortedSteps", sortedSteps  ]);
 
             // Trouver le premier palier dont le seuil est inférieur ou égal au decayProgress
             for (const [threshold, boostValue] of sortedSteps) {
@@ -427,6 +440,8 @@ function calculateProximityBoost(
             sliceBoostNum = new BigNumber(maxBoost)
               .minus(new BigNumber(maxBoost).minus(minBoost).multipliedBy(decayProgress))
               .toNumber();
+            logInTerminal("debug", ["Proximity linear inactif", "decayProgress", decayProgress.toNumber(),
+                "sliceBoostNum", sliceBoostNum  ]);
             break;
         }
       }
@@ -447,13 +462,8 @@ function calculateProximityBoost(
                   .multipliedBy(new BigNumber(1).minus(decayProgress).pow(params.exponent!))
               )
               .toNumber();
-            logInTerminal("debug", [
-              "exponential mode",
-              "decayProgress",
-              decayProgress.toNumber(),
-              "sliceBoostNum",
-              sliceBoostNum,
-            ]);
+            logInTerminal("debug", ["Proximity exponential actif", "decayProgress", decayProgress.toNumber(),
+              "sliceBoostNum", sliceBoostNum  ]);
             break;
 
           case BoostFormulaValues.STEP:
@@ -463,19 +473,14 @@ function calculateProximityBoost(
             // Trier les paliers du plus grand seuil au plus petit
             const sortedSteps = [...params.steps!].sort((a, b) => a[0] - b[0]);
 
+            logInTerminal("debug", [ "Proximity step actif", "decayProgress", decayProgress.toNumber(),
+              "sortedSteps", sortedSteps  ]);
+
             // Trouver le premier palier dont le seuil est inférieur ou égal au decayProgress
             for (const [threshold, boostValue] of sortedSteps) {
               if (decayProgress.isLessThanOrEqualTo(threshold)) {
                 sliceBoostNum = boostValue;
-                logInTerminal("debug", [
-                  "proximity step applied",
-                  "threshold",
-                  threshold,
-                  "decayProgress",
-                  decayProgress.toNumber(),
-                  "boostValue",
-                  boostValue,
-                ]);
+                logInTerminal("debug", [  "step applied", "threshold", threshold, "boostValue", boostValue, ]);
                 break;
               }
             }
@@ -488,6 +493,8 @@ function calculateProximityBoost(
             sliceBoostNum = new BigNumber(maxBoost)
               .minus(new BigNumber(maxBoost).minus(minBoost).multipliedBy(decayProgress))
               .toNumber();
+            logInTerminal("debug", ["Proximity linear actif", "decayProgress", decayProgress.toNumber(),
+                "sliceBoostNum", sliceBoostNum  ]);
             break;
         }
       }
@@ -497,15 +504,16 @@ function calculateProximityBoost(
     bnTotalBoostAccumulated = bnTotalBoostAccumulated.plus(
       new BigNumber(sliceBoostNum).multipliedBy(actualSlicePortion)
     );
-
+    bnTotalPortionAccumulated = bnTotalPortionAccumulated.plus(actualSlicePortion);
+    
     logInTerminal("debug", [
       `Slice #${i}: Start ${bnIterationSliceStart.toNumber()}, End ${bnIterationSliceEnd.toNumber()}, Portion ${actualSlicePortion.toNumber()}, Away ${slicesAway}, Boost ${sliceBoostNum}`,
       `AccumulatedBoost ${bnTotalBoostAccumulated.toNumber()}`,
     ]);
   }
 
-  // L'averageBoost est la somme des boosts pondérés divisée par le nombre total de tranches *théoriques*
-  const averageBoost = bnTotalBoostAccumulated.dividedBy(bnTotalSlicesInLiquidity).toNumber();
+  // L'averageBoost est la somme des boosts pondérés divisée par le total des portions cumulés
+  const averageBoost = bnTotalBoostAccumulated.dividedBy(bnTotalPortionAccumulated).toNumber();
 
   logInTerminal("debug", ["Average Boost", averageBoost]);
   return averageBoost;
