@@ -348,12 +348,12 @@ function calculateProximityBoost(
   logInTerminal("debug", ["Total Slices in Liquidity Range", totalSlicesInLiquidity]);
   logInTerminal("debug", ["Mode de décroissance", params.priceRangeMode]);
   let bnTotalBoostAccumulated = new BigNumber(0);
-  
+  let bnTotalPortionAccumulated = new BigNumber(0);
   const bnDecaySlices = direction === 1 ? new BigNumber(decaySlicesUp) : new BigNumber(decaySlicesDown);
 
   for (let i = 0; i < totalSlicesInLiquidity; i++) {
     let actualSlicePortion = new BigNumber(1); // Par défaut, la tranche est complète
-    let bnTotalPortionAccumulated = new BigNumber(0);
+    
     // Déterminer les bornes de la tranche actuelle
     const bnIterationSliceStart = bnCurrentValue.plus(new BigNumber(i * direction).multipliedBy(bnSliceWidth));
     let bnIterationSliceEnd = bnIterationSliceStart.plus(new BigNumber(direction).multipliedBy(bnSliceWidth));
